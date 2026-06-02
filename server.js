@@ -77,9 +77,9 @@ const ANALYSES_FILE      = path.join(DATA_DIR, 'analyses.json');
 const MONITORS_FILE      = path.join(DATA_DIR, 'monitors.json');
 const ALERTS_FILE        = path.join(DATA_DIR, 'alerts.json');
 const LINK_WATCHES_FILE  = path.join(DATA_DIR, 'link-watches.json');
-const SERPAPI_KEY        = process.env.SERPAPI_KEY;
-const FREE_LIMIT    = 100;
-const BASE_URL      = process.env.BASE_URL || 'https://www.objematch.com';
+const FREE_LIMIT      = 100;
+const LINK_FREE_LIMIT = 5;
+const BASE_URL        = process.env.BASE_URL || 'https://www.objematch.com';
 const LS_API_KEY    = process.env.LEMONSQUEEZY_API_KEY;
 const LS_STORE_ID   = process.env.LEMONSQUEEZY_STORE_ID;
 const LS_VARIANTS   = {
@@ -165,6 +165,27 @@ function incrementUsage(userId) {
     writeJSON(USERS_FILE, users);
   }
 }
+function getLinkUsage(user) {
+  const month = currentMonth();
+  if (user.linkAnalysisMonth !== month) return { count: 0, month };
+  return { count: user.linkAnalysisCount || 0, month };
+}
+function canAnalyzeLink(user) {
+  if (!user) return { allowed: false, reason: 'login' };
+  const usage = getLinkUsage(user);
+  if (usage.count >= LINK_FREE_LIMIT) return { allowed: false, reason: 'limit', used: usage.count, limit: LINK_FREE_LIMIT };
+  return { allowed: true, used: usage.count, limit: LINK_FREE_LIMIT };
+}
+function incrementLinkUsage(userId) {
+  const users = readJSON(USERS_FILE);
+  const idx   = users.findIndex(u => u.id === userId);
+  if (idx !== -1) {
+    const usage = getLinkUsage(users[idx]);
+    users[idx].linkAnalysisCount = usage.count + 1;
+    users[idx].linkAnalysisMonth = usage.month;
+    writeJSON(USERS_FILE, users);
+  }
+}
 
 // ── AUTH MIDDLEWARE ───────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {
@@ -221,37 +242,18 @@ Respond ONLY with JSON:
   try { return JSON.parse(match ? match[0] : '{}'); } catch { return {}; }
 }
 
-async function searchShopping(query) {
-  if (SERPAPI_KEY) {
-    try {
-      const r = await fetch(`https://serpapi.com/search?engine=google_shopping&q=${encodeURIComponent(query)}&api_key=${SERPAPI_KEY}&num=10`);
-      const data = await r.json();
-      if (data.shopping_results?.length) {
-        return data.shopping_results.slice(0, 8).map(item => ({
-          title: item.title, price: item.price, source: item.source,
-          link: item.link, thumbnail: item.thumbnail,
-          rating: item.rating, reviews: item.reviews
-        }));
-      }
-    } catch (e) { console.error('SerpAPI error:', e.message); }
-  }
-  // Fallback: Claude-generated seller list
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001', max_tokens: 600,
-      messages: [{ role: 'user', content: `For this product: "${query}"
-List 6 places where it can be purchased online with realistic prices.
-Respond ONLY with JSON array:
-[{"title":"product name","price":"$XX","source":"Store name","link":"https://...","thumbnail":null}]
-Use real stores: Amazon, eBay, Walmart, Target, Best Buy, Newegg, etc.` }]
-    })
-  });
-  const data = await r.json();
-  const text = data.content?.[0]?.text || '[]';
-  const match = text.match(/\[[\s\S]*\]/);
-  try { return JSON.parse(match ? match[0] : '[]'); } catch { return []; }
+function buildStoreLinks(query) {
+  const q = encodeURIComponent(query);
+  return [
+    { source: 'Amazon',          link: `https://www.amazon.com/s?k=${q}&tag=${AFFILIATE}`,          icon: '🛒' },
+    { source: 'eBay',            link: `https://www.ebay.com/sch/i.html?_nkw=${q}`,                 icon: '🔵' },
+    { source: 'Walmart',         link: `https://www.walmart.com/search?q=${q}`,                      icon: '🔷' },
+    { source: 'Best Buy',        link: `https://www.bestbuy.com/site/searchpage.jsp?st=${q}`,        icon: '💙' },
+    { source: 'Target',          link: `https://www.target.com/s?searchTerm=${q}`,                   icon: '🎯' },
+    { source: 'Newegg',          link: `https://www.newegg.com/p/pl?d=${q}`,                         icon: '🖥️' },
+    { source: 'Google Shopping', link: `https://www.google.com/search?tbm=shop&q=${q}`,              icon: '🛍️' },
+    { source: 'Etsy',            link: `https://www.etsy.com/search?q=${q}`,                         icon: '🎨' },
+  ].map(s => ({ ...s, title: query, price: null, thumbnail: null }));
 }
 
 async function sendLinkAlertEmail(to, productName, sourceUrl, sellers) {
@@ -386,7 +388,7 @@ async function runLinkWatchCron() {
 
   for (const watch of due) {
     try {
-      const sellers = await searchShopping(watch.searchQuery || watch.productName);
+      const sellers = buildStoreLinks(watch.searchQuery || watch.productName);
       const alerts  = readJSON(ALERTS_FILE);
       alerts.push({
         id: Date.now().toString(), type: 'link',
@@ -806,15 +808,18 @@ Respond ONLY with valid JSON, no markdown, no explanation:
 });
 
 // ── LINK TRACKER ROUTES ───────────────────────────────────────────────────────
-app.post('/api/link-analyze', optionalAuth, async (req, res) => {
+app.post('/api/link-analyze', requireAuth, async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: 'URL required' });
   if (!API_KEY) return res.status(500).json({ error: 'API not configured' });
 
-  try {
-    new URL(url); // validate URL
-  } catch {
-    return res.status(400).json({ error: 'Invalid URL' });
+  try { new URL(url); } catch { return res.status(400).json({ error: 'Invalid URL' }); }
+
+  const users  = readJSON(USERS_FILE);
+  const dbUser = users.find(u => u.id === req.user.id);
+  const check  = canAnalyzeLink(dbUser);
+  if (!check.allowed) {
+    return res.status(402).json({ error: 'limit_reached', used: check.used, limit: LINK_FREE_LIMIT });
   }
 
   try {
@@ -822,8 +827,11 @@ app.post('/api/link-analyze', optionalAuth, async (req, res) => {
     const product  = await identifyProduct(pageText, url);
     if (!product.name) return res.status(400).json({ error: 'Could not identify a product on this page' });
 
-    const sellers = await searchShopping(product.searchQuery || product.name);
-    res.json({ product, sellers });
+    const sellers = buildStoreLinks(product.searchQuery || product.name);
+    incrementLinkUsage(req.user.id);
+
+    const usage = getLinkUsage(users.find(u => u.id === req.user.id) || dbUser);
+    res.json({ product, sellers, used: check.used + 1, limit: LINK_FREE_LIMIT });
   } catch (e) {
     console.error('Link analyze error:', e.message);
     res.status(500).json({ error: 'Failed to analyze link' });

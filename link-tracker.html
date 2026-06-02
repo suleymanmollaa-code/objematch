@@ -10,7 +10,6 @@
     body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; min-height: 100vh; }
     a { color: inherit; text-decoration: none; }
 
-    /* NAV */
     nav { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
     .logo { font-size: 20px; font-weight: 800; }
     .logo span { color: #f97316; }
@@ -20,13 +19,11 @@
     .btn-nav { background: #111827; color: #fff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; }
     .btn-nav:hover { background: #1f2937; }
 
-    /* HERO */
     .hero { max-width: 680px; margin: 0 auto; padding: 64px 24px 40px; text-align: center; }
     .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700; margin-bottom: 24px; }
     .hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; color: #111827; line-height: 1.2; margin-bottom: 16px; }
     .hero p { color: #6b7280; font-size: 1.05rem; line-height: 1.7; margin-bottom: 40px; }
 
-    /* INPUT BOX */
     .input-wrap { background: #fff; border: 2px solid #e5e7eb; border-radius: 18px; padding: 20px 24px; display: flex; gap: 12px; align-items: center; transition: border-color .2s; }
     .input-wrap:focus-within { border-color: #f97316; }
     .input-wrap input { flex: 1; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 15px; color: #111827; background: transparent; }
@@ -35,84 +32,77 @@
     .btn-analyze:hover { background: #ea580c; }
     .btn-analyze:disabled { background: #d1d5db; cursor: not-allowed; }
 
-    /* EXAMPLES */
-    .examples { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
-    .example-chip { background: #fff; border: 1px solid #e5e7eb; border-radius: 20px; padding: 6px 14px; font-size: 12px; color: #6b7280; cursor: pointer; transition: all .15s; }
-    .example-chip:hover { border-color: #f97316; color: #f97316; background: #fff7ed; }
+    /* Usage bar */
+    .usage-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; }
+    .usage-dots { display: flex; gap: 5px; }
+    .usage-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; }
+    .usage-dot.used { background: #f97316; }
+    .usage-text { font-size: 12px; color: #9ca3af; }
 
-    /* MAIN CONTENT */
     .main { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
 
-    /* LOADING */
+    /* Login gate */
+    .login-gate { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 48px 32px; text-align: center; margin-bottom: 24px; }
+    .login-gate h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .login-gate p { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .btn-cta { display: inline-block; background: #f97316; color: #fff; padding: 13px 28px; border-radius: 12px; font-size: 15px; font-weight: 700; margin-right: 10px; }
+    .btn-cta:hover { background: #ea580c; }
+    .btn-sec-link { font-size: 14px; color: #6b7280; }
+    .btn-sec-link:hover { color: #111827; }
+
+    /* Limit reached */
+    .limit-banner { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+    .limit-banner p { font-size: 14px; color: #92400e; font-weight: 500; }
+    .limit-banner a { background: #f97316; color: #fff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+
     .loading { text-align: center; padding: 60px 24px; }
     .spinner { width: 40px; height: 40px; border: 3px solid #f3f4f6; border-top-color: #f97316; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading p { color: #6b7280; font-size: 14px; }
 
-    /* PRODUCT CARD */
-    .product-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 24px 28px; margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-    .product-info h2 { font-size: 1.2rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
-    .product-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+    .product-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 24px 28px; margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .product-info h2 { font-size: 1.2rem; font-weight: 800; color: #111827; margin-bottom: 8px; }
+    .product-meta { display: flex; gap: 8px; flex-wrap: wrap; }
     .product-tag { background: #f3f4f6; border-radius: 8px; padding: 3px 10px; font-size: 12px; color: #6b7280; font-weight: 500; }
-    .product-tag.price { background: #ecfdf5; color: #059669; }
-    .product-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .product-tag.green { background: #ecfdf5; color: #059669; }
 
-    /* WATCH MODAL */
-    .watch-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 28px; margin-bottom: 28px; }
+    /* Watch box */
+    .watch-box { background: #fff; border: 2px solid #f97316; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
     .watch-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
     .watch-box p { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
     .freq-grid { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .freq-btn { flex: 1; min-width: 80px; padding: 12px 8px; border: 2px solid #e5e7eb; border-radius: 12px; background: #fff; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #6b7280; cursor: pointer; text-align: center; transition: all .15s; }
     .freq-btn.active { border-color: #f97316; background: #fff7ed; color: #f97316; }
-    .freq-price { font-size: 11px; font-weight: 500; color: #9ca3af; margin-top: 2px; }
+    .freq-price { font-size: 11px; font-weight: 500; color: #9ca3af; margin-top: 3px; }
     .freq-btn.active .freq-price { color: #fdba74; }
     .btn-watch { width: 100%; background: #f97316; color: #fff; border: none; padding: 14px; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s; }
     .btn-watch:hover { background: #ea580c; }
     .btn-watch:disabled { background: #d1d5db; cursor: not-allowed; }
 
-    /* SELLERS GRID */
     .section-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    .sellers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 32px; }
-    .seller-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; transition: border-color .15s, box-shadow .15s; }
+    .sellers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 32px; }
+    .seller-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; transition: border-color .15s, box-shadow .15s; }
     .seller-card:hover { border-color: #f97316; box-shadow: 0 4px 16px rgba(249,115,22,.1); }
-    .seller-top { display: flex; align-items: center; gap: 10px; }
-    .seller-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #f3f4f6; flex-shrink: 0; }
-    .seller-thumb-placeholder { width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .seller-name { font-size: 11px; font-weight: 700; color: #f97316; letter-spacing: .03em; text-transform: uppercase; }
-    .seller-title { font-size: 13px; color: #374151; line-height: 1.5; flex: 1; }
-    .seller-bottom { display: flex; align-items: center; justify-content: space-between; }
-    .seller-price { font-size: 18px; font-weight: 800; color: #059669; }
-    .seller-price.unknown { color: #9ca3af; font-size: 14px; }
-    .seller-rating { font-size: 11px; color: #6b7280; }
-    .btn-view { background: #111827; color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
+    .seller-icon { font-size: 24px; }
+    .seller-name { font-size: 13px; font-weight: 700; color: #111827; }
+    .seller-desc { font-size: 12px; color: #9ca3af; line-height: 1.4; flex: 1; }
+    .btn-view { background: #111827; color: #fff; border: none; padding: 8px 0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; display: block; text-align: center; width: 100%; }
     .btn-view:hover { background: #1f2937; }
 
-    /* WATCHED LIST */
+    /* Watched list */
     .watched-section { margin-top: 40px; }
     .watched-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-    .watched-card .wc-info { flex: 1; }
-    .watched-card .wc-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
-    .watched-card .wc-meta { font-size: 12px; color: #9ca3af; }
+    .wc-info { flex: 1; }
+    .wc-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+    .wc-meta { font-size: 12px; color: #9ca3af; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .freq-badge { background: #f3f4f6; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: #6b7280; }
     .btn-delete { background: none; border: 1px solid #e5e7eb; color: #9ca3af; padding: 6px 12px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; cursor: pointer; }
     .btn-delete:hover { border-color: #ef4444; color: #ef4444; }
-    .freq-badge { background: #f3f4f6; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: #6b7280; }
 
-    /* EMPTY / ERROR */
-    .empty-state { text-align: center; padding: 48px 24px; }
-    .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-    .empty-state p { color: #6b7280; font-size: 14px; line-height: 1.6; }
-    .error-msg { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px 20px; color: #dc2626; font-size: 14px; margin-bottom: 20px; }
+    .error-msg { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 14px 18px; color: #dc2626; font-size: 14px; margin-bottom: 20px; }
 
-    /* TOAST */
     .toast { position: fixed; bottom: 24px; right: 24px; background: #111827; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; }
     .toast.show { opacity: 1; }
-
-    /* LOGIN PROMPT */
-    .login-prompt { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-    .login-prompt p { font-size: 14px; color: #92400e; font-weight: 500; }
-    .btn-login-prompt { background: #f97316; color: #fff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; }
-    .btn-login-prompt:hover { background: #ea580c; }
   </style>
 </head>
 <body>
@@ -128,79 +118,77 @@
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">New — Link Tracker</div>
+  <div class="hero-badge">Link Tracker</div>
   <h1>Paste any link.<br>Find it everywhere it's sold.</h1>
-  <p>Share a product page, social media post, or any URL.<br>We'll identify the product and show you all prices across the web.</p>
+  <p>Share a product page, social post, or any URL — we'll identify the product and show you all the places it's sold across the web.</p>
 
-  <div class="input-wrap">
-    <input type="url" id="urlInput" placeholder="https://www.instagram.com/p/... or amazon.com/dp/..." />
+  <div class="input-wrap" id="inputWrap">
+    <input type="url" id="urlInput" placeholder="https://amazon.com/dp/... or instagram.com/p/..." />
     <button class="btn-analyze" id="analyzeBtn" onclick="analyzeLink()">Track It</button>
   </div>
 
-  <div class="examples">
-    <span class="example-chip" onclick="tryExample('https://www.amazon.com/dp/B08N5WRWNW')">Amazon product</span>
-    <span class="example-chip" onclick="tryExample('https://www.ebay.com/itm/123456789')">eBay listing</span>
-    <span class="example-chip" onclick="tryExample('https://www.bestbuy.com/site/apple-macbook')">Best Buy page</span>
-    <span class="example-chip" onclick="tryExample('https://www.walmart.com/ip/product')">Walmart item</span>
+  <div class="usage-bar" id="usageBar" style="display:none">
+    <div class="usage-dots" id="usageDots"></div>
+    <div class="usage-text" id="usageText"></div>
   </div>
 </div>
 
 <div class="main">
-  <!-- Error -->
   <div id="errorMsg" class="error-msg" style="display:none"></div>
+  <div id="limitBanner" class="limit-banner" style="display:none">
+    <p>You've used all 5 free link analyses this month. Watch a product to keep getting updates.</p>
+    <a href="/pricing.html">See Watch Plans</a>
+  </div>
 
-  <!-- Loading -->
+  <!-- Login gate -->
+  <div class="login-gate" id="loginGate" style="display:none">
+    <div style="font-size:48px;margin-bottom:16px">🔗</div>
+    <h3>Sign in to use Link Tracker</h3>
+    <p>Create a free account to analyze up to 5 links per month<br>and set up price alert watches.</p>
+    <a href="/register.html?next=/link-tracker.html" class="btn-cta">Create Free Account</a>
+    <a href="/login.html?next=/link-tracker.html" class="btn-sec-link">Already have an account? Sign in</a>
+  </div>
+
   <div id="loadingState" class="loading" style="display:none">
     <div class="spinner"></div>
     <p id="loadingText">Fetching page...</p>
   </div>
 
-  <!-- Results -->
   <div id="results" style="display:none">
-    <!-- Product Card -->
-    <div class="product-card" id="productCard">
+    <div class="product-card">
       <div class="product-info">
         <h2 id="productName"></h2>
         <div class="product-meta" id="productMeta"></div>
       </div>
-      <div class="product-actions">
-        <button class="btn-analyze" onclick="toggleWatchBox()" id="watchToggleBtn">Watch This</button>
-      </div>
+      <button class="btn-analyze" onclick="toggleWatchBox()" id="watchToggleBtn" style="font-size:13px;padding:10px 18px">
+        Watch this →
+      </button>
     </div>
 
-    <!-- Login prompt (if not logged in) -->
-    <div class="login-prompt" id="loginPrompt" style="display:none">
-      <p>Sign in to set up price alerts and get notified when the price drops.</p>
-      <a href="/login.html?next=/link-tracker.html" class="btn-login-prompt">Sign In Free</a>
-    </div>
-
-    <!-- Watch Setup Box -->
     <div class="watch-box" id="watchBox" style="display:none">
-      <h3>Set up price alerts</h3>
-      <p>Choose how often you want to be notified about price changes:</p>
+      <h3>Get price alerts for this product</h3>
+      <p>Choose how often you want to be notified — we'll search for deals and email you.</p>
       <div class="freq-grid">
-        <button class="freq-btn" data-freq="daily" onclick="selectFreq('daily')">
-          Daily<br><span class="freq-price">$7.99/mo</span>
+        <button class="freq-btn" data-freq="monthly" onclick="selectFreq('monthly')">
+          Monthly<div class="freq-price">$1.99/mo</div>
         </button>
         <button class="freq-btn active" data-freq="weekly" onclick="selectFreq('weekly')">
-          Weekly<br><span class="freq-price">$3.99/mo</span>
+          Weekly<div class="freq-price">$3.99/mo</div>
         </button>
-        <button class="freq-btn" data-freq="monthly" onclick="selectFreq('monthly')">
-          Monthly<br><span class="freq-price">$1.99/mo</span>
+        <button class="freq-btn" data-freq="daily" onclick="selectFreq('daily')">
+          Daily<div class="freq-price">$7.99/mo</div>
         </button>
       </div>
-      <button class="btn-watch" id="watchSubmitBtn" onclick="saveWatch()">Start Watching</button>
+      <button class="btn-watch" id="watchSubmitBtn" onclick="startWatch()">Start Watching — Subscribe</button>
     </div>
 
-    <!-- Sellers -->
     <div class="section-title">
-      <span>Where it's sold</span>
-      <span id="sellerCount" style="color:#9ca3af;font-weight:500;font-size:13px"></span>
+      Where it's sold
+      <span style="color:#9ca3af;font-weight:500;font-size:13px" id="sellerCount"></span>
     </div>
     <div class="sellers-grid" id="sellersGrid"></div>
   </div>
 
-  <!-- Watched list -->
   <div class="watched-section" id="watchedSection" style="display:none">
     <div class="section-title">Your Tracked Links</div>
     <div id="watchedList"></div>
@@ -215,51 +203,71 @@
   let currentUrl     = null;
   let selectedFreq   = 'weekly';
 
-  // ── Init ──────────────────────────────────────────────────────
   (function init() {
-    if (TOKEN) {
-      try {
-        const payload = JSON.parse(atob(TOKEN.split('.')[1]));
-        document.getElementById('navLogin').style.display = 'none';
-        document.getElementById('navDashboard').style.display = '';
-        document.getElementById('navUser').style.display = '';
-        document.getElementById('navUser').textContent = payload.name || payload.email?.split('@')[0] || 'Account';
-      } catch {}
-      loadWatches();
+    if (!TOKEN) {
+      document.getElementById('loginGate').style.display = '';
+      document.getElementById('inputWrap').style.opacity = '0.4';
+      document.getElementById('analyzeBtn').disabled = true;
+      document.getElementById('analyzeBtn').title = 'Sign in to use Link Tracker';
+      return;
     }
+    try {
+      const p = JSON.parse(atob(TOKEN.split('.')[1]));
+      document.getElementById('navLogin').style.display = 'none';
+      document.getElementById('navDashboard').style.display = '';
+      document.getElementById('navUser').style.display = '';
+      document.getElementById('navUser').textContent = p.name || p.email?.split('@')[0] || 'Account';
+    } catch {}
+    loadWatches();
   })();
 
-  function tryExample(url) {
-    document.getElementById('urlInput').value = url;
-    analyzeLink();
+  function renderUsage(used, limit) {
+    const bar  = document.getElementById('usageBar');
+    const dots = document.getElementById('usageDots');
+    const txt  = document.getElementById('usageText');
+    bar.style.display = 'flex';
+    dots.innerHTML = Array.from({ length: limit }, (_, i) =>
+      `<div class="usage-dot ${i < used ? 'used' : ''}"></div>`
+    ).join('');
+    txt.textContent = `${used} of ${limit} free analyses used this month`;
+    if (used >= limit) {
+      document.getElementById('limitBanner').style.display = 'flex';
+      document.getElementById('analyzeBtn').disabled = true;
+    }
   }
 
-  // ── Analyze ───────────────────────────────────────────────────
   async function analyzeLink() {
+    if (!TOKEN) { window.location.href = '/login.html?next=/link-tracker.html'; return; }
     const url = document.getElementById('urlInput').value.trim();
     if (!url) { showError('Please paste a URL first.'); return; }
 
     setLoading(true, 'Fetching page...');
     hideError();
     document.getElementById('results').style.display = 'none';
-
     setTimeout(() => setLoadingText('Identifying product...'), 2000);
-    setTimeout(() => setLoadingText('Searching across stores...'), 4000);
+    setTimeout(() => setLoadingText('Building store links...'), 3500);
 
     try {
       const r = await fetch('/api/link-analyze', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}) },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
         body: JSON.stringify({ url })
       });
       const data = await r.json();
+
+      if (r.status === 402) {
+        document.getElementById('limitBanner').style.display = 'flex';
+        renderUsage(data.used, data.limit);
+        setLoading(false);
+        return;
+      }
       if (!r.ok) { showError(data.error || 'Could not analyze this link.'); setLoading(false); return; }
 
       currentProduct = data.product;
       currentUrl     = url;
-
+      renderUsage(data.used, data.limit);
       renderResults(data.product, data.sellers);
-    } catch (e) {
+    } catch {
       showError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -267,62 +275,29 @@
   }
 
   function renderResults(product, sellers) {
-    // Product card
     document.getElementById('productName').textContent = product.name || 'Product Found';
     const meta = document.getElementById('productMeta');
     meta.innerHTML = '';
     if (product.category) meta.innerHTML += `<span class="product-tag">${esc(product.category)}</span>`;
     if (product.estimatedPrice && product.estimatedPrice !== 'null') {
-      meta.innerHTML += `<span class="product-tag price">${esc(product.estimatedPrice)}</span>`;
+      meta.innerHTML += `<span class="product-tag green">${esc(product.estimatedPrice)}</span>`;
     }
-    meta.innerHTML += `<span class="product-tag">${sellers.length} seller${sellers.length !== 1 ? 's' : ''} found</span>`;
 
-    // Watch button
-    document.getElementById('watchToggleBtn').style.display = TOKEN ? '' : 'none';
-    document.getElementById('loginPrompt').style.display   = TOKEN ? 'none' : '';
     document.getElementById('watchBox').style.display = 'none';
+    document.getElementById('sellerCount').textContent = `${sellers.length} stores`;
 
-    // Sellers
-    document.getElementById('sellerCount').textContent = `${sellers.length} results`;
     const grid = document.getElementById('sellersGrid');
-    grid.innerHTML = '';
-
-    if (!sellers.length) {
-      grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h3>No sellers found</h3><p>We couldn\'t find this product on shopping sites. Try a more specific URL.</p></div>';
-    } else {
-      sellers.forEach(s => {
-        const thumb = s.thumbnail
-          ? `<img class="seller-thumb" src="${esc(s.thumbnail)}" alt="" onerror="this.style.display='none'">`
-          : `<div class="seller-thumb-placeholder">🛒</div>`;
-        const price = s.price
-          ? `<span class="seller-price">${esc(s.price)}</span>`
-          : `<span class="seller-price unknown">See price</span>`;
-        const rating = s.rating ? `<div class="seller-rating">★ ${s.rating}${s.reviews ? ` (${s.reviews})` : ''}</div>` : '';
-        const viewBtn = s.link
-          ? `<a href="${esc(s.link)}" target="_blank" rel="noopener" class="btn-view">View →</a>`
-          : '';
-        grid.innerHTML += `
-          <div class="seller-card">
-            <div class="seller-top">
-              ${thumb}
-              <div style="flex:1;min-width:0">
-                <div class="seller-name">${esc(s.source || 'Store')}</div>
-                <div class="seller-title">${esc((s.title||'').slice(0,80))}${(s.title||'').length>80?'…':''}</div>
-              </div>
-            </div>
-            ${rating}
-            <div class="seller-bottom">
-              ${price}
-              ${viewBtn}
-            </div>
-          </div>`;
-      });
-    }
+    grid.innerHTML = sellers.map(s => `
+      <div class="seller-card">
+        <div class="seller-icon">${s.icon || '🛒'}</div>
+        <div class="seller-name">${esc(s.source)}</div>
+        <div class="seller-desc">Search for "${esc((s.title||'').slice(0,40))}${(s.title||'').length>40?'…':''}"</div>
+        <a href="${esc(s.link)}" target="_blank" rel="noopener" class="btn-view">Search →</a>
+      </div>`).join('');
 
     document.getElementById('results').style.display = '';
   }
 
-  // ── Watch ─────────────────────────────────────────────────────
   function toggleWatchBox() {
     const box = document.getElementById('watchBox');
     box.style.display = box.style.display === 'none' ? '' : 'none';
@@ -330,45 +305,37 @@
 
   function selectFreq(f) {
     selectedFreq = f;
-    document.querySelectorAll('.freq-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.freq === f);
-    });
+    document.querySelectorAll('.freq-btn').forEach(b => b.classList.toggle('active', b.dataset.freq === f));
   }
 
-  async function saveWatch() {
-    if (!TOKEN) { window.location.href = '/login.html?next=/link-tracker.html'; return; }
+  async function startWatch() {
     if (!currentProduct || !currentUrl) return;
-
     const btn = document.getElementById('watchSubmitBtn');
     btn.disabled = true;
-    btn.textContent = 'Saving...';
+    btn.textContent = 'Setting up...';
 
     try {
-      const r = await fetch('/api/link-watches', {
+      const r = await fetch('/api/watch/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
         body: JSON.stringify({
-          url: currentUrl,
-          productName: currentProduct.name,
-          searchQuery: currentProduct.searchQuery,
+          itemTitle: currentProduct.name,
+          itemDesc:  `Source: ${currentUrl}`,
           frequency: selectedFreq
         })
       });
       const data = await r.json();
-      if (!r.ok) { showToast(data.error || 'Error saving watch'); return; }
-
-      showToast('Watch saved! You\'ll get price alerts.');
-      document.getElementById('watchBox').style.display = 'none';
-      loadWatches();
+      if (data.comingSoon) { showToast('Watch plans coming soon!'); return; }
+      if (data.url) { window.location.href = data.url; return; }
+      showToast(data.error || 'Error setting up watch');
     } catch {
-      showToast('Error saving watch');
+      showToast('Error setting up watch');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Start Watching';
+      btn.textContent = 'Start Watching — Subscribe';
     }
   }
 
-  // ── Watches List ──────────────────────────────────────────────
   async function loadWatches() {
     if (!TOKEN) return;
     try {
@@ -383,18 +350,15 @@
     const list    = document.getElementById('watchedList');
     const active  = watches.filter(w => w.active);
     if (!active.length) { section.style.display = 'none'; return; }
-
     section.style.display = '';
     list.innerHTML = active.map(w => `
       <div class="watched-card">
-        <div style="font-size:20px">🔗</div>
+        <div style="font-size:22px">🔗</div>
         <div class="wc-info">
           <div class="wc-name">${esc(w.productName)}</div>
           <div class="wc-meta">
             <span class="freq-badge">${w.frequency}</span>
-            &nbsp;·&nbsp;
-            ${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}
-            &nbsp;·&nbsp;
+            <span>${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</span>
             <a href="${esc(w.url)}" target="_blank" rel="noopener" style="color:#f97316;font-size:12px">source ↗</a>
           </div>
         </div>
@@ -409,27 +373,18 @@
     loadWatches();
   }
 
-  // ── Helpers ───────────────────────────────────────────────────
   function setLoading(on, text) {
     document.getElementById('loadingState').style.display = on ? '' : 'none';
     document.getElementById('analyzeBtn').disabled = on;
     document.getElementById('analyzeBtn').textContent = on ? 'Analyzing...' : 'Track It';
     if (text) document.getElementById('loadingText').textContent = text;
   }
-  function setLoadingText(t) {
-    const el = document.getElementById('loadingText');
-    if (el) el.textContent = t;
-  }
-  function showError(msg) {
-    const el = document.getElementById('errorMsg');
-    el.textContent = msg;
-    el.style.display = '';
-  }
+  function setLoadingText(t) { const el = document.getElementById('loadingText'); if (el) el.textContent = t; }
+  function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.style.display = ''; }
   function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -441,10 +396,7 @@
     return Math.floor(s/86400) + 'd ago';
   }
 
-  // Enter key
-  document.getElementById('urlInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') analyzeLink();
-  });
+  document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') analyzeLink(); });
 </script>
 </body>
 </html>
