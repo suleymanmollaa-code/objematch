@@ -236,7 +236,7 @@
     .problem-card.active { border-color: var(--accent); box-shadow: 0 2px 12px rgba(249,115,22,0.12); }
 
     .problem-header {
-      display: flex; align-items: center; gap: 14px; padding: 18px 20px;
+      display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px;
     }
 
     .prob-num {
@@ -588,7 +588,7 @@
       card.onclick = () => activateCard(i);
       card.innerHTML = `
         <div class="problem-header">
-          <div class="pin-dot" style="background:${color};position:relative;width:12px;height:12px;flex-shrink:0;border-radius:50%;border:2px solid ${color}33"></div>
+          <div style="background:${color};width:10px;height:10px;flex-shrink:0;border-radius:50%;margin-top:5px"></div>
           <div class="prob-text">
             <div class="prob-title">${esc(prob.title)}</div>
             <div style="font-size:11px;color:${prob.type==='missing'?'#f97316':'#059669'};font-weight:600;margin-top:2px">${prob.type==='missing'?'Missing — add this':'In photo — find similar'}</div>
