@@ -588,34 +588,6 @@ Respond ONLY with valid JSON:
 });
 
 // ── SELL LISTING ──────────────────────────────────────────────────────────────
-app.post('/api/generate-listing', async (req, res) => {
-  const { title, description } = req.body;
-  if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
-  if (!title)   return res.status(400).json({ error: 'title required' });
-
-  const prompt = `Professional eBay seller. Generate a listing for:
-Item: ${title}
-Context: ${description || ''}
-Respond ONLY with JSON: { "listingTitle": "...", "condition": "Very Good", "suggestedPrice": "$XX-$XX", "avgSold": "$XX-$XX", "description": "2-3 paragraphs", "keywords": "ebay search terms" }`;
-
-  try {
-    const r    = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: prompt }] }),
-    });
-    const data = await r.json();
-    if (!r.ok) return res.status(500).json({ error: data?.error?.message || 'AI error' });
-    const text   = data.content[0].text;
-    const match  = text.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(match ? match[0] : text);
-    parsed.ebaySearchUrl = ebayUrl(parsed.keywords || title);
-    parsed.ebaySellUrl   = `https://www.ebay.com/sell/listing?title=${encodeURIComponent(parsed.listingTitle || title)}`;
-    res.json(parsed);
-  } catch (err) {
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
 
 // ── START ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
