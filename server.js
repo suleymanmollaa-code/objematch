@@ -580,23 +580,30 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
     : '';
 
   const base64 = imageBuffer.toString('base64');
-  const prompt = `You are a visual shopping assistant. The user uploaded a photo — it could be anything: a room, a car interior, a desk setup, a garage, an outdoor space, a wardrobe, a kitchen counter, anything.
+  const prompt = `You are an expert visual shopping assistant. Analyze this photo carefully.
 ${yoloContext}
-Identify EVERY significant object. Find 5-8 items. Scan top-left, top-right, center, bottom-left, bottom-right.
+TASK: Identify 5-8 distinct, shoppable objects. For each object:
+- Read any visible brand names, logos, or model numbers
+- Give the most specific name possible (e.g. "Herman Miller Aeron Chair" not just "chair")
+- Estimate realistic current market price ranges
+- Write Amazon search keywords that would find that exact item (include brand + model if visible)
+- Write eBay search keywords optimized for used/second-hand results
+
+Scan all areas: top-left, top-right, center, bottom-left, bottom-right. Do not miss large furniture, electronics, or appliances.
 Coordinates: x=0 far left, x=100 far right, y=0 top, y=100 bottom. Use YOLO coordinates when available.
 
-Respond ONLY with valid JSON:
+Respond ONLY with valid JSON, no markdown, no explanation:
 {
-  "room": "Space type",
-  "summary": "One sentence",
+  "room": "Specific space type (e.g. Modern Home Office, Car Interior, Kitchen)",
+  "summary": "One engaging sentence about what you see",
   "problems": [{
-    "title": "Exact object name",
+    "title": "Brand + specific product name if visible, otherwise descriptive name",
     "type": "present",
-    "description": "What to do with it",
+    "description": "Brief buying tip or what to look for",
     "x": 50, "y": 50,
     "options": {
-      "new":    { "search": "amazon keywords", "price": "$XX-$XX" },
-      "used":   { "search": "ebay keywords",   "price": "$XX-$XX" }
+      "new":  { "search": "brand model specific amazon search terms", "price": "$XX-$XX" },
+      "used": { "search": "brand model specific ebay used search terms", "price": "$XX-$XX" }
     }
   }]
 }`;
