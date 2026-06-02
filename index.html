@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ObjeMatch — Upload any photo. AI finds every item.</title>
-<meta name="description" content="Upload any photo and AI instantly identifies every object, then finds Amazon and eBay links for each one. Free to analyze, 100 times a month.">
+<title>ObjeMatch — Paste any link. Find it everywhere it's sold.</title>
+<meta name="description" content="Paste any product link — from Instagram, Amazon, any site — and instantly find it across 8 major stores. Set price alerts and get notified when deals appear.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -43,7 +43,6 @@ nav {
 }
 @media(max-width:900px) { .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 96px; } }
 
-.hero-left {}
 .hero-label {
   display: inline-flex; align-items: center; gap: 7px;
   background: #fff7ed; border: 1px solid #fed7aa;
@@ -92,7 +91,6 @@ nav {
 .trust-check { width: 18px; height: 18px; border-radius: 50%; background: #f0fdf4; border: 1.5px solid #bbf7d0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 /* ─── DEMO CARD ──────────────────────────────────────────── */
-.hero-right {}
 .demo-card {
   background: #fff; border-radius: 20px;
   border: 1px solid #e5e7eb;
@@ -112,54 +110,32 @@ nav {
   text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
 }
 
-.demo-photo {
-  position: relative; height: 220px;
-  background: linear-gradient(145deg, #e0e7ff 0%, #fce7f3 40%, #fef3c7 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 80px; user-select: none;
-  overflow: hidden;
+/* Link input demo */
+.demo-input-area { padding: 20px 16px 16px; border-bottom: 1px solid #f1f5f9; }
+.demo-input-box {
+  display: flex; align-items: center; gap: 8px;
+  border: 2px solid #f97316; border-radius: 12px; padding: 10px 14px;
+  background: #fff;
 }
-.demo-photo::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 60%, rgba(255,255,255,.2) 100%);
-}
+.demo-input-text { flex: 1; font-size: 12px; color: #94a3b8; }
+.demo-input-btn { background: #f97316; color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
 
-.pin {
-  position: absolute;
-  width: 26px; height: 26px; border-radius: 50%;
-  border: 2.5px solid #fff; color: #fff;
-  font-size: 10px; font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,.2);
-  cursor: pointer; z-index: 1;
-  animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both;
-}
-@keyframes popIn { from{transform:translate(-50%,-50%) scale(0)} to{transform:translate(-50%,-50%) scale(1)} }
-.pin-1 { background: #f97316; top: 32%; left: 28%; animation-delay: .3s; }
-.pin-2 { background: #7c3aed; top: 58%; left: 62%; animation-delay: .5s; }
-.pin-3 { background: #0891b2; top: 22%; left: 68%; animation-delay: .7s; }
+/* Product found */
+.demo-product { padding: 12px 16px; background: #fff7ed; border-bottom: 1px solid #fed7aa; display: flex; align-items: center; gap: 10px; }
+.demo-product-icon { font-size: 20px; }
+.demo-product-name { font-size: 12px; font-weight: 700; color: #c2410c; }
+.demo-product-cat { font-size: 10px; color: #fb923c; margin-top: 1px; }
 
-.demo-list { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-.demo-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px;
+.demo-stores { padding: 12px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.demo-store-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; border-radius: 8px;
   background: #f9fafb; border: 1px solid #f1f5f9;
-  transition: border-color .15s;
 }
-.demo-row:hover { border-color: #e5e7eb; }
-.demo-color { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.demo-name { flex: 1; font-size: 13px; font-weight: 600; color: #1e293b; }
-.demo-btns { display: flex; gap: 5px; }
-.demo-btn {
-  font-size: 10.5px; font-weight: 700; padding: 3px 9px;
-  border-radius: 5px; white-space: nowrap;
-}
-.db-amazon { background: #fff7ed; color: #c2410c; }
-.db-ebay   { background: #f0fdf4; color: #15803d; }
-.db-watch  { background: #f5f3ff; color: #6d28d9; }
+.demo-store-name { font-size: 11px; font-weight: 700; color: #374151; }
+.demo-store-btn { font-size: 10px; font-weight: 700; color: #f97316; }
 
-/* ─── LOGOS / SOCIAL PROOF ───────────────────────────────── */
+/* ─── LOGOS STRIP ──────────────────────────────────────── */
 .logos-strip {
   border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;
   padding: 24px clamp(20px,5vw,48px);
@@ -241,7 +217,6 @@ nav {
 .pricing-header { text-align: center; margin-bottom: 56px; }
 .pricing-header .section-title { color: #fff; }
 .pricing-header .section-sub { color: #94a3b8; margin: 0 auto; }
-
 .pricing-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -249,7 +224,6 @@ nav {
 }
 @media(max-width:900px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
 @media(max-width:540px) { .pricing-grid { grid-template-columns: 1fr; } }
-
 .price-card {
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.08);
@@ -314,20 +288,14 @@ nav {
 .review-role { font-size: 11.5px; color: #94a3b8; margin-top: 1px; }
 
 /* ─── FINAL CTA ──────────────────────────────────────────── */
-.cta-section {
-  padding: 96px clamp(20px,5vw,48px);
-  text-align: center;
-}
+.cta-section { padding: 96px clamp(20px,5vw,48px); text-align: center; }
 .cta-inner { max-width: 600px; margin: 0 auto; }
 .cta-inner .section-title { margin-bottom: 16px; }
 .cta-inner .section-sub { margin: 0 auto 36px; text-align: center; }
 .cta-note { margin-top: 16px; font-size: 13px; color: #94a3b8; }
 
 /* ─── FOOTER ─────────────────────────────────────────────── */
-footer {
-  background: #0f172a;
-  padding: 48px clamp(20px,5vw,48px) 32px;
-}
+footer { background: #0f172a; padding: 48px clamp(20px,5vw,48px) 32px; }
 .footer-inner { max-width: 1100px; margin: 0 auto; }
 .footer-top {
   display: flex; justify-content: space-between;
@@ -351,14 +319,12 @@ footer {
 <nav>
   <div class="logo">Obje<em>Match</em></div>
   <div class="nav-mid">
-    <a href="/room-analyzer.html">Analyzer</a>
     <a href="/link-tracker.html">Link Tracker</a>
     <a href="/pricing.html">Pricing</a>
-    
   </div>
   <div class="nav-end">
     <a href="/login.html" class="btn-nav" id="loginBtn">Sign in</a>
-    <a href="/room-analyzer.html" class="btn-nav cta">Try free</a>
+    <a href="/link-tracker.html" class="btn-nav cta">Try free</a>
     <a href="/dashboard.html" class="btn-nav" id="dashBtn" style="display:none">Dashboard</a>
   </div>
 </nav>
@@ -369,13 +335,13 @@ footer {
     <div class="hero-left">
       <div class="hero-label">
         <div class="label-dot"></div>
-        100 free analyses / month
+        5 free searches / month
       </div>
-      <h1>Upload any photo.<br><span>AI finds every item.</span></h1>
-      <p class="hero-sub">Point AI at any photo — room, desk, car, outfit. It pins every object and instantly finds Amazon and eBay links for each one.</p>
+      <h1>Paste any link.<br><span>Find it everywhere.</span></h1>
+      <p class="hero-sub">Saw a product on Instagram, Amazon, anywhere — paste the link and instantly see every place it's sold across the web. Set a price alert and get notified when it drops.</p>
       <div class="hero-actions">
-        <a href="/room-analyzer.html" class="btn-primary">
-          Start for free
+        <a href="/link-tracker.html" class="btn-primary">
+          Try it free
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         <a href="/pricing.html" class="btn-secondary">See pricing</a>
@@ -391,7 +357,7 @@ footer {
           <div class="trust-check">
             <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          Any photo type
+          Any website link
         </div>
         <div class="trust-item">
           <div class="trust-check">
@@ -408,41 +374,45 @@ footer {
           <div class="demo-dot" style="background:#ff5f57"></div>
           <div class="demo-dot" style="background:#febc2e"></div>
           <div class="demo-dot" style="background:#28c840"></div>
-          <div class="demo-url">objematch.com/room-analyzer</div>
+          <div class="demo-url">objematch.com/link-tracker</div>
         </div>
-        <div class="demo-photo">
-          🛋️
-          <div class="pin pin-1">1</div>
-          <div class="pin pin-2">2</div>
-          <div class="pin pin-3">3</div>
+        <div class="demo-input-area">
+          <div class="demo-input-box">
+            <div class="demo-input-text">instagram.com/p/C8xK2mNP4aQ/</div>
+            <div class="demo-input-btn">Track It</div>
+          </div>
         </div>
-        <div class="demo-list">
-          <div class="demo-row">
-            <div class="demo-color" style="background:#f97316"></div>
-            <div class="demo-name">Mid-Century Sofa</div>
-            <div class="demo-btns">
-              <span class="demo-btn db-amazon">Amazon</span>
-              <span class="demo-btn db-ebay">eBay</span>
-              <span class="demo-btn db-watch">Watch</span>
-            </div>
+        <div class="demo-product">
+          <div class="demo-product-icon">🎧</div>
+          <div>
+            <div class="demo-product-name">Sony WH-1000XM5 Headphones</div>
+            <div class="demo-product-cat">Electronics · $279–$349</div>
           </div>
-          <div class="demo-row">
-            <div class="demo-color" style="background:#7c3aed"></div>
-            <div class="demo-name">Floor Lamp</div>
-            <div class="demo-btns">
-              <span class="demo-btn db-amazon">Amazon</span>
-              <span class="demo-btn db-ebay">eBay</span>
-              <span class="demo-btn db-watch">Watch</span>
-            </div>
+        </div>
+        <div class="demo-stores">
+          <div class="demo-store-row">
+            <div class="demo-store-name">Amazon</div>
+            <div class="demo-store-btn">Search →</div>
           </div>
-          <div class="demo-row">
-            <div class="demo-color" style="background:#0891b2"></div>
-            <div class="demo-name">Coffee Table</div>
-            <div class="demo-btns">
-              <span class="demo-btn db-amazon">Amazon</span>
-              <span class="demo-btn db-ebay">eBay</span>
-              <span class="demo-btn db-watch">Watch</span>
-            </div>
+          <div class="demo-store-row">
+            <div class="demo-store-name">Best Buy</div>
+            <div class="demo-store-btn">Search →</div>
+          </div>
+          <div class="demo-store-row">
+            <div class="demo-store-name">Walmart</div>
+            <div class="demo-store-btn">Search →</div>
+          </div>
+          <div class="demo-store-row">
+            <div class="demo-store-name">eBay</div>
+            <div class="demo-store-btn">Search →</div>
+          </div>
+          <div class="demo-store-row">
+            <div class="demo-store-name">Target</div>
+            <div class="demo-store-btn">Search →</div>
+          </div>
+          <div class="demo-store-row">
+            <div class="demo-store-name">+ 3 more</div>
+            <div class="demo-store-btn">Watch →</div>
           </div>
         </div>
       </div>
@@ -456,7 +426,11 @@ footer {
   <div class="logos-row">
     <span class="logo-item">Amazon</span>
     <span class="logo-item">eBay</span>
-    <span class="logo-item">+ AI-powered matching</span>
+    <span class="logo-item">Walmart</span>
+    <span class="logo-item">Best Buy</span>
+    <span class="logo-item">Target</span>
+    <span class="logo-item">Newegg</span>
+    <span class="logo-item">+ more</span>
   </div>
 </div>
 
@@ -465,27 +439,27 @@ footer {
   <div class="how-inner">
     <div class="how-header">
       <div class="section-eyebrow">How it works</div>
-      <h2 class="section-title">Three steps. Zero typing.</h2>
-      <p class="section-sub wide" style="text-align:center; margin:0 auto;">No product names. No keyword searches. Just upload and let AI do the work.</p>
+      <h2 class="section-title">Three steps. Zero effort.</h2>
+      <p class="section-sub wide" style="text-align:center; margin:0 auto;">No product names to type. No stores to visit one by one. Just paste and find.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="step-num">01</div>
-        <div class="step-icon">📸</div>
-        <div class="step-title">Upload any photo</div>
-        <div class="step-text">Room, car, closet, desk, outfit — any photo with objects in it. First 100 analyses every month are completely free.</div>
+        <div class="step-icon">🔗</div>
+        <div class="step-title">Paste any link</div>
+        <div class="step-text">Instagram post, Amazon listing, news article, Pinterest pin — any URL works. If a product is on the page, we'll find it.</div>
       </div>
       <div class="step">
         <div class="step-num">02</div>
         <div class="step-icon">🤖</div>
-        <div class="step-title">AI identifies every object</div>
-        <div class="step-text">AI scans the photo and places a colored pin on each item it recognizes. The more objects, the more results.</div>
+        <div class="step-title">AI identifies the product</div>
+        <div class="step-text">We fetch the page and our AI reads it to extract the exact product name, brand, and model — no manual input needed.</div>
       </div>
       <div class="step">
         <div class="step-num">03</div>
-        <div class="step-icon">🔗</div>
-        <div class="step-title">Instant Amazon & eBay links</div>
-        <div class="step-text">Click any pin and get direct buy new (Amazon) and buy used (eBay) links — matched to that specific item.</div>
+        <div class="step-icon">🛒</div>
+        <div class="step-title">See every store at once</div>
+        <div class="step-text">Amazon, eBay, Walmart, Best Buy, Target, Newegg and more — all in one view. Watch it to get email alerts when the price changes.</div>
       </div>
     </div>
   </div>
@@ -496,29 +470,29 @@ footer {
   <div class="section-inner">
     <div style="max-width:520px">
       <div class="section-eyebrow">Features</div>
-      <h2 class="section-title">Everything you need, nothing you don't.</h2>
-      <p class="section-sub">Built to be fast and focused. Every feature serves one goal: find what's in your photo.</p>
+      <h2 class="section-title">Built for how you actually shop.</h2>
+      <p class="section-sub">You see it somewhere. You want it. We help you find the best price without the legwork.</p>
     </div>
     <div class="features-grid">
       <div class="feature">
-        <div class="feature-icon fi-orange">📌</div>
-        <div class="feature-title">Multi-object detection</div>
-        <div class="feature-text">AI pins every recognizable object in a single photo — furniture, electronics, clothing, accessories. One upload, all results at once.</div>
+        <div class="feature-icon fi-orange">🔗</div>
+        <div class="feature-title">Any link, any source</div>
+        <div class="feature-text">Instagram, TikTok, Pinterest, news articles, blog posts, product pages — wherever you find a product, paste the link and track it.</div>
       </div>
       <div class="feature">
-        <div class="feature-icon fi-orange">🛒</div>
-        <div class="feature-title">Buy new on Amazon</div>
-        <div class="feature-text">Each pin links directly to the best-matched Amazon listing. No manual searching, no guessing the right keywords.</div>
+        <div class="feature-icon fi-blue">🛒</div>
+        <div class="feature-title">8 stores in one search</div>
+        <div class="feature-text">We generate search links for Amazon, eBay, Walmart, Best Buy, Target, Newegg, Google Shopping, and Etsy — all at once, instantly.</div>
       </div>
       <div class="feature">
-        <div class="feature-icon fi-green">♻️</div>
-        <div class="feature-title">Buy used on eBay</div>
-        <div class="feature-text">Find the same object second-hand. AI matches to eBay listings so you can get the same item for 40–70% less.</div>
+        <div class="feature-icon fi-green">📡</div>
+        <div class="feature-title">Price drop alerts</div>
+        <div class="feature-text">Set a Watch on any product and get email notifications on your schedule — daily, weekly, or monthly. Never miss a deal again.</div>
       </div>
       <div class="feature">
-        <div class="feature-icon fi-purple">📡</div>
-        <div class="feature-title">Watch for new deals</div>
-        <div class="feature-text">Click Watch on any item. AI searches on your schedule — daily, weekly, or monthly — and emails you when new deals appear.</div>
+        <div class="feature-icon fi-purple">⚡</div>
+        <div class="feature-title">Results in seconds</div>
+        <div class="feature-text">AI reads the page and identifies the product in under 5 seconds. No forms, no categories, no keywords to type out.</div>
       </div>
     </div>
   </div>
@@ -529,22 +503,22 @@ footer {
   <div class="pricing-inner">
     <div class="pricing-header">
       <div class="section-eyebrow" style="color:#fb923c">Pricing</div>
-      <h2 class="section-title">Free to analyze. Pay only to watch.</h2>
-      <p class="section-sub wide">The Watch feature — where AI keeps searching for you automatically — is the only paid part. Analyzing is always free.</p>
+      <h2 class="section-title">Free to search. Pay only to watch.</h2>
+      <p class="section-sub wide">Finding products across stores is always free. The Watch feature — where we automatically check for deals and email you — is the only paid part.</p>
     </div>
     <div class="pricing-grid">
       <div class="price-card">
         <div class="price-icon">🎁</div>
-        <div class="price-name">Analyze</div>
-        <div class="price-amount">Free</div>
-        <div class="price-period">100 analyses / month · forever</div>
+        <div class="price-name">Free</div>
+        <div class="price-amount">$0</div>
+        <div class="price-period">5 link searches / month · forever</div>
         <ul class="price-feats">
-          <li>Upload any photo</li>
-          <li>AI pins all objects</li>
-          <li>Amazon & eBay links</li>
+          <li>Paste any link</li>
+          <li>AI product identification</li>
+          <li>8 store search links</li>
           <li>No credit card needed</li>
         </ul>
-        <a href="/room-analyzer.html" class="price-btn">Start free</a>
+        <a href="/link-tracker.html" class="price-btn">Start free</a>
       </div>
       <div class="price-card">
         <div class="price-icon">🗓️</div>
@@ -552,9 +526,9 @@ footer {
         <div class="price-amount">$1.99</div>
         <div class="price-period">per item / month · cancel anytime</div>
         <ul class="price-feats">
-          <li>1 AI search / month</li>
-          <li>Amazon & eBay deals</li>
-          <li>Email digest</li>
+          <li>1 price check / month</li>
+          <li>Email deal alert</li>
+          <li>All 8 stores checked</li>
           <li>Cancel anytime</li>
         </ul>
         <a href="/pricing.html" class="price-btn">See plans</a>
@@ -566,9 +540,9 @@ footer {
         <div class="price-amount">$3.99</div>
         <div class="price-period">per item / month · cancel anytime</div>
         <ul class="price-feats">
-          <li>4 AI searches / month</li>
-          <li>Amazon & eBay deals</li>
-          <li>Email digest</li>
+          <li>4 price checks / month</li>
+          <li>Email deal alert</li>
+          <li>All 8 stores checked</li>
           <li>Cancel anytime</li>
         </ul>
         <a href="/pricing.html" class="price-btn">Get started</a>
@@ -579,9 +553,9 @@ footer {
         <div class="price-amount">$7.99</div>
         <div class="price-period">per item / month · cancel anytime</div>
         <ul class="price-feats">
-          <li>30 AI searches / month</li>
-          <li>Amazon & eBay deals</li>
-          <li>Email digest</li>
+          <li>30 price checks / month</li>
+          <li>Email deal alert</li>
+          <li>All 8 stores checked</li>
           <li>Cancel anytime</li>
         </ul>
         <a href="/pricing.html" class="price-btn">See plans</a>
@@ -595,19 +569,19 @@ footer {
   <div class="section-inner">
     <div style="text-align:center; max-width:480px; margin:0 auto 8px;">
       <div class="section-eyebrow">Reviews</div>
-      <h2 class="section-title">People find what they're looking for.</h2>
+      <h2 class="section-title">People find better prices.</h2>
     </div>
     <div class="reviews-grid">
       <div class="review">
         <div class="review-stars">
           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
-        <p class="review-text">"Uploaded a photo of my living room and found the exact sofa I'd been searching for for months. Took about 10 seconds."</p>
+        <p class="review-text">"Saw a coffee maker on Instagram, pasted the link — it was $40 cheaper on Walmart than on the brand's own site. Found it in 5 seconds."</p>
         <div class="review-author">
           <div class="review-avatar" style="background:linear-gradient(135deg,#f97316,#ef4444)">S</div>
           <div>
             <div class="review-name">Sarah M.</div>
-            <div class="review-role">Interior design enthusiast</div>
+            <div class="review-role">Deal hunter</div>
           </div>
         </div>
       </div>
@@ -615,12 +589,12 @@ footer {
         <div class="review-stars">
           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
-        <p class="review-text">"Set a weekly watch on a vintage lamp. Got an email with a $40 eBay listing — same lamp was $280 new on Amazon."</p>
+        <p class="review-text">"Set a weekly watch on headphones I wanted. Got an email when they dropped $60 on Best Buy. Paid for the subscription 30x over."</p>
         <div class="review-author">
           <div class="review-avatar" style="background:linear-gradient(135deg,#7c3aed,#0891b2)">J</div>
           <div>
             <div class="review-name">James T.</div>
-            <div class="review-role">Budget home decorator</div>
+            <div class="review-role">Tech enthusiast</div>
           </div>
         </div>
       </div>
@@ -628,12 +602,12 @@ footer {
         <div class="review-stars">
           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
-        <p class="review-text">"I photograph everything now. Gaming setup, kitchen, car — it always finds something I didn't know I could find on eBay."</p>
+        <p class="review-text">"I paste links from Pinterest all the time now. Instead of spending an hour searching, I get all the stores in one click. Game changer."</p>
         <div class="review-author">
           <div class="review-avatar" style="background:linear-gradient(135deg,#0891b2,#22c55e)">A</div>
           <div>
             <div class="review-name">Alex K.</div>
-            <div class="review-role">Tech enthusiast</div>
+            <div class="review-role">Home decorator</div>
           </div>
         </div>
       </div>
@@ -645,15 +619,15 @@ footer {
 <section class="cta-section">
   <div class="cta-inner">
     <div class="section-eyebrow" style="text-align:center">Get started</div>
-    <h2 class="section-title" style="text-align:center">Your first photo is on us.</h2>
-    <p class="section-sub" style="text-align:center; margin:0 auto 36px;">Upload any photo and see what AI finds. No sign up required to start.</p>
+    <h2 class="section-title" style="text-align:center">Your first 5 searches are free.</h2>
+    <p class="section-sub" style="text-align:center; margin:0 auto 36px;">Paste any product link and see every store it's sold at — no sign up required to start.</p>
     <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-      <a href="/room-analyzer.html" class="btn-primary" style="font-size:16px; padding:15px 32px;">
-        Upload a photo — it's free
+      <a href="/link-tracker.html" class="btn-primary" style="font-size:16px; padding:15px 32px;">
+        Try Link Tracker — it's free
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
-    <p class="cta-note">100 analyses free every month · No credit card · Cancel watches anytime</p>
+    <p class="cta-note">5 free searches / month · No credit card · Cancel watches anytime</p>
   </div>
 </section>
 
@@ -663,10 +637,10 @@ footer {
     <div class="footer-top">
       <div>
         <div class="footer-logo">Obje<em>Match</em></div>
-        <div class="footer-tagline">Upload any photo. AI finds every item.</div>
+        <div class="footer-tagline">Paste any link. Find it everywhere it's sold.</div>
       </div>
       <div class="footer-links">
-        <a href="/room-analyzer.html">Analyzer</a>
+        <a href="/link-tracker.html">Link Tracker</a>
         <a href="/pricing.html">Pricing</a>
         <a href="/dashboard.html">Dashboard</a>
         <a href="/privacy.html">Privacy</a>
@@ -675,7 +649,7 @@ footer {
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">© 2025 ObjeMatch. We participate in the Amazon Associates Program and other affiliate programs. Commissions are earned on qualifying purchases at no extra cost to you.</p>
+      <p class="footer-copy">© 2026 ObjeMatch. We participate in the Amazon Associates Program and other affiliate programs. Commissions are earned on qualifying purchases at no extra cost to you.</p>
     </div>
   </div>
 </footer>
