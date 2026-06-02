@@ -780,6 +780,7 @@
   // ── SHOW RESULTS ─────────────────────────────────────────
   function showResults(data, photoUrl, isNew) {
     document.getElementById('loading').classList.remove('active');
+    document.getElementById('uploadSection').style.display = 'none';
 
     document.getElementById('roomBadge').textContent = '📍 ' + (data.room || 'Your Room');
     document.getElementById('resultsSummary').textContent = data.summary || '';
@@ -854,7 +855,7 @@
               <div class="option-source">eBay</div>
             </a>` : ''}
             ${prob.options?.repair ? `
-            <a href="${prob.options.repair.url}" target="_blank" rel="noopener" class="option-card option-repair" onclick="event.stopPropagation()">
+            <a href="${prob.options.repair.url || 'https://www.thumbtack.com/search/?q=' + encodeURIComponent(prob.title)}" target="_blank" rel="noopener" class="option-card option-repair" onclick="event.stopPropagation()">
               <div class="option-icon">🔧</div>
               <div class="option-label">Hire Someone</div>
               <div class="option-price">${esc(prob.options.repair.note||'')}</div>
