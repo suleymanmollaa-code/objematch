@@ -416,6 +416,55 @@
     .avg-sold-note { font-size: 12px; color: var(--muted); margin-top: 6px; }
     .avg-sold-note strong { color: #059669; }
 
+    /* ── USAGE BAR ── */
+    .usage-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      color: var(--muted);
+    }
+    .usage-pill.warn { background: #fff7ed; border-color: #fed7aa; color: #ea580c; }
+    .usage-pill.pro  { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+
+    /* ── UPGRADE MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 500; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      background: var(--surface); border-radius: 24px; padding: 36px 32px;
+      max-width: 440px; width: 100%; box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+      animation: fadeUp 0.3s ease;
+    }
+
+    .modal-icon { font-size: 40px; text-align: center; margin-bottom: 16px; }
+    .modal-title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+    .modal-sub { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 24px; }
+
+    .modal-perks { margin-bottom: 28px; }
+    .modal-perk {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 500; padding: 8px 0;
+      border-bottom: 1px solid var(--bg);
+    }
+    .modal-perk:last-child { border-bottom: none; }
+
+    .modal-btn-primary {
+      display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: var(--accent); color: white; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit; margin-bottom: 10px; transition: all 0.15s;
+    }
+    .modal-btn-primary:hover { background: #ea580c; }
+    .modal-btn-secondary {
+      display: block; width: 100%; padding: 12px; border: 1.5px solid var(--border);
+      border-radius: 12px; background: transparent; color: var(--muted);
+      font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .modal-btn-secondary:hover { color: var(--text); border-color: var(--text); }
+
     .error-box {
       background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
       padding: 14px; border-radius: 12px; font-size: 14px; display: none; margin-top: 14px;
@@ -441,6 +490,8 @@
       <div class="user-avatar" id="userAvatar"></div>
       <span id="userName"></span>
     </div>
+    <div class="usage-pill" id="usagePill" style="display:none"></div>
+    <a href="/pricing.html" class="nav-btn" id="upgradeBtn" style="display:none">Upgrade</a>
     <a href="/blog/" class="nav-btn">Blog</a>
     <a href="/dashboard.html" class="nav-btn" id="historyBtn" style="display:none">
       🕐 History
@@ -449,6 +500,22 @@
     <a href="/login.html" class="nav-btn accent" id="loginBtn">Sign in</a>
   </div>
 </nav>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal-box">
+    <div class="modal-icon">🚀</div>
+    <div class="modal-title">You've hit your free limit</div>
+    <div class="modal-sub" id="modalSubText">You've used all 5 free analyses this month. Upgrade to Pro for unlimited access.</div>
+    <div class="modal-perks">
+      <div class="modal-perk">✅ Unlimited analyses</div>
+      <div class="modal-perk">📡 Weekly deal monitoring</div>
+      <div class="modal-perk">📧 Email deal digest</div>
+    </div>
+    <button class="modal-btn-primary" onclick="location.href='/pricing.html'">Get Pro — $9.99/mo</button>
+    <button class="modal-btn-secondary" onclick="closeUpgradeModal()">Maybe later</button>
+  </div>
+</div>
 
 <div class="layout">
   <!-- MAIN -->
@@ -539,8 +606,57 @@
       document.getElementById('historyBtn').style.display = 'flex';
       document.getElementById('logoutBtn').style.display = 'flex';
       document.getElementById('loginBtn').style.display = 'none';
+      loadUsage();
     }
   }
+
+  async function loadUsage() {
+    if (!token) return;
+    try {
+      const res  = await fetch('/api/user/usage', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      renderUsage(data);
+    } catch {}
+  }
+
+  function renderUsage(data) {
+    const pill    = document.getElementById('usagePill');
+    const upgrade = document.getElementById('upgradeBtn');
+    if (!pill || !data) return;
+
+    if (data.unlimited || data.plan === 'pro') {
+      pill.textContent = 'Pro';
+      pill.className   = 'usage-pill pro';
+      pill.style.display = 'inline-flex';
+      return;
+    }
+
+    const remaining = data.limit - data.used;
+    pill.style.display = 'inline-flex';
+    pill.className = remaining <= 1 ? 'usage-pill warn' : 'usage-pill';
+    pill.textContent = `${data.used}/${data.limit} analyses`;
+
+    if (remaining <= 0) {
+      upgrade.style.display = 'inline-flex';
+    }
+  }
+
+  // ── UPGRADE MODAL ────────────────────────────────────────
+  function showUpgradeModal(used, limit) {
+    const sub = document.getElementById('modalSubText');
+    if (sub) sub.textContent = `You've used ${used || limit}/${limit} free analyses this month. Upgrade to Pro for unlimited access.`;
+    document.getElementById('upgradeModal').classList.add('active');
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('uploadSection').style.display = 'block';
+  }
+
+  function closeUpgradeModal() {
+    document.getElementById('upgradeModal').classList.remove('active');
+  }
+
+  document.getElementById('upgradeModal').addEventListener('click', function(e) {
+    if (e.target === this) closeUpgradeModal();
+  });
 
   function logout() {
     localStorage.removeItem('om_token');
@@ -609,12 +725,20 @@
         body: form
       });
       clearInterval(interval);
+      const errData = await res.json().catch(() => ({}));
+      if (res.status === 402 && errData.error === 'limit_reached') {
+        showUpgradeModal(errData.used, errData.limit);
+        return;
+      }
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || `Server error ${res.status}`);
       }
-      const data = await res.json();
-      showResults(data, photoUrl, true);
+      // Update usage display from response headers
+      const usedH  = res.headers.get('X-Usage-Used');
+      const limitH = res.headers.get('X-Usage-Limit');
+      const planH  = res.headers.get('X-Usage-Plan');
+      if (usedH) renderUsage({ used: +usedH, limit: +limitH, plan: planH, unlimited: planH === 'pro' });
+      showResults(errData, photoUrl, true);
     } catch (err) {
       clearInterval(interval);
       document.getElementById('loading').classList.remove('active');

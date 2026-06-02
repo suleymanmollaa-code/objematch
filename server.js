@@ -6,18 +6,73 @@ const jwt      = require('jsonwebtoken');
 const fs       = require('fs');
 
 const app = express();
+
+// ── STRIPE WEBHOOK — raw body, must come before express.json() ──────────────
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const Stripe = require('stripe');
+  const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+  if (!stripe) return res.status(500).json({ error: 'Stripe not configured' });
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      req.headers['stripe-signature'],
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error('Webhook signature error:', err.message);
+    return res.status(400).json({ error: 'Webhook signature failed' });
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const userId  = session.metadata?.userId;
+    if (userId) {
+      const users = readJSON(USERS_FILE);
+      const idx   = users.findIndex(u => u.id === userId);
+      if (idx !== -1) {
+        users[idx].plan                 = 'pro';
+        users[idx].stripeCustomerId     = session.customer;
+        users[idx].stripeSubscriptionId = session.subscription;
+        writeJSON(USERS_FILE, users);
+        console.log(`User ${userId} upgraded to Pro`);
+      }
+    }
+  }
+
+  if (event.type === 'customer.subscription.deleted') {
+    const sub  = event.data.object;
+    const users = readJSON(USERS_FILE);
+    const idx  = users.findIndex(u => u.stripeSubscriptionId === sub.id);
+    if (idx !== -1) {
+      users[idx].plan = 'free';
+      writeJSON(USERS_FILE, users);
+      console.log(`Subscription cancelled for user ${users[idx].id}`);
+    }
+  }
+
+  res.json({ received: true });
+});
+
+// ── MIDDLEWARE ───────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-const upload       = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
-const API_KEY      = process.env.ANTHROPIC_API_KEY?.replace(/\s/g, '');
-const JWT_SECRET   = process.env.JWT_SECRET || 'objematch-secret-2026';
-const AFFILIATE    = 'objematch-20';
-const DATA_DIR     = path.join(__dirname, 'data');
-const USERS_FILE   = path.join(DATA_DIR, 'users.json');
-const ANALYSES_FILE= path.join(DATA_DIR, 'analyses.json');
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const upload        = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+const API_KEY       = process.env.ANTHROPIC_API_KEY?.replace(/\s/g, '');
+const JWT_SECRET    = process.env.JWT_SECRET || 'objematch-secret-2026';
+const AFFILIATE     = 'objematch-20';
+const DATA_DIR      = path.join(__dirname, 'data');
+const USERS_FILE    = path.join(DATA_DIR, 'users.json');
+const ANALYSES_FILE = path.join(DATA_DIR, 'analyses.json');
+const FREE_LIMIT    = 5;
+const BASE_URL      = process.env.BASE_URL || 'https://www.objematch.com';
 
-// ── DATA HELPERS ───────────────────────────────────────────
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+// ── DATA HELPERS ─────────────────────────────────────────────────────────────
 function readJSON(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return []; }
 }
@@ -25,7 +80,35 @@ function writeJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-// ── AUTH MIDDLEWARE ────────────────────────────────────────
+// ── USAGE HELPERS ────────────────────────────────────────────────────────────
+function currentMonth() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function getUserUsage(user) {
+  const month = currentMonth();
+  if (user.analysisMonth !== month) return { count: 0, month };
+  return { count: user.analysisCount || 0, month };
+}
+
+function canAnalyze(user) {
+  if (!user || user.plan === 'pro') return true;
+  return getUserUsage(user).count < FREE_LIMIT;
+}
+
+function incrementUsage(userId) {
+  const users = readJSON(USERS_FILE);
+  const idx   = users.findIndex(u => u.id === userId);
+  if (idx !== -1 && users[idx].plan !== 'pro') {
+    const usage = getUserUsage(users[idx]);
+    users[idx].analysisCount = usage.count + 1;
+    users[idx].analysisMonth = usage.month;
+    writeJSON(USERS_FILE, users);
+  }
+}
+
+// ── AUTH MIDDLEWARE ───────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
@@ -45,6 +128,7 @@ function optionalAuth(req, res, next) {
   next();
 }
 
+// ── URL HELPERS ───────────────────────────────────────────────────────────────
 function amazonUrl(search) {
   return `https://www.amazon.com/s?k=${encodeURIComponent(search)}&tag=${AFFILIATE}`;
 }
@@ -55,7 +139,7 @@ function thumbtackUrl(search) {
   return `https://www.thumbtack.com/search/?q=${encodeURIComponent(search)}`;
 }
 
-// ── AUTH ROUTES ────────────────────────────────────────────
+// ── AUTH ROUTES ───────────────────────────────────────────────────────────────
 app.post('/api/auth/register', async (req, res) => {
   const { email, password, name } = req.body;
   if (!email || !password || password.length < 6)
@@ -66,12 +150,21 @@ app.post('/api/auth/register', async (req, res) => {
     return res.status(400).json({ error: 'Email already registered' });
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = { id: Date.now().toString(), email: email.toLowerCase(), name: name || '', password: hashed, createdAt: new Date().toISOString() };
+  const user = {
+    id: Date.now().toString(),
+    email: email.toLowerCase(),
+    name: name || '',
+    password: hashed,
+    plan: 'free',
+    analysisCount: 0,
+    analysisMonth: currentMonth(),
+    createdAt: new Date().toISOString()
+  };
   users.push(user);
   writeJSON(USERS_FILE, users);
 
   const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  res.json({ token, user: { id: user.id, email: user.email, name: user.name, plan: 'free', used: 0, limit: FREE_LIMIT } });
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -81,15 +174,34 @@ app.post('/api/auth/login', async (req, res) => {
   if (!user || !await bcrypt.compare(password, user.password))
     return res.status(400).json({ error: 'Invalid email or password' });
 
+  const usage = getUserUsage(user);
   const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  res.json({
+    token,
+    user: { id: user.id, email: user.email, name: user.name, plan: user.plan || 'free', used: usage.count, limit: FREE_LIMIT }
+  });
 });
 
 app.get('/api/auth/me', requireAuth, (req, res) => {
-  res.json({ user: req.user });
+  const users = readJSON(USERS_FILE);
+  const user  = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ error: 'Not found' });
+  const usage = getUserUsage(user);
+  res.json({
+    user: { id: user.id, email: user.email, name: user.name, plan: user.plan || 'free', used: usage.count, limit: FREE_LIMIT }
+  });
 });
 
-// ── HISTORY ROUTES ─────────────────────────────────────────
+// ── USAGE ROUTE ───────────────────────────────────────────────────────────────
+app.get('/api/user/usage', requireAuth, (req, res) => {
+  const users = readJSON(USERS_FILE);
+  const user  = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ error: 'Not found' });
+  const usage = getUserUsage(user);
+  res.json({ plan: user.plan || 'free', used: usage.count, limit: FREE_LIMIT, unlimited: user.plan === 'pro' });
+});
+
+// ── HISTORY ROUTES ────────────────────────────────────────────────────────────
 app.get('/api/history', requireAuth, (req, res) => {
   const analyses = readJSON(ANALYSES_FILE);
   const mine = analyses.filter(a => a.userId === req.user.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -103,7 +215,7 @@ app.delete('/api/history/:id', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// ── AI QUIZ RECOMMENDER ────────────────────────────────────
+// ── AI QUIZ RECOMMENDER ───────────────────────────────────────────────────────
 app.post('/api/recommend', async (req, res) => {
   const { room, size, problem, budget, style } = req.body;
   if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
@@ -123,7 +235,7 @@ Recommend exactly 5 specific Amazon products. Respond ONLY with valid JSON:
       body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }),
     });
     const data = await r.json();
-    const text = data.content[0].text;
+    const text  = data.content[0].text;
     const match = text.match(/\{[\s\S]*\}/);
     res.json(JSON.parse(match ? match[0] : text));
   } catch (err) {
@@ -131,7 +243,7 @@ Recommend exactly 5 specific Amazon products. Respond ONLY with valid JSON:
   }
 });
 
-// ── YOLO DETECTION HELPER ──────────────────────────────────
+// ── YOLO DETECTION ────────────────────────────────────────────────────────────
 let _detector = null;
 async function runYolo(imageBuffer) {
   try {
@@ -140,11 +252,9 @@ async function runYolo(imageBuffer) {
       process.env.HF_HOME = process.env.HF_HOME || '/tmp/hf-cache';
       _detector = await pipeline('object-detection', 'Xenova/yolov8n', { device: 'cpu' });
     }
-    // Convert buffer to base64 data URL for RawImage
     const dataUrl = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
-    const img = await RawImage.fromURL(dataUrl);
+    const img     = await RawImage.fromURL(dataUrl);
     const results = await _detector(img, { threshold: 0.35 });
-    // Normalize boxes to 0-100 percentage coords (center x,y)
     return results.map(r => ({
       label: r.label,
       score: Math.round(r.score * 100),
@@ -157,15 +267,29 @@ async function runYolo(imageBuffer) {
   }
 }
 
-// ── AI ROOM ANALYZER (Vision) ──────────────────────────────
+// ── AI ANALYZER ───────────────────────────────────────────────────────────────
 app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, res) => {
   if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
   if (!req.file) return res.status(400).json({ error: 'No photo uploaded' });
 
-  // Resize large images to stay within API limits
-  let imageBuffer = req.file.buffer;
-  let mediaType = req.file.mimetype || 'image/jpeg';
+  // ── LIMIT CHECK ──
+  if (req.user) {
+    const users  = readJSON(USERS_FILE);
+    const dbUser = users.find(u => u.id === req.user.id);
+    if (dbUser && !canAnalyze(dbUser)) {
+      const usage = getUserUsage(dbUser);
+      return res.status(402).json({
+        error: 'limit_reached',
+        used: usage.count,
+        limit: FREE_LIMIT,
+        plan: dbUser.plan || 'free'
+      });
+    }
+  }
 
+  // ── IMAGE RESIZE ──
+  let imageBuffer = req.file.buffer;
+  let mediaType   = req.file.mimetype || 'image/jpeg';
   try {
     const sharp = require('sharp');
     imageBuffer = await sharp(req.file.buffer)
@@ -177,7 +301,7 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
     console.error('Sharp error:', e.message);
   }
 
-  // Run YOLO detection for precise object coordinates (8s timeout, non-blocking)
+  // ── YOLO ──
   const yoloObjects = await Promise.race([
     runYolo(imageBuffer),
     new Promise(resolve => setTimeout(() => resolve([]), 8000))
@@ -245,24 +369,25 @@ Respond ONLY with valid JSON:
       console.error('Anthropic error:', JSON.stringify(errData));
       return res.status(500).json({ error: 'AI service error', detail: errData });
     }
-    const data  = await r.json();
-    const text  = data.content[0].text;
-    const match = text.match(/\{[\s\S]*\}/);
+
+    const data   = await r.json();
+    const text   = data.content[0].text;
+    const match  = text.match(/\{[\s\S]*\}/);
     const parsed = JSON.parse(match ? match[0] : text);
 
     parsed.problems = parsed.problems.map(p => ({
       ...p,
       options: {
-        new:    { ...p.options?.new,    url: amazonUrl(p.options?.new?.search || p.title) },
-        used:   { ...p.options?.used,   url: ebayUrl(p.options?.used?.search || p.title) },
+        new:    { ...p.options?.new,    url: amazonUrl(p.options?.new?.search    || p.title) },
+        used:   { ...p.options?.used,   url: ebayUrl(p.options?.used?.search     || p.title) },
         repair: { ...p.options?.repair, url: thumbtackUrl(p.options?.repair?.search || p.title) }
       }
     }));
 
-    // Save to history if user logged in
+    // ── SAVE TO HISTORY ──
     if (req.user) {
-      const analyses = readJSON(ANALYSES_FILE);
-      const photoB64 = `data:${mediaType};base64,${base64.slice(0, 20000)}`; // thumbnail
+      const analyses  = readJSON(ANALYSES_FILE);
+      const photoB64  = `data:${mediaType};base64,${base64.slice(0, 20000)}`;
       analyses.push({
         id: Date.now().toString(),
         userId: req.user.id,
@@ -273,16 +398,31 @@ Respond ONLY with valid JSON:
         createdAt: new Date().toISOString()
       });
       writeJSON(ANALYSES_FILE, analyses);
+
+      // ── INCREMENT USAGE ──
+      incrementUsage(req.user.id);
+    }
+
+    // Return usage info in response headers for frontend
+    if (req.user) {
+      const users  = readJSON(USERS_FILE);
+      const dbUser = users.find(u => u.id === req.user.id);
+      if (dbUser) {
+        const usage = getUserUsage(dbUser);
+        res.setHeader('X-Usage-Used',  String(usage.count));
+        res.setHeader('X-Usage-Limit', String(FREE_LIMIT));
+        res.setHeader('X-Usage-Plan',  dbUser.plan || 'free');
+      }
     }
 
     res.json(parsed);
   } catch (err) {
     console.error('Analyze error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: err.message || 'Server error' });
   }
 });
 
-// ── SELL LISTING GENERATOR ─────────────────────────────────
+// ── SELL LISTING GENERATOR ────────────────────────────────────────────────────
 app.post('/api/generate-listing', async (req, res) => {
   const { title, description } = req.body;
   if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
@@ -314,11 +454,11 @@ Respond ONLY with valid JSON:
       console.error('Anthropic listing error:', JSON.stringify(data));
       return res.status(500).json({ error: data?.error?.message || 'AI service error' });
     }
-    const text = data.content[0].text;
-    const match = text.match(/\{[\s\S]*\}/);
+    const text   = data.content[0].text;
+    const match  = text.match(/\{[\s\S]*\}/);
     const parsed = JSON.parse(match ? match[0] : text);
     parsed.ebaySearchUrl = ebayUrl(parsed.keywords || title);
-    parsed.ebaySellUrl = `https://www.ebay.com/sell/listing?title=${encodeURIComponent(parsed.listingTitle || title)}`;
+    parsed.ebaySellUrl   = `https://www.ebay.com/sell/listing?title=${encodeURIComponent(parsed.listingTitle || title)}`;
     res.json(parsed);
   } catch (err) {
     console.error('Listing error:', err);
@@ -326,5 +466,36 @@ Respond ONLY with valid JSON:
   }
 });
 
+// ── STRIPE CHECKOUT ───────────────────────────────────────────────────────────
+app.post('/api/stripe/checkout', requireAuth, async (req, res) => {
+  if (!process.env.STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe not configured' });
+  if (!process.env.STRIPE_PRICE_ID)   return res.status(500).json({ error: 'Stripe price not configured' });
+
+  const Stripe = require('stripe');
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+  const users = readJSON(USERS_FILE);
+  const user  = users.find(u => u.id === req.user.id);
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      customer_email: user?.email,
+      success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${BASE_URL}/pricing.html`,
+      metadata: { userId: req.user.id },
+      subscription_data: {
+        metadata: { userId: req.user.id }
+      }
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Stripe checkout error:', err);
+    res.status(500).json({ error: err.message || 'Payment setup failed' });
+  }
+});
+
+// ── START ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`ObjeMatch running on http://localhost:${PORT}`));

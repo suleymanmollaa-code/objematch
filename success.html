@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Pro — ObjeMatch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #f97316; --green: #22c55e; --border: #e5e7eb; --muted: #6b7280;
+      --bg: #f9fafb; --surface: #fff; --text: #111827;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+           min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+
+    nav {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 clamp(16px, 4vw, 32px); height: 64px;
+      display: flex; align-items: center;
+    }
+    .logo { font-size: 20px; font-weight: 800; }
+    .logo span { color: var(--accent); }
+
+    .center {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 48px 40px; max-width: 480px; width: 100%;
+      text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    .success-icon {
+      width: 72px; height: 72px; background: #f0fdf4; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin: 0 auto 24px;
+      border: 2px solid #bbf7d0;
+    }
+
+    .pro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent); color: white; font-size: 12px; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 14px; border-radius: 999px; margin-bottom: 20px;
+    }
+
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+    p { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 32px; }
+
+    .perks { text-align: left; margin-bottom: 32px; }
+    .perk {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--bg);
+      font-size: 14px; font-weight: 500;
+    }
+    .perk:last-child { border-bottom: none; }
+    .perk-icon { font-size: 20px; }
+
+    .btn-main {
+      display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: var(--accent); color: white; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.15s; margin-bottom: 10px;
+    }
+    .btn-main:hover { background: #ea580c; }
+
+    .btn-sec {
+      display: block; width: 100%; padding: 12px; border: 1.5px solid var(--border);
+      border-radius: 12px; background: var(--surface); color: var(--muted);
+      font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-sec:hover { border-color: var(--accent); color: var(--accent); }
+
+    .confetti {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 999; overflow: hidden;
+    }
+    .dot {
+      position: absolute; top: -10px; width: 8px; height: 8px; border-radius: 50%;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="confetti" id="confetti"></div>
+
+<nav>
+  <a href="/" class="logo">Obje<span>Match</span></a>
+</nav>
+
+<div class="center">
+  <div class="card">
+    <div class="success-icon">🎉</div>
+    <div class="pro-badge">PRO</div>
+    <h1>You're all set!</h1>
+    <p>Welcome to ObjeMatch Pro. Your account has been upgraded and you now have access to all Pro features.</p>
+
+    <div class="perks">
+      <div class="perk"><span class="perk-icon">∞</span> Unlimited photo analyses</div>
+      <div class="perk"><span class="perk-icon">📡</span> Weekly deal monitoring</div>
+      <div class="perk"><span class="perk-icon">📧</span> Email deal digest</div>
+      <div class="perk"><span class="perk-icon">💰</span> AI sell listing generator</div>
+    </div>
+
+    <button class="btn-main" onclick="location.href='/room-analyzer.html'">Start Analyzing</button>
+    <button class="btn-sec" onclick="location.href='/dashboard.html'">View Dashboard</button>
+  </div>
+</div>
+
+<script>
+  // Update stored user plan
+  const user = JSON.parse(localStorage.getItem('om_user') || 'null');
+  if (user) {
+    user.plan = 'pro';
+    localStorage.setItem('om_user', JSON.stringify(user));
+  }
+
+  // Fetch fresh user data from server
+  const token = localStorage.getItem('om_token');
+  if (token) {
+    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => {
+        if (d.user) localStorage.setItem('om_user', JSON.stringify(d.user));
+      }).catch(() => {});
+  }
+
+  // Confetti
+  const colors = ['#f97316','#7c6ff7','#22c55e','#0ea5e9','#ef4444','#f59e0b'];
+  const c = document.getElementById('confetti');
+  for (let i = 0; i < 60; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.style.cssText = `
+      left: ${Math.random() * 100}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration: ${1.5 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 0.8}s;
+      width: ${6 + Math.random() * 8}px;
+      height: ${6 + Math.random() * 8}px;
+    `;
+    c.appendChild(dot);
+  }
+  setTimeout(() => c.remove(), 4000);
+</script>
+</body>
+</html>
