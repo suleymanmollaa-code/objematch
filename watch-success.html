@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Activated — ObjeMatch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --accent: #f97316; --purple: #7c6ff7; --border: #e5e7eb; --muted: #6b7280; --bg: #f9fafb; --surface: #fff; --text: #111827; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 clamp(16px,4vw,32px); height: 64px; display: flex; align-items: center; }
+    .logo { font-size: 20px; font-weight: 800; } .logo span { color: var(--accent); }
+    .center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 48px 36px; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.06); }
+    .icon { width: 72px; height: 72px; background: #f5f3ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 24px; border: 2px solid #c4b5fd; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--purple); color: white; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 14px; border-radius: 999px; margin-bottom: 20px; }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 10px; }
+    p { font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 28px; }
+    .details { background: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 14px; padding: 16px 20px; margin-bottom: 28px; text-align: left; }
+    .detail-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
+    .detail-row .key { color: var(--muted); }
+    .detail-row .val { font-weight: 600; color: var(--purple); }
+    .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; margin-bottom: 10px; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #ea580c; }
+    .btn-sec { background: white; color: var(--muted); border: 1.5px solid var(--border); font-size: 14px; }
+    .btn-sec:hover { color: var(--text); border-color: var(--text); }
+    .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; overflow: hidden; }
+    .dot { position: absolute; top: -10px; border-radius: 50%; animation: fall linear forwards; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+  </style>
+</head>
+<body>
+<div class="confetti" id="confetti"></div>
+<nav><a href="/" class="logo">Obje<span>Match</span></a></nav>
+<div class="center">
+  <div class="card">
+    <div class="icon">📡</div>
+    <div class="badge">Watch Activated</div>
+    <h1>AI is on the case!</h1>
+    <p>Your watch is now active. We'll search Amazon & eBay automatically and email you new deals on schedule.</p>
+    <div class="details" id="watchDetails" style="display:none">
+      <div class="detail-row"><span class="key">Item</span><span class="val" id="dItem">—</span></div>
+      <div class="detail-row"><span class="key">Frequency</span><span class="val" id="dFreq">—</span></div>
+      <div class="detail-row"><span class="key">Expires</span><span class="val" id="dExpiry">—</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="location.href='/room-analyzer.html'">Analyze Another Photo</button>
+    <button class="btn btn-sec" onclick="location.href='/dashboard.html'">View My Watches</button>
+  </div>
+</div>
+<script>
+  // Load watches to show latest
+  const token = localStorage.getItem('om_token');
+  if (token) {
+    fetch('/api/watches', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => {
+        const w = (d.watches || [])[0];
+        if (!w) return;
+        const freqMap = { daily: 'Every day', weekly: 'Every week', monthly: 'Every month' };
+        document.getElementById('dItem').textContent  = w.itemTitle;
+        document.getElementById('dFreq').textContent  = freqMap[w.frequency] || w.frequency;
+        document.getElementById('dExpiry').textContent = new Date(w.expiresAt).toLocaleDateString();
+        document.getElementById('watchDetails').style.display = 'block';
+      }).catch(() => {});
+  }
+
+  // Confetti
+  const colors = ['#7c6ff7','#f97316','#22c55e','#0ea5e9','#f59e0b'];
+  const c = document.getElementById('confetti');
+  for (let i = 0; i < 55; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const s = 6 + Math.random() * 8;
+    dot.style.cssText = `left:${Math.random()*100}%;background:${colors[i%colors.length]};width:${s}px;height:${s}px;animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.8}s`;
+    c.appendChild(dot);
+  }
+  setTimeout(() => c.remove(), 4000);
+</script>
+</body>
+</html>

@@ -332,6 +332,71 @@
 
     .aff-note { font-size: 12px; color: var(--light); margin-top: 24px; line-height: 1.5; }
 
+    /* ── WATCH MODAL ── */
+    .watch-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 600;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .watch-overlay.active { display: flex; }
+
+    .watch-box {
+      background: var(--surface); border-radius: 22px; padding: 32px 28px;
+      max-width: 420px; width: 100%; box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+      animation: fadeUp 0.3s ease;
+    }
+
+    .watch-title-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+    .watch-icon { font-size: 28px; }
+    .watch-heading { font-size: 19px; font-weight: 800; }
+    .watch-item-name {
+      font-size: 13px; color: var(--muted); margin-bottom: 20px;
+      padding: 6px 10px; background: var(--bg); border-radius: 8px;
+    }
+
+    .freq-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+
+    .freq-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .freq-opt {
+      display: flex; align-items: center; gap: 14px;
+      border: 2px solid var(--border); border-radius: 14px; padding: 14px 16px;
+      cursor: pointer; transition: all 0.15s; background: var(--surface);
+    }
+    .freq-opt:hover { border-color: var(--purple); background: #f5f3ff; }
+    .freq-opt.selected { border-color: var(--purple); background: #f5f3ff; }
+
+    .freq-emoji { font-size: 22px; }
+    .freq-info { flex: 1; }
+    .freq-name { font-size: 14px; font-weight: 700; }
+    .freq-desc { font-size: 12px; color: var(--muted); }
+    .freq-price {
+      font-size: 15px; font-weight: 800; color: var(--purple);
+      background: #ede9fe; padding: 4px 10px; border-radius: 8px;
+    }
+
+    .watch-what { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .watch-what strong { color: var(--text); }
+
+    .watch-cta {
+      width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: var(--purple); color: white; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.15s; margin-bottom: 10px;
+    }
+    .watch-cta:hover { background: #6558d4; }
+    .watch-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+    .watch-cancel {
+      width: 100%; padding: 10px; border: 1.5px solid var(--border);
+      border-radius: 12px; background: transparent; color: var(--muted);
+      font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+    .watch-cancel:hover { color: var(--text); border-color: var(--text); }
+
+    .watch-active-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #f5f3ff; border: 1px solid #c4b5fd; color: var(--purple);
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+    }
+
     /* ── SELL MODE ── */
     .option-sell { background: #fffbeb; border-color: #fde68a; }
     .option-sell:hover { border-color: #f59e0b; }
@@ -514,6 +579,52 @@
     </div>
     <button class="modal-btn-primary" onclick="location.href='/pricing.html'">Get Pro — $9.99/mo</button>
     <button class="modal-btn-secondary" onclick="closeUpgradeModal()">Maybe later</button>
+  </div>
+</div>
+
+<!-- WATCH MODAL -->
+<div class="watch-overlay" id="watchOverlay">
+  <div class="watch-box">
+    <div class="watch-title-row">
+      <div class="watch-icon">📡</div>
+      <div class="watch-heading">Watch this item</div>
+    </div>
+    <div class="watch-item-name" id="watchItemName"></div>
+
+    <div class="freq-label">How often should AI search?</div>
+    <div class="freq-options">
+      <div class="freq-opt selected" data-freq="daily" onclick="selectFreq(this)">
+        <div class="freq-emoji">⚡</div>
+        <div class="freq-info">
+          <div class="freq-name">Daily</div>
+          <div class="freq-desc">New deals every day for 30 days</div>
+        </div>
+        <div class="freq-price">$2.99</div>
+      </div>
+      <div class="freq-opt" data-freq="weekly" onclick="selectFreq(this)">
+        <div class="freq-emoji">📅</div>
+        <div class="freq-info">
+          <div class="freq-name">Weekly</div>
+          <div class="freq-desc">Fresh picks every week for 30 days</div>
+        </div>
+        <div class="freq-price">$0.99</div>
+      </div>
+      <div class="freq-opt" data-freq="monthly" onclick="selectFreq(this)">
+        <div class="freq-emoji">🗓️</div>
+        <div class="freq-info">
+          <div class="freq-name">Monthly</div>
+          <div class="freq-desc">Monthly check for 90 days</div>
+        </div>
+        <div class="freq-price">$0.49</div>
+      </div>
+    </div>
+
+    <div class="watch-what">
+      AI will search Amazon & eBay for <strong id="watchItemInline"></strong> at the chosen frequency and notify you of new deals by email.
+    </div>
+
+    <button class="watch-cta" id="watchPayBtn" onclick="startWatch()">Continue to Payment</button>
+    <button class="watch-cancel" onclick="closeWatchModal()">Cancel</button>
   </div>
 </div>
 
@@ -810,7 +921,7 @@
         <div class="problem-body">
           <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px">${esc(prob.description)}</p>
           <div class="products-label">Your Options</div>
-          <div class="options-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="options-grid" style="grid-template-columns:repeat(5,1fr)">
             ${prob.options?.new ? `
             <a href="${prob.options.new.url}" target="_blank" rel="noopener" class="option-card option-new" onclick="event.stopPropagation()">
               <div class="option-icon">🛒</div>
@@ -838,6 +949,12 @@
               <div class="option-price">Get cash</div>
               <div class="option-source">eBay</div>
             </button>
+            <button class="option-card" style="background:#f5f3ff;border-color:#c4b5fd" onclick="event.stopPropagation(); openWatchModal(${i})" id="watch-btn-${i}">
+              <div class="option-icon">📡</div>
+              <div class="option-label">Watch</div>
+              <div class="option-price">from $0.49</div>
+              <div class="option-source" style="color:#7c6ff7">AI Monitor</div>
+            </button>
           </div>
           <div id="sell-panel-${i}" class="sell-panel" style="display:none"></div>
         </div>
@@ -861,6 +978,91 @@
   function esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  // ── WATCH MODE ───────────────────────────────────────────
+  let _watchItem = null;
+  let _activeWatches = new Set(); // itemTitles already being watched
+
+  async function loadWatches() {
+    if (!token) return;
+    try {
+      const res  = await fetch('/api/watches', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      const now  = new Date();
+      (data.watches || []).forEach(w => {
+        if (w.active && new Date(w.expiresAt) > now) _activeWatches.add(w.itemTitle);
+      });
+    } catch {}
+  }
+
+  function openWatchModal(idx) {
+    const card  = document.getElementById(`card-${idx}`);
+    const title = card.dataset.title || '';
+    const desc  = card.dataset.desc  || '';
+
+    if (_activeWatches.has(title)) {
+      alert(`"${title}" is already being watched!`);
+      return;
+    }
+
+    if (!token) {
+      localStorage.setItem('om_redirect_after_login', '/room-analyzer.html');
+      location.href = '/login.html';
+      return;
+    }
+
+    _watchItem = { title, desc, idx };
+    document.getElementById('watchItemName').textContent = title;
+    document.getElementById('watchItemInline').textContent = title;
+    // Reset to daily selection
+    document.querySelectorAll('.freq-opt').forEach(o => o.classList.remove('selected'));
+    document.querySelector('.freq-opt[data-freq="daily"]').classList.add('selected');
+    document.getElementById('watchOverlay').classList.add('active');
+  }
+
+  function closeWatchModal() {
+    document.getElementById('watchOverlay').classList.remove('active');
+    _watchItem = null;
+  }
+
+  function selectFreq(el) {
+    document.querySelectorAll('.freq-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  async function startWatch() {
+    if (!_watchItem) return;
+    const freqEl = document.querySelector('.freq-opt.selected');
+    const freq   = freqEl?.dataset.freq || 'weekly';
+
+    const btn = document.getElementById('watchPayBtn');
+    btn.disabled = true;
+    btn.textContent = 'Redirecting...';
+
+    try {
+      const res  = await fetch('/api/watch/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ itemTitle: _watchItem.title, itemDesc: _watchItem.desc, frequency: freq })
+      });
+      const data = await res.json();
+      if (data.url) {
+        location.href = data.url;
+      } else {
+        alert(data.error || 'Could not start payment. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Continue to Payment';
+      }
+    } catch (err) {
+      alert('Network error. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Continue to Payment';
+    }
+  }
+
+  document.getElementById('watchOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeWatchModal();
+  });
 
   // ── SELL MODE ────────────────────────────────────────────
   const _sellCache = {};      // cardIdx -> listing data
@@ -967,6 +1169,7 @@
 
   // ── INIT ─────────────────────────────────────────────────
   initAuth();
+  loadWatches();
 </script>
 </body>
 </html>

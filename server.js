@@ -27,39 +27,41 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const userId  = session.metadata?.userId;
-    if (userId) {
-      const users = readJSON(USERS_FILE);
-      const idx   = users.findIndex(u => u.id === userId);
-      if (idx !== -1) {
-        users[idx].plan                 = 'pro';
-        users[idx].stripeCustomerId     = session.customer;
-        users[idx].stripeSubscriptionId = session.subscription;
-        writeJSON(USERS_FILE, users);
-        console.log(`User ${userId} upgraded to Pro`);
-      }
-    }
-  }
+    const meta    = session.metadata || {};
 
-  if (event.type === 'customer.subscription.deleted') {
-    const sub  = event.data.object;
-    const users = readJSON(USERS_FILE);
-    const idx  = users.findIndex(u => u.stripeSubscriptionId === sub.id);
-    if (idx !== -1) {
-      users[idx].plan = 'free';
-      writeJSON(USERS_FILE, users);
-      console.log(`Subscription cancelled for user ${users[idx].id}`);
+    if (meta.type === 'watch' && meta.userId && meta.itemTitle) {
+      // Calculate expiry based on frequency
+      const days = { daily: 30, weekly: 30, monthly: 90 };
+      const d    = days[meta.frequency] || 30;
+      const expiresAt = new Date(Date.now() + d * 24 * 60 * 60 * 1000).toISOString();
+
+      const monitors = readJSON(MONITORS_FILE);
+      monitors.push({
+        id:           Date.now().toString(),
+        userId:       meta.userId,
+        itemTitle:    meta.itemTitle,
+        itemDesc:     meta.itemDesc || '',
+        frequency:    meta.frequency,
+        active:       true,
+        expiresAt,
+        lastCheckedAt: null,
+        nextCheckAt:  new Date().toISOString(),
+        stripeSessionId: session.id,
+        createdAt:    new Date().toISOString()
+      });
+      writeJSON(MONITORS_FILE, monitors);
+      console.log(`Watch created: "${meta.itemTitle}" (${meta.frequency}) for user ${meta.userId}`);
     }
   }
 
   res.json({ received: true });
 });
 
-// ── MIDDLEWARE ───────────────────────────────────────────────────────────────
+// ── MIDDLEWARE ────────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// ── CONSTANTS ────────────────────────────────────────────────────────────────
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const upload        = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const API_KEY       = process.env.ANTHROPIC_API_KEY?.replace(/\s/g, '');
 const JWT_SECRET    = process.env.JWT_SECRET || 'objematch-secret-2026';
@@ -67,12 +69,18 @@ const AFFILIATE     = 'objematch-20';
 const DATA_DIR      = path.join(__dirname, 'data');
 const USERS_FILE    = path.join(DATA_DIR, 'users.json');
 const ANALYSES_FILE = path.join(DATA_DIR, 'analyses.json');
-const FREE_LIMIT    = 5;
+const MONITORS_FILE = path.join(DATA_DIR, 'monitors.json');
+const FREE_LIMIT    = 100;
 const BASE_URL      = process.env.BASE_URL || 'https://www.objematch.com';
+
+// Watch pricing (cents)
+const WATCH_PRICES = { daily: 299, weekly: 99, monthly: 49 };
+// Watch durations (days)
+const WATCH_DAYS   = { daily: 30, weekly: 30, monthly: 90 };
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-// ── DATA HELPERS ─────────────────────────────────────────────────────────────
+// ── DATA HELPERS ──────────────────────────────────────────────────────────────
 function readJSON(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return []; }
 }
@@ -80,27 +88,24 @@ function writeJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-// ── USAGE HELPERS ────────────────────────────────────────────────────────────
+// ── USAGE HELPERS ─────────────────────────────────────────────────────────────
 function currentMonth() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
-
 function getUserUsage(user) {
   const month = currentMonth();
   if (user.analysisMonth !== month) return { count: 0, month };
   return { count: user.analysisCount || 0, month };
 }
-
 function canAnalyze(user) {
-  if (!user || user.plan === 'pro') return true;
+  if (!user) return true;
   return getUserUsage(user).count < FREE_LIMIT;
 }
-
 function incrementUsage(userId) {
   const users = readJSON(USERS_FILE);
   const idx   = users.findIndex(u => u.id === userId);
-  if (idx !== -1 && users[idx].plan !== 'pro') {
+  if (idx !== -1) {
     const usage = getUserUsage(users[idx]);
     users[idx].analysisCount = usage.count + 1;
     users[idx].analysisMonth = usage.month;
@@ -119,7 +124,6 @@ function requireAuth(req, res, next) {
     res.status(401).json({ error: 'Token expired' });
   }
 }
-
 function optionalAuth(req, res, next) {
   const auth = req.headers.authorization;
   if (auth?.startsWith('Bearer ')) {
@@ -129,15 +133,9 @@ function optionalAuth(req, res, next) {
 }
 
 // ── URL HELPERS ───────────────────────────────────────────────────────────────
-function amazonUrl(search) {
-  return `https://www.amazon.com/s?k=${encodeURIComponent(search)}&tag=${AFFILIATE}`;
-}
-function ebayUrl(search) {
-  return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(search)}`;
-}
-function thumbtackUrl(search) {
-  return `https://www.thumbtack.com/search/?q=${encodeURIComponent(search)}`;
-}
+function amazonUrl(search) { return `https://www.amazon.com/s?k=${encodeURIComponent(search)}&tag=${AFFILIATE}`; }
+function ebayUrl(search)   { return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(search)}`; }
+function thumbtackUrl(s)   { return `https://www.thumbtack.com/search/?q=${encodeURIComponent(s)}`; }
 
 // ── AUTH ROUTES ───────────────────────────────────────────────────────────────
 app.post('/api/auth/register', async (req, res) => {
@@ -151,20 +149,15 @@ app.post('/api/auth/register', async (req, res) => {
 
   const hashed = await bcrypt.hash(password, 10);
   const user = {
-    id: Date.now().toString(),
-    email: email.toLowerCase(),
-    name: name || '',
-    password: hashed,
-    plan: 'free',
-    analysisCount: 0,
-    analysisMonth: currentMonth(),
+    id: Date.now().toString(), email: email.toLowerCase(), name: name || '',
+    password: hashed, analysisCount: 0, analysisMonth: currentMonth(),
     createdAt: new Date().toISOString()
   };
   users.push(user);
   writeJSON(USERS_FILE, users);
 
   const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name, plan: 'free', used: 0, limit: FREE_LIMIT } });
+  res.json({ token, user: { id: user.id, email: user.email, name: user.name, used: 0, limit: FREE_LIMIT } });
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -176,10 +169,7 @@ app.post('/api/auth/login', async (req, res) => {
 
   const usage = getUserUsage(user);
   const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
-  res.json({
-    token,
-    user: { id: user.id, email: user.email, name: user.name, plan: user.plan || 'free', used: usage.count, limit: FREE_LIMIT }
-  });
+  res.json({ token, user: { id: user.id, email: user.email, name: user.name, used: usage.count, limit: FREE_LIMIT } });
 });
 
 app.get('/api/auth/me', requireAuth, (req, res) => {
@@ -187,24 +177,22 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
   const user  = users.find(u => u.id === req.user.id);
   if (!user) return res.status(404).json({ error: 'Not found' });
   const usage = getUserUsage(user);
-  res.json({
-    user: { id: user.id, email: user.email, name: user.name, plan: user.plan || 'free', used: usage.count, limit: FREE_LIMIT }
-  });
+  res.json({ user: { id: user.id, email: user.email, name: user.name, used: usage.count, limit: FREE_LIMIT } });
 });
 
-// ── USAGE ROUTE ───────────────────────────────────────────────────────────────
 app.get('/api/user/usage', requireAuth, (req, res) => {
   const users = readJSON(USERS_FILE);
   const user  = users.find(u => u.id === req.user.id);
   if (!user) return res.status(404).json({ error: 'Not found' });
   const usage = getUserUsage(user);
-  res.json({ plan: user.plan || 'free', used: usage.count, limit: FREE_LIMIT, unlimited: user.plan === 'pro' });
+  res.json({ used: usage.count, limit: FREE_LIMIT });
 });
 
 // ── HISTORY ROUTES ────────────────────────────────────────────────────────────
 app.get('/api/history', requireAuth, (req, res) => {
   const analyses = readJSON(ANALYSES_FILE);
-  const mine = analyses.filter(a => a.userId === req.user.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const mine = analyses.filter(a => a.userId === req.user.id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   res.json({ analyses: mine });
 });
 
@@ -213,6 +201,68 @@ app.delete('/api/history/:id', requireAuth, (req, res) => {
   analyses = analyses.filter(a => !(a.id === req.params.id && a.userId === req.user.id));
   writeJSON(ANALYSES_FILE, analyses);
   res.json({ ok: true });
+});
+
+// ── WATCH ROUTES ──────────────────────────────────────────────────────────────
+app.get('/api/watches', requireAuth, (req, res) => {
+  const monitors = readJSON(MONITORS_FILE);
+  const now      = new Date();
+  const mine     = monitors
+    .filter(m => m.userId === req.user.id)
+    .map(m => ({ ...m, expired: new Date(m.expiresAt) < now }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  res.json({ watches: mine });
+});
+
+app.delete('/api/watches/:id', requireAuth, (req, res) => {
+  const monitors = readJSON(MONITORS_FILE);
+  const idx = monitors.findIndex(m => m.id === req.params.id && m.userId === req.user.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  monitors[idx].active = false;
+  writeJSON(MONITORS_FILE, monitors);
+  res.json({ ok: true });
+});
+
+app.post('/api/watch/checkout', requireAuth, async (req, res) => {
+  const { itemTitle, itemDesc, frequency } = req.body;
+  if (!itemTitle)    return res.status(400).json({ error: 'itemTitle required' });
+  if (!WATCH_PRICES[frequency]) return res.status(400).json({ error: 'Invalid frequency. Use: daily, weekly, monthly' });
+  if (!process.env.STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe not configured' });
+
+  const Stripe = require('stripe');
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+  const freq_labels = { daily: 'Daily (30 days)', weekly: 'Weekly (30 days)', monthly: 'Monthly (90 days)' };
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `Watch: "${itemTitle}"`,
+            description: `${freq_labels[frequency]} — AI finds new deals automatically`
+          },
+          unit_amount: WATCH_PRICES[frequency]
+        },
+        quantity: 1
+      }],
+      success_url: `${BASE_URL}/watch-success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${BASE_URL}/room-analyzer.html`,
+      metadata: {
+        type:      'watch',
+        userId:    req.user.id,
+        itemTitle: itemTitle.slice(0, 200),
+        itemDesc:  (itemDesc || '').slice(0, 400),
+        frequency
+      }
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Watch checkout error:', err);
+    res.status(500).json({ error: err.message || 'Payment setup failed' });
+  }
 });
 
 // ── AI QUIZ RECOMMENDER ───────────────────────────────────────────────────────
@@ -234,13 +284,11 @@ Recommend exactly 5 specific Amazon products. Respond ONLY with valid JSON:
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }),
     });
-    const data = await r.json();
+    const data  = await r.json();
     const text  = data.content[0].text;
     const match = text.match(/\{[\s\S]*\}/);
     res.json(JSON.parse(match ? match[0] : text));
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
 // ── YOLO DETECTION ────────────────────────────────────────────────────────────
@@ -256,15 +304,11 @@ async function runYolo(imageBuffer) {
     const img     = await RawImage.fromURL(dataUrl);
     const results = await _detector(img, { threshold: 0.35 });
     return results.map(r => ({
-      label: r.label,
-      score: Math.round(r.score * 100),
+      label: r.label, score: Math.round(r.score * 100),
       x: Math.round(((r.box.xmin + r.box.xmax) / 2) / img.width  * 100),
       y: Math.round(((r.box.ymin + r.box.ymax) / 2) / img.height * 100),
     }));
-  } catch (e) {
-    console.error('YOLO error:', e.message);
-    return [];
-  }
+  } catch (e) { console.error('YOLO error:', e.message); return []; }
 }
 
 // ── AI ANALYZER ───────────────────────────────────────────────────────────────
@@ -272,46 +316,37 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
   if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
   if (!req.file) return res.status(400).json({ error: 'No photo uploaded' });
 
-  // ── LIMIT CHECK ──
+  // Limit check (100/month for logged-in users)
   if (req.user) {
     const users  = readJSON(USERS_FILE);
     const dbUser = users.find(u => u.id === req.user.id);
     if (dbUser && !canAnalyze(dbUser)) {
       const usage = getUserUsage(dbUser);
-      return res.status(402).json({
-        error: 'limit_reached',
-        used: usage.count,
-        limit: FREE_LIMIT,
-        plan: dbUser.plan || 'free'
-      });
+      return res.status(402).json({ error: 'limit_reached', used: usage.count, limit: FREE_LIMIT });
     }
   }
 
-  // ── IMAGE RESIZE ──
+  // Image resize
   let imageBuffer = req.file.buffer;
   let mediaType   = req.file.mimetype || 'image/jpeg';
   try {
     const sharp = require('sharp');
     imageBuffer = await sharp(req.file.buffer)
       .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
-      .jpeg({ quality: 85 })
-      .toBuffer();
+      .jpeg({ quality: 85 }).toBuffer();
     mediaType = 'image/jpeg';
-  } catch(e) {
-    console.error('Sharp error:', e.message);
-  }
+  } catch(e) { console.error('Sharp error:', e.message); }
 
-  // ── YOLO ──
+  // YOLO
   const yoloObjects = await Promise.race([
     runYolo(imageBuffer),
     new Promise(resolve => setTimeout(() => resolve([]), 8000))
   ]);
   const yoloContext = yoloObjects.length > 0
-    ? `\n\nPrecise object detections from YOLO (use these x,y coordinates for pins):\n${yoloObjects.map(o => `- ${o.label} at x=${o.x}%, y=${o.y}% (confidence ${o.score}%)`).join('\n')}\n`
+    ? `\n\nPrecise object detections from YOLO:\n${yoloObjects.map(o => `- ${o.label} at x=${o.x}%, y=${o.y}% (${o.score}%)`).join('\n')}\n`
     : '';
 
   const base64 = imageBuffer.toString('base64');
-
   const prompt = `You are a visual shopping assistant. The user uploaded a photo — it could be anything: a room, a car interior, a desk setup, a garage, an outdoor space, a wardrobe, a kitchen counter, anything.
 ${yoloContext}
 Your job: identify EVERY significant object or opportunity in the photo. Be comprehensive — scan the entire image.
@@ -322,13 +357,10 @@ Look for:
 3. EVERY empty space or missing item that would improve the scene
 4. EVERY item that looks worn, outdated, or could be upgraded
 
-Find between 5 and 8 items. Do NOT stop at 3. Scan every part of the image systematically: top-left, top-right, center, bottom-left, bottom-right.
+Find between 5 and 8 items. Scan every part of the image: top-left, top-right, center, bottom-left, bottom-right.
 
-For each item, set x and y as percentage coordinates (0-100) indicating where on the image that object is located:
-- x=0 is far left, x=100 is far right
-- y=0 is top, y=100 is bottom
-- If YOLO detected this object above, use THOSE exact coordinates for the pin
-- Place the coordinate ON the object itself, not near it
+For each item x and y are percentage coordinates (0-100): x=0 far left, x=100 far right, y=0 top, y=100 bottom.
+If YOLO detected this object, use THOSE exact coordinates.
 
 Respond ONLY with valid JSON:
 {
@@ -336,15 +368,14 @@ Respond ONLY with valid JSON:
   "summary": "One sentence describing the space",
   "problems": [
     {
-      "title": "Exact object name (e.g. White Wardrobe, Desk Chair, Empty Wall Above Desk)",
+      "title": "Exact object name",
       "type": "present",
       "description": "What you see and what to do with it",
-      "x": 15,
-      "y": 45,
+      "x": 15, "y": 45,
       "options": {
-        "new": { "search": "specific amazon search keywords", "price": "$XX-$XX" },
-        "used": { "search": "specific ebay search keywords", "price": "$XX-$XX" },
-        "repair": { "search": "thumbtack service", "note": "assembly, painting, etc or null" }
+        "new":    { "search": "amazon keywords", "price": "$XX-$XX" },
+        "used":   { "search": "ebay keywords",   "price": "$XX-$XX" },
+        "repair": { "search": "thumbtack service", "note": "service type or null" }
       }
     }
   ]
@@ -355,8 +386,7 @@ Respond ONLY with valid JSON:
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        model: 'claude-haiku-4-5-20251001', max_tokens: 1500,
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
           { type: 'text', text: prompt }
@@ -384,34 +414,25 @@ Respond ONLY with valid JSON:
       }
     }));
 
-    // ── SAVE TO HISTORY ──
     if (req.user) {
-      const analyses  = readJSON(ANALYSES_FILE);
-      const photoB64  = `data:${mediaType};base64,${base64.slice(0, 20000)}`;
+      // Save to history
+      const analyses = readJSON(ANALYSES_FILE);
       analyses.push({
-        id: Date.now().toString(),
-        userId: req.user.id,
-        room: parsed.room,
-        summary: parsed.summary,
-        problems: parsed.problems,
-        thumbnail: photoB64,
+        id: Date.now().toString(), userId: req.user.id,
+        room: parsed.room, summary: parsed.summary, problems: parsed.problems,
+        thumbnail: `data:${mediaType};base64,${base64.slice(0, 20000)}`,
         createdAt: new Date().toISOString()
       });
       writeJSON(ANALYSES_FILE, analyses);
-
-      // ── INCREMENT USAGE ──
+      // Increment count
       incrementUsage(req.user.id);
-    }
-
-    // Return usage info in response headers for frontend
-    if (req.user) {
+      // Pass usage in response header
       const users  = readJSON(USERS_FILE);
       const dbUser = users.find(u => u.id === req.user.id);
       if (dbUser) {
         const usage = getUserUsage(dbUser);
         res.setHeader('X-Usage-Used',  String(usage.count));
         res.setHeader('X-Usage-Limit', String(FREE_LIMIT));
-        res.setHeader('X-Usage-Plan',  dbUser.plan || 'free');
       }
     }
 
@@ -429,18 +450,17 @@ app.post('/api/generate-listing', async (req, res) => {
   if (!title)   return res.status(400).json({ error: 'title required' });
 
   const prompt = `You are a professional eBay seller who writes high-converting listings.
-Generate a compelling eBay listing for this item.
 Item name: ${title}
 Context: ${description || ''}
 
 Respond ONLY with valid JSON:
 {
-  "listingTitle": "Concise eBay listing title under 80 characters, include brand/condition if known",
+  "listingTitle": "Concise eBay title under 80 chars",
   "condition": "Very Good",
   "suggestedPrice": "$XX-$XX",
   "avgSold": "$XX-$XX",
-  "description": "2-3 paragraph eBay listing description. Start with a hook, describe condition, list features, end with shipping note.",
-  "keywords": "best search keywords to find similar sold listings on eBay"
+  "description": "2-3 paragraph eBay listing description.",
+  "keywords": "ebay search keywords for similar sold listings"
 }`;
 
   try {
@@ -450,10 +470,7 @@ Respond ONLY with valid JSON:
       body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: prompt }] }),
     });
     const data = await r.json();
-    if (!r.ok) {
-      console.error('Anthropic listing error:', JSON.stringify(data));
-      return res.status(500).json({ error: data?.error?.message || 'AI service error' });
-    }
+    if (!r.ok) return res.status(500).json({ error: data?.error?.message || 'AI service error' });
     const text   = data.content[0].text;
     const match  = text.match(/\{[\s\S]*\}/);
     const parsed = JSON.parse(match ? match[0] : text);
@@ -461,38 +478,7 @@ Respond ONLY with valid JSON:
     parsed.ebaySellUrl   = `https://www.ebay.com/sell/listing?title=${encodeURIComponent(parsed.listingTitle || title)}`;
     res.json(parsed);
   } catch (err) {
-    console.error('Listing error:', err);
     res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// ── STRIPE CHECKOUT ───────────────────────────────────────────────────────────
-app.post('/api/stripe/checkout', requireAuth, async (req, res) => {
-  if (!process.env.STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe not configured' });
-  if (!process.env.STRIPE_PRICE_ID)   return res.status(500).json({ error: 'Stripe price not configured' });
-
-  const Stripe = require('stripe');
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-
-  const users = readJSON(USERS_FILE);
-  const user  = users.find(u => u.id === req.user.id);
-
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
-      customer_email: user?.email,
-      success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${BASE_URL}/pricing.html`,
-      metadata: { userId: req.user.id },
-      subscription_data: {
-        metadata: { userId: req.user.id }
-      }
-    });
-    res.json({ url: session.url });
-  } catch (err) {
-    console.error('Stripe checkout error:', err);
-    res.status(500).json({ error: err.message || 'Payment setup failed' });
   }
 });
 

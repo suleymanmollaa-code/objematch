@@ -3,39 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pricing — ObjeMatch Pro</title>
-  <meta name="description" content="Start for free, upgrade when you need more. ObjeMatch Pro gives you unlimited analyses and weekly deal alerts.">
+  <title>Pricing — ObjeMatch Watch</title>
+  <meta name="description" content="Analyze photos for free. Pay only to watch specific objects — AI finds new Amazon & eBay deals automatically.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #f9fafb;
-      --surface: #fff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --muted: #6b7280;
-      --light: #9ca3af;
-      --accent: #f97316;
-      --accent-light: #fff7ed;
-      --green: #22c55e;
-      --purple: #7c6ff7;
+      --bg: #f9fafb; --surface: #fff; --border: #e5e7eb;
+      --text: #111827; --muted: #6b7280; --light: #9ca3af;
+      --accent: #f97316; --purple: #7c6ff7; --green: #22c55e;
     }
-
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     a { color: inherit; text-decoration: none; }
 
     nav {
       background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 0 clamp(16px, 4vw, 32px); height: 64px;
+      padding: 0 clamp(16px,4vw,32px); height: 64px;
       display: flex; align-items: center; gap: 16px;
       position: sticky; top: 0; z-index: 100;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-
     .logo { font-size: 20px; font-weight: 800; }
     .logo span { color: var(--accent); }
-    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .nav-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
     .nav-btn {
       padding: 7px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
       border: 1px solid var(--border); background: var(--surface); color: var(--muted);
@@ -46,110 +36,109 @@
     .nav-btn.accent:hover { background: #ea580c; }
 
     /* Hero */
-    .hero {
-      text-align: center; padding: 72px 24px 48px;
-      max-width: 640px; margin: 0 auto;
-    }
-    .hero-eyebrow {
-      display: inline-block; background: var(--accent-light); color: var(--accent);
-      border: 1px solid #fed7aa; border-radius: 999px; font-size: 13px; font-weight: 600;
+    .hero { text-align: center; padding: 72px 24px 56px; max-width: 680px; margin: 0 auto; }
+    .hero-tag {
+      display: inline-block; background: #f5f3ff; color: var(--purple);
+      border: 1px solid #c4b5fd; border-radius: 999px; font-size: 13px; font-weight: 600;
       padding: 4px 14px; margin-bottom: 20px;
     }
-    .hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
-    .hero p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+    .hero h1 { font-size: clamp(28px,5vw,44px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 em { font-style: normal; color: var(--purple); }
+    .hero p { font-size: 17px; color: var(--muted); line-height: 1.65; }
 
-    /* Plans */
-    .plans-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
-    .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    /* How it works */
+    .steps { max-width: 860px; margin: 0 auto; padding: 0 24px 64px; }
+    .steps-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 28px; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media(max-width:640px){ .steps-grid { grid-template-columns: 1fr; } }
+    .step {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 24px 20px; text-align: center;
+    }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--purple); color: white;
+      font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .step-icon { font-size: 28px; margin-bottom: 10px; }
+    .step-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .step-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
-    @media (max-width: 640px) { .plans-grid { grid-template-columns: 1fr; } }
+    /* Watch plans */
+    .plans-section { max-width: 860px; margin: 0 auto; padding: 0 24px 64px; }
+    .plans-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+    .plans-sub { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 32px; }
 
-    .plan-card {
+    .free-banner {
+      background: #f0fdf4; border: 1.5px solid #bbf7d0;
+      border-radius: 16px; padding: 18px 24px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .free-banner-icon { font-size: 28px; }
+    .free-banner-text { flex: 1; }
+    .free-banner-text strong { font-size: 15px; font-weight: 700; color: #15803d; }
+    .free-banner-text p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .free-cta { padding: 9px 20px; border-radius: 10px; background: #22c55e; color: white; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; }
+    .free-cta:hover { background: #16a34a; }
+
+    .watch-plans-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media(max-width:640px){ .watch-plans-grid { grid-template-columns: 1fr; } }
+
+    .watch-plan {
       background: var(--surface); border: 2px solid var(--border);
-      border-radius: 20px; padding: 32px; display: flex; flex-direction: column;
+      border-radius: 18px; padding: 28px 22px;
+      display: flex; flex-direction: column; position: relative;
     }
-
-    .plan-card.pro {
-      border-color: var(--accent);
-      box-shadow: 0 8px 32px rgba(249,115,22,0.12);
-      position: relative;
-    }
-
-    .plan-badge {
-      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-      background: var(--accent); color: white; font-size: 11px; font-weight: 800;
+    .watch-plan.popular { border-color: var(--purple); box-shadow: 0 8px 32px rgba(124,111,247,0.12); }
+    .popular-badge {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: var(--purple); color: white; font-size: 10px; font-weight: 800;
       letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 4px 16px; border-radius: 999px; white-space: nowrap;
+      padding: 3px 14px; border-radius: 999px; white-space: nowrap;
     }
 
-    .plan-name { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .plan-emoji { font-size: 32px; margin-bottom: 12px; }
+    .plan-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .plan-freq { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .plan-price { font-size: 40px; font-weight: 800; color: var(--purple); margin-bottom: 4px; line-height: 1; }
+    .plan-per { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
 
-    .plan-price {
-      font-size: 44px; font-weight: 800; margin-bottom: 4px; line-height: 1;
-    }
-    .plan-price span { font-size: 16px; font-weight: 500; color: var(--muted); }
-    .plan-billing { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+    .plan-features { list-style: none; flex: 1; margin-bottom: 22px; }
+    .plan-features li { font-size: 13px; color: var(--muted); padding: 5px 0; display: flex; gap: 8px; }
+    .plan-features li::before { content: '✓'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
 
-    .plan-features { list-style: none; flex: 1; margin-bottom: 28px; }
-    .plan-features li {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 14px; line-height: 1.5; padding: 7px 0;
-      border-bottom: 1px solid var(--bg);
+    .plan-btn {
+      width: 100%; padding: 12px; border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s;
     }
-    .plan-features li:last-child { border-bottom: none; }
-    .feat-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-    .feat-text { color: var(--text); }
-    .feat-text.dim { color: var(--light); }
-
-    .plan-cta {
-      width: 100%; padding: 14px; border: none; border-radius: 12px;
-      font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
-      transition: all 0.15s;
-    }
-    .plan-cta.free-cta {
-      background: var(--bg); color: var(--muted); border: 1.5px solid var(--border);
-    }
-    .plan-cta.free-cta:hover { border-color: var(--accent); color: var(--accent); }
-    .plan-cta.pro-cta {
-      background: var(--accent); color: white;
-    }
-    .plan-cta.pro-cta:hover { background: #ea580c; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(249,115,22,0.3); }
-    .plan-cta:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    /* Already pro banner */
-    .pro-banner {
-      display: none; text-align: center; margin-bottom: 32px;
-      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px;
-      padding: 16px 24px; color: #15803d; font-size: 15px; font-weight: 600;
-    }
+    .plan-btn.primary { background: var(--purple); color: white; }
+    .plan-btn.primary:hover { background: #6558d4; }
+    .plan-btn.outline { background: white; color: var(--purple); border: 1.5px solid var(--purple); }
+    .plan-btn.outline:hover { background: #f5f3ff; }
 
     /* FAQ */
-    .faq-wrap { max-width: 640px; margin: 0 auto; padding: 0 24px 80px; }
-    .faq-title { font-size: 22px; font-weight: 800; margin-bottom: 24px; text-align: center; }
-    .faq-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 18px 20px; margin-bottom: 10px;
-    }
+    .faq { max-width: 640px; margin: 0 auto; padding: 0 24px 80px; }
+    .faq-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 24px; }
+    .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 10px; }
     .faq-q { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
     .faq-a { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
-    /* Loading overlay */
-    .checkout-loading {
-      display: none; position: fixed; inset: 0;
-      background: rgba(255,255,255,0.9); z-index: 200;
-      align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+    .loading-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9);
+      z-index: 200; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
       font-size: 16px; font-weight: 600;
     }
-    .checkout-loading.active { display: flex; }
-    .checkout-ring {
-      width: 44px; height: 44px; border: 3px solid var(--border);
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    .loading-overlay.active { display: flex; }
+    .spin { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spin"></div>
+  <span>Redirecting to secure payment...</span>
+</div>
 
 <nav>
   <a href="/" class="logo">Obje<span>Match</span></a>
@@ -161,131 +150,136 @@
   </div>
 </nav>
 
-<div class="checkout-loading" id="checkoutLoading">
-  <div class="checkout-ring"></div>
-  <span>Redirecting to secure checkout...</span>
-</div>
-
 <section class="hero">
-  <div class="hero-eyebrow">Simple pricing</div>
-  <h1>Start free.<br>Upgrade when you're ready.</h1>
-  <p>ObjeMatch analyzes any photo and finds you the best deals. Go Pro to unlock unlimited analyses and weekly monitoring.</p>
+  <div class="hero-tag">Pay only for what you monitor</div>
+  <h1>Analyze free.<br>Watch items <em>automatically.</em></h1>
+  <p>Upload any photo for free and get instant buy & sell links. When you want AI to keep searching for an item on its own — pick a watch plan and we'll email you new deals on schedule.</p>
 </section>
 
-<div class="plans-wrap">
-  <div class="pro-banner" id="proBanner">
-    You're already on the Pro plan. Enjoy unlimited analyses!
-  </div>
-
-  <div class="plans-grid">
-    <!-- Free -->
-    <div class="plan-card">
-      <div class="plan-name">Free</div>
-      <div class="plan-price">$0</div>
-      <div class="plan-billing">forever</div>
-      <ul class="plan-features">
-        <li><span class="feat-icon">✅</span><span class="feat-text">5 analyses per month</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text">Amazon & eBay affiliate links</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text">AI sell listing generator</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text">Works with any photo type</span></li>
-        <li><span class="feat-icon">⬜</span><span class="feat-text dim">Unlimited analyses</span></li>
-        <li><span class="feat-icon">⬜</span><span class="feat-text dim">Weekly deal monitoring</span></li>
-        <li><span class="feat-icon">⬜</span><span class="feat-text dim">Email deal digest</span></li>
-      </ul>
-      <button class="plan-cta free-cta" onclick="location.href='/room-analyzer.html'">Start Free</button>
+<section class="steps">
+  <div class="steps-title">How it works</div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-icon">📸</div>
+      <div class="step-num">1</div>
+      <div class="step-title">Upload any photo</div>
+      <div class="step-desc">Room, car, closet, desk — anything. First 100 analyses per month are free.</div>
     </div>
-
-    <!-- Pro -->
-    <div class="plan-card pro">
-      <div class="plan-badge">MOST POPULAR</div>
-      <div class="plan-name">Pro</div>
-      <div class="plan-price">$9.99<span>/mo</span></div>
-      <div class="plan-billing">cancel anytime</div>
-      <ul class="plan-features">
-        <li><span class="feat-icon">✅</span><span class="feat-text">Unlimited analyses</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text">Amazon & eBay affiliate links</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text">AI sell listing generator</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text">Works with any photo type</span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text"><strong>Unlimited analyses</strong></span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text"><strong>Weekly deal monitoring</strong></span></li>
-        <li><span class="feat-icon">✅</span><span class="feat-text"><strong>Email deal digest</strong></span></li>
-      </ul>
-      <button class="plan-cta pro-cta" id="proBtn" onclick="checkout()">Get Pro &rarr;</button>
+    <div class="step">
+      <div class="step-icon">🔍</div>
+      <div class="step-num">2</div>
+      <div class="step-title">AI identifies objects</div>
+      <div class="step-desc">AI pins every object with buy new, buy used, hire, and sell options.</div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📡</div>
+      <div class="step-num">3</div>
+      <div class="step-title">Watch any item</div>
+      <div class="step-desc">Click Watch on any item. Choose daily, weekly, or monthly. AI searches automatically and emails you new deals.</div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="faq-wrap">
-  <div class="faq-title">Frequently asked questions</div>
+<section class="plans-section">
+  <div class="plans-title">Watch Plans — per item</div>
+  <div class="plans-sub">One payment per item. No subscription. Cancel anytime from your dashboard.</div>
 
-  <div class="faq-item">
-    <div class="faq-q">What counts as an "analysis"?</div>
-    <div class="faq-a">Each time you upload a photo and run the AI, that's one analysis. Free users get 5 per month. The counter resets on the 1st of each month.</div>
+  <div class="free-banner">
+    <div class="free-banner-icon">🎁</div>
+    <div class="free-banner-text">
+      <strong>Free — 100 analyses/month</strong>
+      <p>Upload photos, identify objects, get instant Amazon & eBay links. No credit card required.</p>
+    </div>
+    <button class="free-cta" onclick="location.href='/room-analyzer.html'">Start free</button>
   </div>
 
-  <div class="faq-item">
-    <div class="faq-q">What is "weekly deal monitoring"?</div>
-    <div class="faq-a">Pro users can mark any analyzed photo as "monitored." Our system re-runs the AI every week to find fresh Amazon and eBay deals for the objects in that photo, then emails you a digest.</div>
+  <div class="watch-plans-grid">
+    <div class="watch-plan">
+      <div class="plan-emoji">🗓️</div>
+      <div class="plan-name">Monthly</div>
+      <div class="plan-freq">Checks once a month</div>
+      <div class="plan-price">$0.49</div>
+      <div class="plan-per">per item · 90 days</div>
+      <ul class="plan-features">
+        <li>1 AI search per month</li>
+        <li>Amazon & eBay results</li>
+        <li>Email notification</li>
+        <li>90-day coverage</li>
+      </ul>
+      <button class="plan-btn outline" onclick="goAnalyze()">Start analyzing</button>
+    </div>
+
+    <div class="watch-plan popular">
+      <div class="popular-badge">BEST VALUE</div>
+      <div class="plan-emoji">📅</div>
+      <div class="plan-name">Weekly</div>
+      <div class="plan-freq">Checks every week</div>
+      <div class="plan-price">$0.99</div>
+      <div class="plan-per">per item · 30 days</div>
+      <ul class="plan-features">
+        <li>4 AI searches per month</li>
+        <li>Amazon & eBay results</li>
+        <li>Email notification</li>
+        <li>30-day coverage</li>
+      </ul>
+      <button class="plan-btn primary" onclick="goAnalyze()">Start analyzing</button>
+    </div>
+
+    <div class="watch-plan">
+      <div class="plan-emoji">⚡</div>
+      <div class="plan-name">Daily</div>
+      <div class="plan-freq">Checks every day</div>
+      <div class="plan-price">$2.99</div>
+      <div class="plan-per">per item · 30 days</div>
+      <ul class="plan-features">
+        <li>30 AI searches per month</li>
+        <li>Amazon & eBay results</li>
+        <li>Email notification</li>
+        <li>30-day coverage</li>
+      </ul>
+      <button class="plan-btn outline" onclick="goAnalyze()">Start analyzing</button>
+    </div>
   </div>
+</section>
+
+<section class="faq">
+  <div class="faq-title">FAQ</div>
 
   <div class="faq-item">
-    <div class="faq-q">Can I cancel anytime?</div>
-    <div class="faq-a">Yes. Cancel at any time from your account settings. You'll keep Pro access until the end of your billing period.</div>
+    <div class="faq-q">What is a "watch"?</div>
+    <div class="faq-a">After analyzing a photo, you can click "Watch" on any identified object. Our AI searches Amazon and eBay for that specific item at your chosen frequency and emails you a digest of new deals.</div>
   </div>
-
   <div class="faq-item">
-    <div class="faq-q">Is the Amazon affiliate program included?</div>
-    <div class="faq-a">Yes. All Amazon links use the ObjeMatch affiliate tag. You don't need your own affiliate account — just click through and shop normally.</div>
+    <div class="faq-q">Is the analysis really free?</div>
+    <div class="faq-a">Yes. You can upload photos and get instant buy/sell links 100 times per month at no cost. Watching is only needed if you want ongoing automated research for a specific item.</div>
   </div>
-</div>
+  <div class="faq-item">
+    <div class="faq-q">Can I watch multiple items?</div>
+    <div class="faq-a">Yes. Each item is a separate watch. You can mix and match frequencies — watch your sofa daily and your lamp monthly, for example.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What happens after the watch period ends?</div>
+    <div class="faq-a">The watch expires and stops searching. You can renew it from your dashboard at any time.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">How do I receive deal alerts?</div>
+    <div class="faq-a">New deals are emailed to your registered address and saved in your dashboard under "My Watches."</div>
+  </div>
+</section>
 
 <script>
-  const token = localStorage.getItem('om_token');
   const user  = JSON.parse(localStorage.getItem('om_user') || 'null');
+  const token = localStorage.getItem('om_token');
 
-  function initPage() {
-    if (user) {
-      document.getElementById('loginBtn').style.display = 'none';
-      document.getElementById('userChip').style.display = 'inline-flex';
-      document.getElementById('userChip').textContent = user.name || user.email?.split('@')[0];
-
-      if (user.plan === 'pro') {
-        document.getElementById('proBanner').style.display = 'block';
-        const proBtn = document.getElementById('proBtn');
-        proBtn.textContent = 'Already Pro';
-        proBtn.disabled = true;
-      }
-    }
+  if (user) {
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('userChip').style.display = 'inline-flex';
+    document.getElementById('userChip').textContent = user.name || user.email?.split('@')[0];
   }
 
-  async function checkout() {
-    if (!token) {
-      localStorage.setItem('om_redirect_after_login', '/pricing.html');
-      location.href = '/login.html';
-      return;
-    }
-
-    document.getElementById('checkoutLoading').classList.add('active');
-
-    try {
-      const res  = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (data.url) {
-        location.href = data.url;
-      } else {
-        alert(data.error || 'Could not start checkout. Please try again.');
-        document.getElementById('checkoutLoading').classList.remove('active');
-      }
-    } catch (err) {
-      alert('Network error. Please try again.');
-      document.getElementById('checkoutLoading').classList.remove('active');
-    }
+  function goAnalyze() {
+    location.href = '/room-analyzer.html';
   }
-
-  initPage();
 </script>
 </body>
 </html>
