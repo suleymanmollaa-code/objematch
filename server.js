@@ -48,6 +48,12 @@ function optionalAuth(req, res, next) {
 function amazonUrl(search) {
   return `https://www.amazon.com/s?k=${encodeURIComponent(search)}&tag=${AFFILIATE}`;
 }
+function ebayUrl(search) {
+  return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(search)}`;
+}
+function thumbtackUrl(search) {
+  return `https://www.thumbtack.com/search/?q=${encodeURIComponent(search)}`;
+}
 
 // ── AUTH ROUTES ────────────────────────────────────────────
 app.post('/api/auth/register', async (req, res) => {
@@ -148,36 +154,33 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
 
   const base64 = imageBuffer.toString('base64');
 
-  const prompt = `You are an expert interior designer and home stylist analyzing a room photo. Look very carefully at the image.
+  const prompt = `You are a smart home shopping assistant analyzing a photo. Look carefully at the image.
 
-Identify exactly 3 specific opportunities to IMPROVE this space. These can be:
-- Empty walls that need art, mirrors, shelves, or wall decor
-- Furniture gaps (missing chair, side table, rug, lamp, nightstand, etc.)
-- Clutter or storage problems that need organizers
-- Style upgrades (plain area needs decor, lighting is poor, etc.)
-- Better use of existing space (closet system, drawer organizers, etc.)
+Identify exactly 3 items or areas in this photo. For each one:
+1. Items already visible that the user might want to buy new, find used, or get repaired
+2. Empty spaces or missing items that would improve the space
 
-For each opportunity, recommend 1-2 specific products — NOT just organizers:
-- Empty wall → wall art, floating shelf, mirror, wall clock
-- Missing seating → chair, ottoman, bench
-- Poor lighting → floor lamp, table lamp, LED strips
-- No rug → area rug
-- Desk area → ergonomic chair, monitor stand, desk lamp
-- Bare corner → plant, floor lamp, accent chair
+For each item provide:
+- A short title
+- What you see
+- Whether it's better to buy new, buy used, or repair/hire someone
+- Specific search keywords for Amazon (new), eBay (used), and Thumbtack (repair/install)
 
 Respond ONLY with valid JSON:
 {
-  "room": "Room type",
-  "summary": "One sentence describing the room and main improvement opportunity",
+  "room": "Space type (e.g. Home Office, Living Room, Bedroom, Kitchen)",
+  "summary": "One sentence describing the space and main opportunity",
   "problems": [
     {
-      "title": "Short title (e.g. Empty Wall, Missing Rug)",
-      "description": "What you see and why this product improves the space",
+      "title": "Short title (e.g. Desk Chair, Floor Lamp, Empty Wall)",
+      "description": "What you see and what would improve this space",
       "x": 45,
       "y": 60,
-      "products": [
-        { "name": "Specific real product name", "search": "amazon keywords", "price": "$XX-$XX", "why": "Why it fits this space" }
-      ]
+      "options": {
+        "new": { "label": "Buy New", "search": "amazon search keywords", "price": "$XX-$XX" },
+        "used": { "label": "Buy Used", "search": "ebay search keywords", "price": "$XX-$XX" },
+        "repair": { "label": "Hire Someone", "search": "thumbtack service keywords", "note": "e.g. furniture assembly, interior painter" }
+      }
     }
   ]
 }`;
@@ -208,7 +211,11 @@ Respond ONLY with valid JSON:
 
     parsed.problems = parsed.problems.map(p => ({
       ...p,
-      products: p.products.map(prod => ({ ...prod, url: amazonUrl(prod.search) }))
+      options: {
+        new:    { ...p.options?.new,    url: amazonUrl(p.options?.new?.search || p.title) },
+        used:   { ...p.options?.used,   url: ebayUrl(p.options?.used?.search || p.title) },
+        repair: { ...p.options?.repair, url: thumbtackUrl(p.options?.repair?.search || p.title) }
+      }
     }));
 
     // Save to history if user logged in
