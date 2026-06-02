@@ -28,63 +28,181 @@
     .nav-btn.accent { background: var(--accent); color: white; border-color: var(--accent); }
     .nav-btn.accent:hover { background: #ea580c; }
 
-    .page { max-width: 900px; margin: 0 auto; padding: clamp(24px,4vw,40px); }
+    .layout { display: flex; min-height: calc(100vh - 64px); }
 
-    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 32px; }
-    @media(max-width:560px){ .stats { grid-template-columns: 1fr 1fr; } }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
-    .stat-val { font-size: 28px; font-weight: 800; }
-    .stat-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    /* Sidebar */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 24px 12px;
+      position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+    }
+    @media(max-width:640px){
+      .sidebar { display: none; }
+      .mob-tabs { display: flex !important; }
+    }
+    .sidebar-user {
+      padding: 12px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), #a78bfa);
+      color: white; font-size: 16px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sidebar-name { font-size: 14px; font-weight: 700; }
+    .sidebar-email { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
 
-    .section { margin-bottom: 36px; }
-    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .section-title { font-size: 17px; font-weight: 800; }
+    .nav-group { margin-bottom: 8px; }
+    .nav-label { font-size: 10px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 12px; margin-bottom: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px; cursor: pointer;
+      font-size: 14px; font-weight: 500; color: var(--muted);
+      transition: all 0.15s; user-select: none;
+    }
+    .nav-item:hover { background: var(--bg); color: var(--text); }
+    .nav-item.active { background: #f5f3ff; color: var(--purple); font-weight: 700; }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-badge { margin-left: auto; background: var(--purple); color: white; font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 999px; }
+
+    /* Mobile tabs */
+    .mob-tabs {
+      display: none; background: var(--surface); border-bottom: 1px solid var(--border);
+      overflow-x: auto; padding: 0 16px;
+    }
+    .mob-tab {
+      padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--muted);
+      border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .mob-tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+    /* Main */
+    .main { flex: 1; padding: clamp(20px,3vw,36px); max-width: 720px; }
+
+    /* Panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    @media(max-width:500px){ .stats { grid-template-columns: 1fr 1fr; } }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+    .stat-val { font-size: 26px; font-weight: 800; }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Section */
+    .section { margin-bottom: 28px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .section-title { font-size: 15px; font-weight: 800; }
     .section-link { font-size: 13px; color: var(--accent); font-weight: 600; cursor: pointer; }
     .section-link:hover { text-decoration: underline; }
 
-    .empty { text-align: center; padding: 36px 24px; color: var(--muted); font-size: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
-    .empty-icon { font-size: 32px; margin-bottom: 10px; }
+    .empty { text-align: center; padding: 32px 20px; color: var(--muted); font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+    .empty-icon { font-size: 28px; margin-bottom: 8px; }
 
-    .watch-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; transition: box-shadow 0.15s; }
+    /* Watch cards */
+    .watch-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
     .watch-card.active { border-color: #c4b5fd; }
-    .watch-card.inactive { opacity: 0.6; }
-    .watch-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .watch-card.inactive { opacity: 0.55; }
     .watch-info { flex: 1; min-width: 0; }
-    .watch-title { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .watch-meta  { font-size: 12px; color: var(--muted); margin-top: 3px; }
-    .watch-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
+    .watch-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .watch-meta  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .watch-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
     .badge-active   { background: #f5f3ff; color: var(--purple); border: 1px solid #c4b5fd; }
     .badge-inactive { background: var(--bg); color: var(--light); border: 1px solid var(--border); }
-    .watch-cancel { background: none; border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; flex-shrink: 0; }
-    .watch-cancel:hover { border-color: var(--red); color: var(--red); }
+    .btn-cancel { background: none; border: 1px solid var(--border); color: var(--muted); padding: 4px 10px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; flex-shrink: 0; }
+    .btn-cancel:hover { border-color: var(--red); color: var(--red); }
 
-    .alert-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
-    .alert-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; gap: 12px; }
+    /* Alert cards */
+    .alert-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+    .alert-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; gap: 10px; }
     .alert-head:hover { background: var(--bg); }
-    .alert-title { font-size: 14px; font-weight: 700; flex: 1; }
-    .alert-time  { font-size: 12px; color: var(--light); flex-shrink: 0; }
-    .alert-chevron { color: var(--light); transition: transform 0.15s; }
+    .alert-title { font-size: 13px; font-weight: 700; flex: 1; }
+    .alert-time  { font-size: 11px; color: var(--light); flex-shrink: 0; }
+    .alert-chevron { color: var(--light); transition: transform 0.15s; font-size: 12px; }
     .alert-card.open .alert-chevron { transform: rotate(180deg); }
-    .alert-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
-    .alert-card.open .alert-body { display: block; padding-top: 14px; }
-
-    .deal-row { display: flex; align-items: center; gap: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+    .alert-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+    .alert-card.open .alert-body { display: block; padding-top: 12px; }
+    .deal-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; margin-bottom: 6px; }
     .deal-info { flex: 1; min-width: 0; }
-    .deal-name  { font-size: 13px; font-weight: 600; }
-    .deal-price { font-size: 12px; color: #059669; font-weight: 700; }
-    .deal-why   { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .deal-links { display: flex; gap: 6px; flex-shrink: 0; }
-    .amz-btn { background: #ff9900; color: #000; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; text-decoration: none; }
-    .ebay-btn { background: #e53238; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; text-decoration: none; }
+    .deal-name  { font-size: 12px; font-weight: 600; }
+    .deal-price { font-size: 11px; color: #059669; font-weight: 700; }
+    .deal-why   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .deal-links { display: flex; gap: 5px; flex-shrink: 0; }
+    .amz-btn { background: #ff9900; color: #000; font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 5px; text-decoration: none; }
+    .ebay-btn { background: #e53238; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 5px; text-decoration: none; }
 
-    .analyses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .analysis-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow 0.15s; }
-    .analysis-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-    .analysis-thumb { width: 100%; height: 100px; object-fit: cover; background: var(--bg); display: block; }
-    .analysis-thumb-ph { width: 100%; height: 100px; background: linear-gradient(135deg,#e5e7eb,#d1d5db); display: flex; align-items: center; justify-content: center; font-size: 28px; }
-    .analysis-meta { padding: 10px 12px; }
-    .analysis-room { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-    .analysis-date { font-size: 11px; color: var(--light); }
+    /* Analysis cards */
+    .analysis-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+    .analysis-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; }
+    .analysis-head:hover { background: var(--bg); }
+    .analysis-thumb-sm { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .analysis-thumb-ph { width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg,#e5e7eb,#d1d5db); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .analysis-head-info { flex: 1; min-width: 0; }
+    .analysis-room-title { font-size: 13px; font-weight: 700; }
+    .analysis-summary { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .analysis-date-sm { font-size: 10px; color: var(--light); flex-shrink: 0; }
+    .analysis-chevron { color: var(--light); transition: transform 0.15s; font-size: 12px; flex-shrink: 0; }
+    .analysis-item.open .analysis-chevron { transform: rotate(180deg); }
+    .analysis-items { display: none; border-top: 1px solid var(--border); padding: 10px 14px; }
+    .analysis-item.open .analysis-items { display: block; }
+    .item-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .item-row:last-child { border-bottom: none; }
+    .item-name { font-size: 12px; font-weight: 600; flex: 1; }
+    .item-price { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .item-links { display: flex; gap: 5px; flex-shrink: 0; }
+
+    /* Settings */
+    .settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+    .settings-card-head { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .settings-card-title { font-size: 14px; font-weight: 800; }
+    .settings-card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .settings-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 12px; font-weight: 700; color: var(--muted); }
+    .field input {
+      padding: 9px 12px; border: 1px solid var(--border); border-radius: 9px;
+      font-size: 14px; font-family: inherit; outline: none; background: var(--bg); color: var(--text);
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: var(--purple); background: var(--surface); }
+    .field-row { display: flex; gap: 10px; align-items: flex-end; }
+    .field-row .field { flex: 1; }
+
+    .btn-primary { background: var(--purple); color: white; border: none; padding: 9px 20px; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+    .btn-primary:hover { background: #6558d4; }
+    .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info { flex: 1; }
+    .toggle-label { font-size: 14px; font-weight: 600; }
+    .toggle-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; background: var(--border); border-radius: 999px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute; width: 18px; height: 18px;
+      left: 3px; top: 3px; background: white; border-radius: 50%;
+      transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-slider { background: var(--purple); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .plan-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .plan-row:last-child { border-bottom: none; }
+    .plan-item-name { font-size: 13px; font-weight: 600; }
+    .plan-item-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .plan-freq-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #f5f3ff; color: var(--purple); border: 1px solid #c4b5fd; flex-shrink: 0; }
+
+    .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 9px 20px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .logout-btn:hover { border-color: var(--red); color: var(--red); }
 
     .loading-state { text-align: center; padding: 60px; color: var(--muted); }
     .spin { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
@@ -93,39 +211,108 @@
     .auth-gate { text-align: center; padding: 80px 24px; }
     .auth-gate h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
     .auth-gate p  { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #111827; color: white; padding: 10px 20px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity 0.2s;
+      pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+    .field-hint { font-size: 11px; color: var(--muted); }
   </style>
 </head>
 <body>
 
+<div class="toast" id="toast"></div>
+
 <nav>
   <a href="/" class="logo">Obje<span>Match</span></a>
   <div class="nav-right">
-    <a href="/room-analyzer.html" class="nav-btn accent">Analyze</a>
-    <button class="nav-btn" id="logoutBtn" style="display:none" onclick="logout()">Sign out</button>
+    <a href="/room-analyzer.html" class="nav-btn accent">+ Analyze</a>
   </div>
 </nav>
 
-<div class="page" id="mainPage">
-  <div class="loading-state">
-    <div class="spin"></div>
-    Loading your dashboard...
+<div id="authGate" style="display:none">
+  <div class="auth-gate">
+    <div style="font-size:48px;margin-bottom:16px">🔒</div>
+    <h2>Sign in to view your dashboard</h2>
+    <p>Track your analyses, watches, and deal alerts in one place.</p>
+    <a href="/login.html" style="display:inline-block;background:var(--accent);color:white;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:700;">Sign in</a>
+  </div>
+</div>
+
+<div id="appShell" style="display:none">
+  <!-- Mobile tabs -->
+  <div class="mob-tabs" id="mobTabs">
+    <div class="mob-tab active" onclick="switchTab('overview')">Overview</div>
+    <div class="mob-tab" onclick="switchTab('analyses')">Analyses</div>
+    <div class="mob-tab" onclick="switchTab('alerts')">Alerts</div>
+    <div class="mob-tab" onclick="switchTab('settings')">Settings</div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-user">
+        <div class="avatar" id="sidebarAvatar">?</div>
+        <div>
+          <div class="sidebar-name" id="sidebarName">—</div>
+          <div class="sidebar-email" id="sidebarEmail">—</div>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Menu</div>
+        <div class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
+          <span class="icon">📊</span> Overview
+        </div>
+        <div class="nav-item" onclick="switchTab('analyses')" id="nav-analyses">
+          <span class="icon">📸</span> Analyses
+        </div>
+        <div class="nav-item" onclick="switchTab('alerts')" id="nav-alerts">
+          <span class="icon">🔔</span> Deal Alerts
+          <span class="nav-badge" id="alertBadge" style="display:none">0</span>
+        </div>
+      </div>
+
+      <div class="nav-group" style="margin-top:8px">
+        <div class="nav-label">Account</div>
+        <div class="nav-item" onclick="switchTab('settings')" id="nav-settings">
+          <span class="icon">⚙️</span> Settings
+        </div>
+        <div class="nav-item" onclick="switchTab('plan')" id="nav-plan">
+          <span class="icon">📡</span> My Watches
+        </div>
+      </div>
+
+      <div style="margin-top:auto;padding-top:20px;">
+        <div class="nav-item" onclick="logout()" style="color:var(--red)">
+          <span class="icon">↩️</span> Sign out
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main" id="mainContent">
+      <div class="loading-state"><div class="spin"></div>Loading...</div>
+    </main>
   </div>
 </div>
 
 <script>
-  const token = localStorage.getItem('om_token');
-  const user  = JSON.parse(localStorage.getItem('om_user') || 'null');
+  let token = localStorage.getItem('om_token');
+  let user  = JSON.parse(localStorage.getItem('om_user') || 'null');
+  let dashData = null;
+  let currentTab = 'overview';
 
   if (!token || !user) {
-    document.getElementById('mainPage').innerHTML = `
-      <div class="auth-gate">
-        <div style="font-size:48px;margin-bottom:16px">🔒</div>
-        <h2>Sign in to view your dashboard</h2>
-        <p>Track your analyses, watches, and deal alerts in one place.</p>
-        <a href="/login.html" style="display:inline-block;background:var(--accent);color:white;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:700;">Sign in</a>
-      </div>`;
+    document.getElementById('authGate').style.display = 'block';
   } else {
-    document.getElementById('logoutBtn').style.display = 'block';
+    document.getElementById('appShell').style.display = 'block';
+    document.getElementById('sidebarAvatar').textContent = (user.name || user.email || '?')[0].toUpperCase();
+    document.getElementById('sidebarName').textContent   = user.name || 'My Account';
+    document.getElementById('sidebarEmail').textContent  = user.email || '';
     loadDashboard();
   }
 
@@ -135,55 +322,94 @@
     location.href = '/';
   }
 
+  function showToast(msg, duration = 2500) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
   async function loadDashboard() {
     try {
       const res  = await fetch('/api/dashboard', { headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
-      renderDashboard(data);
-    } catch (e) {
-      document.getElementById('mainPage').innerHTML = '<div class="loading-state">Failed to load. Please refresh.</div>';
+      dashData   = await res.json();
+      updateBadges();
+      renderTab(currentTab);
+    } catch {
+      document.getElementById('mainContent').innerHTML = '<div class="loading-state">Failed to load. Please refresh.</div>';
     }
   }
 
-  function timeAgo(iso) {
-    const diff = Date.now() - new Date(iso).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1)  return 'just now';
-    if (m < 60) return m + 'm ago';
-    const h = Math.floor(m / 60);
-    if (h < 24) return h + 'h ago';
-    const d = Math.floor(h / 24);
-    if (d < 30) return d + 'd ago';
-    return new Date(iso).toLocaleDateString();
+  function updateBadges() {
+    if (!dashData) return;
+    const count = (dashData.alerts||[]).length;
+    const badge = document.getElementById('alertBadge');
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline'; }
+    else badge.style.display = 'none';
   }
 
-  function freqLabel(f) {
-    return { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly' }[f] || f;
+  function switchTab(tab) {
+    currentTab = tab;
+    // Sidebar
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + tab);
+    if (navEl) navEl.classList.add('active');
+    // Mobile tabs
+    document.querySelectorAll('.mob-tab').forEach((el, i) => {
+      const tabs = ['overview','analyses','alerts','settings'];
+      el.classList.toggle('active', tabs[i] === tab);
+    });
+    if (dashData) renderTab(tab);
   }
 
-  async function cancelWatch(id) {
-    if (!confirm('Cancel this watch? AI searches will stop.')) return;
-    const res = await fetch('/api/watches/' + id, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    if (res.ok) loadDashboard();
-    else alert('Could not cancel. Please try again.');
+  function renderTab(tab) {
+    const el = document.getElementById('mainContent');
+    if (tab === 'overview')  el.innerHTML = renderOverview();
+    if (tab === 'analyses')  el.innerHTML = renderAnalyses();
+    if (tab === 'alerts')    el.innerHTML = renderAlerts();
+    if (tab === 'settings')  el.innerHTML = renderSettings();
+    if (tab === 'plan')      el.innerHTML = renderPlan();
   }
 
-  function toggleAlert(id) {
-    document.getElementById(id).classList.toggle('open');
-  }
-
+  /* ── Helpers ─────────────────────────────────────────────── */
   function esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+  function timeAgo(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff/60000);
+    if (m < 1)  return 'just now';
+    if (m < 60) return m + 'm ago';
+    const h = Math.floor(m/60);
+    if (h < 24) return h + 'h ago';
+    const d = Math.floor(h/24);
+    if (d < 30) return d + 'd ago';
+    return new Date(iso).toLocaleDateString();
+  }
+  function freqLabel(f) { return {daily:'Daily',weekly:'Weekly',monthly:'Monthly'}[f]||f; }
 
-  function renderDashboard(data) {
-    const { user: u, watches, alerts, analyses } = data;
+  /* ── Overview ────────────────────────────────────────────── */
+  function renderOverview() {
+    const { user: u, watches, alerts } = dashData;
     const activeWatches = (watches||[]).filter(w => w.active);
 
-    const statsHtml = `
+    const watchesHtml = activeWatches.length === 0
+      ? `<div class="empty"><div class="empty-icon">📡</div>No active watches. <a href="/room-analyzer.html" style="color:var(--purple);font-weight:600">Analyze a photo</a> and click Watch on any item.</div>`
+      : activeWatches.slice(0,5).map(w => `
+          <div class="watch-card active">
+            <div style="font-size:20px">📡</div>
+            <div class="watch-info">
+              <div class="watch-title">${esc(w.itemTitle)}</div>
+              <div class="watch-meta">${freqLabel(w.frequency)} · ${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</div>
+            </div>
+            <span class="watch-badge badge-active">${freqLabel(w.frequency)}</span>
+            <button class="btn-cancel" onclick="cancelWatch('${w.id}')">Cancel</button>
+          </div>`).join('');
+
+    return `
       <div class="stats">
         <div class="stat-card">
-          <div class="stat-val">${u?.used||0}<span style="font-size:16px;color:var(--muted)">/${u?.limit||100}</span></div>
+          <div class="stat-val">${u?.used||0}<span style="font-size:14px;color:var(--muted)">/${u?.limit||100}</span></div>
           <div class="stat-label">Analyses this month</div>
         </div>
         <div class="stat-card" style="border-color:#c4b5fd">
@@ -194,91 +420,297 @@
           <div class="stat-val">${(alerts||[]).length}</div>
           <div class="stat-label">Deal alerts</div>
         </div>
-      </div>`;
-
-    let watchesHtml = '';
-    if (!watches || watches.length === 0) {
-      watchesHtml = `<div class="empty"><div class="empty-icon">📡</div>No watches yet. Analyze a photo and click "Watch" on any item.</div>`;
-    } else {
-      watchesHtml = (watches||[]).map(w => `
-        <div class="watch-card ${w.active ? 'active' : 'inactive'}">
-          <div style="font-size:22px">${w.active ? '📡' : '⏹️'}</div>
-          <div class="watch-info">
-            <div class="watch-title">${esc(w.itemTitle)}</div>
-            <div class="watch-meta">${freqLabel(w.frequency)} · ${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</div>
-          </div>
-          <span class="watch-badge ${w.active ? 'badge-active' : 'badge-inactive'}">${w.active ? 'Active' : 'Cancelled'}</span>
-          ${w.active ? `<button class="watch-cancel" onclick="cancelWatch('${w.id}')">Cancel</button>` : ''}
-        </div>`).join('');
-    }
-
-    let alertsHtml = '';
-    if (!alerts || alerts.length === 0) {
-      alertsHtml = `<div class="empty"><div class="empty-icon">🔔</div>No deal alerts yet. Alerts appear here when a Watch finds new deals.</div>`;
-    } else {
-      alertsHtml = (alerts||[]).slice(0,10).map((a, i) => {
-        const aid = 'alert-' + i;
-        const dealsHtml = (a.deals||[]).map(d => `
-          <div class="deal-row">
-            <div class="deal-info">
-              <div class="deal-name">${esc(d.title||'')}</div>
-              <div class="deal-price">${esc(d.price||'')}</div>
-              ${d.why ? `<div class="deal-why">${esc(d.why)}</div>` : ''}
-            </div>
-            <div class="deal-links">
-              ${d.amazonUrl ? `<a href="${d.amazonUrl}" target="_blank" class="amz-btn" rel="noopener">Amazon</a>` : ''}
-              ${d.ebayUrl   ? `<a href="${d.ebayUrl}"   target="_blank" class="ebay-btn" rel="noopener">eBay</a>`   : ''}
-            </div>
-          </div>`).join('');
-        return `
-          <div class="alert-card" id="${aid}">
-            <div class="alert-head" onclick="toggleAlert('${aid}')">
-              <div>🔔</div>
-              <div class="alert-title">Deals for &ldquo;${esc(a.itemTitle)}&rdquo;</div>
-              <div class="alert-time">${timeAgo(a.createdAt)}</div>
-              <div class="alert-chevron">⌄</div>
-            </div>
-            <div class="alert-body">${dealsHtml||'<div style="color:var(--muted);font-size:13px">No deals found.</div>'}</div>
-          </div>`;
-      }).join('');
-    }
-
-    let analysesHtml = '';
-    if (!analyses || analyses.length === 0) {
-      analysesHtml = `<div class="empty"><div class="empty-icon">📸</div>No analyses yet. <a href="/room-analyzer.html" style="color:var(--accent);font-weight:600">Upload a photo</a> to get started.</div>`;
-    } else {
-      analysesHtml = `<div class="analyses-grid">${(analyses||[]).map(a => `
-        <div class="analysis-card" onclick="location.href='/room-analyzer.html'">
-          ${a.thumbnail
-            ? `<img class="analysis-thumb" src="${a.thumbnail}" alt="" loading="lazy">`
-            : `<div class="analysis-thumb-ph">📸</div>`}
-          <div class="analysis-meta">
-            <div class="analysis-room">${esc(a.room||'Space')}</div>
-            <div class="analysis-date">${timeAgo(a.createdAt)}</div>
-          </div>
-        </div>`).join('')}</div>`;
-    }
-
-    document.getElementById('mainPage').innerHTML = `
-      ${statsHtml}
+      </div>
       <div class="section">
         <div class="section-head">
-          <div class="section-title">My Watches</div>
-          <a href="/pricing.html" class="section-link">Learn more</a>
+          <div class="section-title">Active Watches</div>
+          <span class="section-link" onclick="switchTab('plan')">View all</span>
         </div>
         ${watchesHtml}
-      </div>
-      <div class="section">
-        <div class="section-head"><div class="section-title">Deal Alerts</div></div>
-        ${alertsHtml}
-      </div>
-      <div class="section">
-        <div class="section-head">
-          <div class="section-title">Recent Analyses</div>
-          <span class="section-link" onclick="location.href='/room-analyzer.html'">New analysis</span>
-        </div>
-        ${analysesHtml}
       </div>`;
+  }
+
+  /* ── Analyses ────────────────────────────────────────────── */
+  function renderAnalyses() {
+    const { analyses } = dashData;
+    if (!analyses || analyses.length === 0)
+      return `<div class="section"><div class="section-title" style="margin-bottom:12px">Recent Analyses</div><div class="empty"><div class="empty-icon">📸</div>No analyses yet. <a href="/room-analyzer.html" style="color:var(--accent);font-weight:600">Upload a photo</a> to get started.</div></div>`;
+
+    const cards = analyses.map((a, i) => {
+      const aid = 'an-' + i;
+      const thumb = a.thumbnail
+        ? `<img class="analysis-thumb-sm" src="${a.thumbnail}" alt="" loading="lazy">`
+        : `<div class="analysis-thumb-ph">📸</div>`;
+      const items = (a.problems||[]).length === 0
+        ? `<div style="font-size:12px;color:var(--muted);padding:6px 0">No items found.</div>`
+        : (a.problems||[]).map(p => `
+            <div class="item-row">
+              <div>
+                <div class="item-name">${esc(p.title)}</div>
+                ${p.options?.new?.price ? `<div class="item-price">New ~${esc(p.options.new.price)}</div>` : ''}
+              </div>
+              <div class="item-links">
+                ${p.options?.new?.url  ? `<a href="${esc(p.options.new.url)}"  target="_blank" class="amz-btn" rel="noopener">Amazon</a>` : ''}
+                ${p.options?.used?.url ? `<a href="${esc(p.options.used.url)}" target="_blank" class="ebay-btn" rel="noopener">eBay</a>` : ''}
+              </div>
+            </div>`).join('');
+      return `
+        <div class="analysis-item" id="${aid}">
+          <div class="analysis-head" onclick="document.getElementById('${aid}').classList.toggle('open')">
+            ${thumb}
+            <div class="analysis-head-info">
+              <div class="analysis-room-title">${esc(a.room||'Photo')}</div>
+              <div class="analysis-summary">${esc(a.summary||'')} · ${(a.problems||[]).length} items</div>
+            </div>
+            <div class="analysis-date-sm">${timeAgo(a.createdAt)}</div>
+            <div class="analysis-chevron">⌄</div>
+          </div>
+          <div class="analysis-items">${items}</div>
+        </div>`;
+    }).join('');
+
+    return `<div class="section"><div class="section-head"><div class="section-title">Recent Analyses</div><span class="section-link" onclick="location.href='/room-analyzer.html'">New analysis</span></div>${cards}</div>`;
+  }
+
+  /* ── Alerts ──────────────────────────────────────────────── */
+  function renderAlerts() {
+    const { alerts } = dashData;
+    if (!alerts || alerts.length === 0)
+      return `<div class="section"><div class="section-title" style="margin-bottom:12px">Deal Alerts</div><div class="empty"><div class="empty-icon">🔔</div>No deal alerts yet. They appear here when a Watch finds new deals.</div></div>`;
+
+    const cards = (alerts||[]).map((a, i) => {
+      const aid = 'al-' + i;
+      const deals = (a.deals||[]).map(d => `
+        <div class="deal-row">
+          <div class="deal-info">
+            <div class="deal-name">${esc(d.title||'')}</div>
+            <div class="deal-price">${esc(d.price||'')}</div>
+            ${d.why ? `<div class="deal-why">${esc(d.why)}</div>` : ''}
+          </div>
+          <div class="deal-links">
+            ${d.amazonUrl ? `<a href="${d.amazonUrl}" target="_blank" class="amz-btn" rel="noopener">Amazon</a>` : ''}
+            ${d.ebayUrl   ? `<a href="${d.ebayUrl}"   target="_blank" class="ebay-btn" rel="noopener">eBay</a>`   : ''}
+          </div>
+        </div>`).join('');
+      return `
+        <div class="alert-card" id="${aid}">
+          <div class="alert-head" onclick="document.getElementById('${aid}').classList.toggle('open')">
+            <div>🔔</div>
+            <div class="alert-title">Deals for &ldquo;${esc(a.itemTitle)}&rdquo;</div>
+            <div class="alert-time">${timeAgo(a.createdAt)}</div>
+            <div class="alert-chevron">⌄</div>
+          </div>
+          <div class="alert-body">${deals||'<div style="font-size:12px;color:var(--muted)">No deals found.</div>'}</div>
+        </div>`;
+    }).join('');
+
+    return `<div class="section"><div class="section-head"><div class="section-title">Deal Alerts</div></div>${cards}</div>`;
+  }
+
+  /* ── Plan / Watches ──────────────────────────────────────── */
+  function renderPlan() {
+    const { watches } = dashData;
+    const active   = (watches||[]).filter(w => w.active);
+    const inactive = (watches||[]).filter(w => !w.active);
+
+    const makeRow = w => `
+      <div class="plan-row">
+        <div>
+          <div class="plan-item-name">${esc(w.itemTitle)}</div>
+          <div class="plan-item-meta">${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</div>
+        </div>
+        <span class="plan-freq-badge">${freqLabel(w.frequency)}</span>
+        ${w.active ? `<button class="btn-cancel" onclick="cancelWatch('${w.id}')">Cancel</button>` : '<span style="font-size:11px;color:var(--light)">Cancelled</span>'}
+      </div>`;
+
+    const activeHtml = active.length === 0
+      ? `<div class="empty"><div class="empty-icon">📡</div>No active watches. <a href="/room-analyzer.html" style="color:var(--purple);font-weight:600">Analyze a photo</a> to add one.</div>`
+      : `<div class="settings-card"><div class="settings-card-head"><div class="settings-card-title">Active Watches</div><div class="settings-card-sub">Cancel anytime — billing stops immediately</div></div><div style="padding:4px 20px">${active.map(makeRow).join('')}</div></div>`;
+
+    const inactiveHtml = inactive.length === 0 ? '' :
+      `<div class="settings-card"><div class="settings-card-head"><div class="settings-card-title" style="color:var(--muted)">Cancelled Watches</div></div><div style="padding:4px 20px;opacity:0.6">${inactive.map(makeRow).join('')}</div></div>`;
+
+    return `<div class="section"><div class="section-head"><div class="section-title">My Watches</div><a href="/pricing.html" class="section-link">View plans</a></div>${activeHtml}${inactiveHtml}</div>`;
+  }
+
+  /* ── Settings ────────────────────────────────────────────── */
+  function renderSettings() {
+    const prefs = dashData?.user?.notifPrefs || {};
+    return `
+      <!-- Profile -->
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Profile</div>
+          <div class="settings-card-sub">Update your name and email address</div>
+        </div>
+        <div class="settings-body">
+          <div class="field-row">
+            <div class="field">
+              <label>Name</label>
+              <input id="setName" type="text" value="${esc(user.name||'')}" placeholder="Your name">
+            </div>
+          </div>
+          <div class="field">
+            <label>Email address</label>
+            <input id="setEmail" type="email" value="${esc(user.email||'')}" placeholder="you@example.com">
+            <span class="field-hint">Deal alert emails are sent to this address</span>
+          </div>
+          <div>
+            <button class="btn-primary" onclick="saveProfile()">Save changes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Change Password</div>
+          <div class="settings-card-sub">Leave blank to keep current password</div>
+        </div>
+        <div class="settings-body">
+          <div class="field">
+            <label>Current password</label>
+            <input id="setPwdCurrent" type="password" placeholder="••••••••">
+          </div>
+          <div class="field">
+            <label>New password</label>
+            <input id="setPwdNew" type="password" placeholder="Min 6 characters">
+          </div>
+          <div class="field">
+            <label>Confirm new password</label>
+            <input id="setPwdConfirm" type="password" placeholder="Repeat new password">
+          </div>
+          <div>
+            <button class="btn-primary" onclick="savePassword()">Update password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title">Notifications</div>
+          <div class="settings-card-sub">Choose which emails you want to receive</div>
+        </div>
+        <div class="settings-body">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Deal alerts</div>
+              <div class="toggle-desc">Email when a Watch finds new Amazon & eBay deals</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notifDeals" ${prefs.deals !== false ? 'checked' : ''} onchange="saveNotifs()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Usage reminders</div>
+              <div class="toggle-desc">Email when you're close to your monthly analysis limit</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notifUsage" ${prefs.usage !== false ? 'checked' : ''} onchange="saveNotifs()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Product updates</div>
+              <div class="toggle-desc">Occasional emails about new features</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notifUpdates" ${prefs.updates === true ? 'checked' : ''} onchange="saveNotifs()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="settings-card">
+        <div class="settings-card-head">
+          <div class="settings-card-title" style="color:var(--red)">Sign out</div>
+        </div>
+        <div class="settings-body">
+          <div>
+            <button class="logout-btn" onclick="logout()">Sign out of this device</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ── Actions ─────────────────────────────────────────────── */
+  async function cancelWatch(id) {
+    if (!confirm('Cancel this watch? AI searches will stop.')) return;
+    const res = await fetch('/api/watches/' + id, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    if (res.ok) { await loadDashboard(); showToast('Watch cancelled'); }
+    else showToast('Could not cancel. Try again.');
+  }
+
+  async function saveProfile() {
+    const name  = document.getElementById('setName').value.trim();
+    const email = document.getElementById('setEmail').value.trim();
+    if (!email || !email.includes('@')) { showToast('Enter a valid email'); return; }
+
+    const btn = document.querySelector('#mainContent .btn-primary');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+    const res = await fetch('/api/auth/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ name, email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      user = { ...user, name: data.user.name, email: data.user.email };
+      localStorage.setItem('om_user', JSON.stringify(user));
+      if (data.token) { token = data.token; localStorage.setItem('om_token', token); }
+      document.getElementById('sidebarName').textContent  = user.name || 'My Account';
+      document.getElementById('sidebarEmail').textContent = user.email;
+      document.getElementById('sidebarAvatar').textContent = (user.name||user.email||'?')[0].toUpperCase();
+      showToast('Profile saved');
+    } else {
+      showToast(data.error || 'Could not save');
+    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Save changes'; }
+  }
+
+  async function savePassword() {
+    const current = document.getElementById('setPwdCurrent').value;
+    const nw      = document.getElementById('setPwdNew').value;
+    const confirm = document.getElementById('setPwdConfirm').value;
+    if (!current)           { showToast('Enter current password'); return; }
+    if (nw.length < 6)      { showToast('New password must be at least 6 characters'); return; }
+    if (nw !== confirm)     { showToast('Passwords do not match'); return; }
+
+    const res = await fetch('/api/auth/password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ currentPassword: current, newPassword: nw })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('setPwdCurrent').value = '';
+      document.getElementById('setPwdNew').value     = '';
+      document.getElementById('setPwdConfirm').value = '';
+      showToast('Password updated');
+    } else {
+      showToast(data.error || 'Could not update password');
+    }
+  }
+
+  async function saveNotifs() {
+    const prefs = {
+      deals:   document.getElementById('notifDeals').checked,
+      usage:   document.getElementById('notifUsage').checked,
+      updates: document.getElementById('notifUpdates').checked,
+    };
+    await fetch('/api/auth/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ notifPrefs: prefs })
+    });
+    showToast('Preferences saved');
   }
 </script>
 </body>

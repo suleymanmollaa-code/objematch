@@ -4,54 +4,54 @@ const multer     = require('multer');
 const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const fs         = require('fs');
+const crypto     = require('crypto');
 const nodemailer = require('nodemailer');
 
 const app = express();
 
-// ── STRIPE WEBHOOK — raw body, must come before express.json() ──────────────
-app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const Stripe = require('stripe');
-  const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
-  if (!stripe) return res.status(500).json({ error: 'Stripe not configured' });
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error('Webhook signature error:', err.message);
-    return res.status(400).json({ error: 'Webhook signature failed' });
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const meta    = session.metadata || {};
-    if (meta.type === 'watch' && meta.userId && meta.itemTitle) {
-      const monitors = readJSON(MONITORS_FILE);
-      monitors.push({
-        id:                   Date.now().toString(),
-        userId:               meta.userId,
-        itemTitle:            meta.itemTitle,
-        itemDesc:             meta.itemDesc || '',
-        frequency:            meta.frequency,
-        active:               true,
-        expiresAt:            null,
-        lastCheckedAt:        null,
-        nextCheckAt:          new Date().toISOString(),
-        stripeSessionId:      session.id,
-        stripeSubscriptionId: session.subscription || null,
-        createdAt:            new Date().toISOString()
-      });
-      writeJSON(MONITORS_FILE, monitors);
-      console.log(`Watch created: "${meta.itemTitle}" (${meta.frequency}) for user ${meta.userId}`);
+// ── LEMONSQUEEZY WEBHOOK — raw body, must come before express.json() ─────────
+app.post('/api/lemonsqueezy/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+  if (secret) {
+    const sig  = req.headers['x-signature'];
+    const hmac = crypto.createHmac('sha256', secret).update(req.body).digest('hex');
+    if (sig !== hmac) {
+      console.error('LS webhook signature mismatch');
+      return res.status(400).json({ error: 'Invalid signature' });
     }
   }
 
-  if (event.type === 'customer.subscription.deleted') {
-    const sub      = event.data.object;
+  let payload;
+  try { payload = JSON.parse(req.body.toString()); }
+  catch { return res.status(400).json({ error: 'Invalid JSON' }); }
+
+  const event  = payload?.meta?.event_name;
+  const custom = payload?.meta?.custom_data || {};
+  const data   = payload?.data?.attributes || {};
+  const lsId   = payload?.data?.id;
+
+  if (event === 'subscription_created' && custom.userId && custom.itemTitle) {
     const monitors = readJSON(MONITORS_FILE);
-    const idx      = monitors.findIndex(m => m.stripeSubscriptionId === sub.id);
+    monitors.push({
+      id:           Date.now().toString(),
+      userId:       custom.userId,
+      itemTitle:    custom.itemTitle,
+      itemDesc:     custom.itemDesc || '',
+      frequency:    custom.frequency,
+      active:       true,
+      expiresAt:    null,
+      lastCheckedAt: null,
+      nextCheckAt:  new Date().toISOString(),
+      lsSubscriptionId: lsId || null,
+      createdAt:    new Date().toISOString()
+    });
+    writeJSON(MONITORS_FILE, monitors);
+    console.log(`Watch created: "${custom.itemTitle}" (${custom.frequency}) for user ${custom.userId}`);
+  }
+
+  if (event === 'subscription_cancelled' || event === 'subscription_expired') {
+    const monitors = readJSON(MONITORS_FILE);
+    const idx      = monitors.findIndex(m => m.lsSubscriptionId === lsId);
     if (idx !== -1) {
       monitors[idx].active      = false;
       monitors[idx].cancelledAt = new Date().toISOString();
@@ -78,7 +78,13 @@ const MONITORS_FILE = path.join(DATA_DIR, 'monitors.json');
 const ALERTS_FILE   = path.join(DATA_DIR, 'alerts.json');
 const FREE_LIMIT    = 100;
 const BASE_URL      = process.env.BASE_URL || 'https://www.objematch.com';
-const WATCH_PRICES  = { daily: 299, weekly: 99, monthly: 49 };
+const LS_API_KEY    = process.env.LEMONSQUEEZY_API_KEY;
+const LS_STORE_ID   = process.env.LEMONSQUEEZY_STORE_ID;
+const LS_VARIANTS   = {
+  monthly: process.env.LEMONSQUEEZY_VARIANT_MONTHLY,
+  weekly:  process.env.LEMONSQUEEZY_VARIANT_WEEKLY,
+  daily:   process.env.LEMONSQUEEZY_VARIANT_DAILY,
+};
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -315,6 +321,46 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
   res.json({ user: { id: user.id, email: user.email, name: user.name, used: usage.count, limit: FREE_LIMIT } });
 });
 
+app.put('/api/auth/profile', requireAuth, async (req, res) => {
+  const { email, name, notifPrefs } = req.body;
+  const users = readJSON(USERS_FILE);
+  const idx   = users.findIndex(u => u.id === req.user.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+
+  if (email) {
+    const normalized = email.toLowerCase().trim();
+    if (users.find(u => u.email === normalized && u.id !== req.user.id))
+      return res.status(400).json({ error: 'Email already in use' });
+    users[idx].email = normalized;
+  }
+  if (name !== undefined) users[idx].name = name;
+  if (notifPrefs !== undefined) users[idx].notifPrefs = notifPrefs;
+  writeJSON(USERS_FILE, users);
+
+  const newToken = jwt.sign(
+    { id: users[idx].id, email: users[idx].email, name: users[idx].name },
+    JWT_SECRET, { expiresIn: '30d' }
+  );
+  res.json({ token: newToken, user: { id: users[idx].id, email: users[idx].email, name: users[idx].name } });
+});
+
+app.put('/api/auth/password', requireAuth, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword || newPassword.length < 6)
+    return res.status(400).json({ error: 'Invalid request' });
+
+  const users = readJSON(USERS_FILE);
+  const idx   = users.findIndex(u => u.id === req.user.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+
+  const valid = await bcrypt.compare(currentPassword, users[idx].password);
+  if (!valid) return res.status(400).json({ error: 'Current password is incorrect' });
+
+  users[idx].password = await bcrypt.hash(newPassword, 10);
+  writeJSON(USERS_FILE, users);
+  res.json({ ok: true });
+});
+
 app.get('/api/user/usage', requireAuth, (req, res) => {
   const users = readJSON(USERS_FILE);
   const user  = users.find(u => u.id === req.user.id);
@@ -344,10 +390,19 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
     .filter(a => a.userId === uid)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 10)
-    .map(a => ({ id: a.id, room: a.room, summary: a.summary, createdAt: a.createdAt, thumbnail: a.thumbnail }));
+    .map(a => ({
+      id: a.id, room: a.room, summary: a.summary, createdAt: a.createdAt, thumbnail: a.thumbnail,
+      problems: (a.problems||[]).map(p => ({
+        title: p.title,
+        options: {
+          new:  { url: p.options?.new?.url,  price: p.options?.new?.price },
+          used: { url: p.options?.used?.url }
+        }
+      }))
+    }));
 
   res.json({
-    user: { id: user?.id, email: user?.email, name: user?.name, used: usage.count, limit: FREE_LIMIT },
+    user: { id: user?.id, email: user?.email, name: user?.name, used: usage.count, limit: FREE_LIMIT, notifPrefs: user?.notifPrefs || {} },
     watches: monitors,
     alerts,
     analyses
@@ -382,12 +437,14 @@ app.delete('/api/watches/:id', requireAuth, async (req, res) => {
   const idx = monitors.findIndex(m => m.id === req.params.id && m.userId === req.user.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
 
-  const subId = monitors[idx].stripeSubscriptionId;
-  if (subId && process.env.STRIPE_SECRET_KEY) {
+  const subId = monitors[idx].lsSubscriptionId;
+  if (subId && LS_API_KEY) {
     try {
-      const Stripe = require('stripe');
-      await Stripe(process.env.STRIPE_SECRET_KEY).subscriptions.cancel(subId);
-    } catch (e) { console.error('Stripe cancel:', e.message); }
+      await fetch(`https://api.lemonsqueezy.com/v1/subscriptions/${subId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${LS_API_KEY}`, Accept: 'application/vnd.api+json' }
+      });
+    } catch (e) { console.error('LS cancel error:', e.message); }
   }
 
   monitors[idx].active      = false;
@@ -397,41 +454,58 @@ app.delete('/api/watches/:id', requireAuth, async (req, res) => {
 });
 
 app.post('/api/watch/checkout', requireAuth, async (req, res) => {
-  // Watch payments are not yet enabled — return coming-soon flag
   if (process.env.WATCHES_ENABLED !== 'true') {
     return res.status(503).json({ comingSoon: true, message: 'Watch subscriptions launching soon!' });
   }
 
   const { itemTitle, itemDesc, frequency } = req.body;
-  if (!itemTitle)              return res.status(400).json({ error: 'itemTitle required' });
-  if (!WATCH_PRICES[frequency]) return res.status(400).json({ error: 'Invalid frequency' });
-  if (!process.env.STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe not configured' });
+  if (!itemTitle)             return res.status(400).json({ error: 'itemTitle required' });
+  if (!LS_VARIANTS[frequency]) return res.status(400).json({ error: 'Invalid frequency' });
+  if (!LS_API_KEY || !LS_STORE_ID) return res.status(500).json({ error: 'Payment not configured' });
 
-  const Stripe = require('stripe');
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-  const users  = readJSON(USERS_FILE);
-  const user   = users.find(u => u.id === req.user.id);
-  const freq_labels = { daily: 'Daily checks', weekly: 'Weekly checks', monthly: 'Monthly checks' };
+  const users = readJSON(USERS_FILE);
+  const user  = users.find(u => u.id === req.user.id);
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: { name: `Watch: "${itemTitle}"`, description: `${freq_labels[frequency]} — AI finds deals automatically` },
-          unit_amount: WATCH_PRICES[frequency],
-          recurring: { interval: 'month' }
-        },
-        quantity: 1
-      }],
-      customer_email: user?.email,
-      success_url: `${BASE_URL}/watch-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${BASE_URL}/room-analyzer.html`,
-      metadata: { type: 'watch', userId: req.user.id, itemTitle: itemTitle.slice(0,200), itemDesc: (itemDesc||'').slice(0,400), frequency },
-      subscription_data: { metadata: { userId: req.user.id, itemTitle: itemTitle.slice(0,200), frequency } }
+    const r = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
+      method: 'POST',
+      headers: {
+        Authorization:  `Bearer ${LS_API_KEY}`,
+        Accept:         'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'checkouts',
+          attributes: {
+            checkout_data: {
+              email:  user?.email || undefined,
+              custom: {
+                userId:    req.user.id,
+                itemTitle: itemTitle.slice(0, 200),
+                itemDesc:  (itemDesc || '').slice(0, 400),
+                frequency,
+              }
+            },
+            product_options: {
+              redirect_url: `${BASE_URL}/watch-success.html`,
+            }
+          },
+          relationships: {
+            store:   { data: { type: 'stores',   id: String(LS_STORE_ID) } },
+            variant: { data: { type: 'variants',  id: String(LS_VARIANTS[frequency]) } },
+          }
+        }
+      })
     });
-    res.json({ url: session.url });
+
+    const data = await r.json();
+    if (!r.ok) {
+      console.error('LS checkout error:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Payment setup failed' });
+    }
+
+    res.json({ url: data.data?.attributes?.url });
   } catch (err) {
     console.error('Watch checkout error:', err);
     res.status(500).json({ error: err.message || 'Payment setup failed' });
