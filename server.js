@@ -131,6 +131,31 @@ Recommend exactly 5 specific Amazon products. Respond ONLY with valid JSON:
   }
 });
 
+// ── YOLO DETECTION HELPER ──────────────────────────────────
+let _detector = null;
+async function runYolo(imageBuffer) {
+  try {
+    const { pipeline, RawImage } = await import('@huggingface/transformers');
+    if (!_detector) {
+      _detector = await pipeline('object-detection', 'Xenova/yolov8n', { device: 'cpu' });
+    }
+    // Convert buffer to base64 data URL for RawImage
+    const dataUrl = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
+    const img = await RawImage.fromURL(dataUrl);
+    const results = await _detector(img, { threshold: 0.35 });
+    // Normalize boxes to 0-100 percentage coords (center x,y)
+    return results.map(r => ({
+      label: r.label,
+      score: Math.round(r.score * 100),
+      x: Math.round(((r.box.xmin + r.box.xmax) / 2) / img.width  * 100),
+      y: Math.round(((r.box.ymin + r.box.ymax) / 2) / img.height * 100),
+    }));
+  } catch (e) {
+    console.error('YOLO error:', e.message);
+    return [];
+  }
+}
+
 // ── AI ROOM ANALYZER (Vision) ──────────────────────────────
 app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, res) => {
   if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
@@ -149,26 +174,32 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
     mediaType = 'image/jpeg';
   } catch(e) {
     console.error('Sharp error:', e.message);
-    // sharp failed, use original
   }
+
+  // Run YOLO detection for precise object coordinates
+  const yoloObjects = await runYolo(imageBuffer);
+  const yoloContext = yoloObjects.length > 0
+    ? `\n\nPrecise object detections from YOLO (use these x,y coordinates for pins):\n${yoloObjects.map(o => `- ${o.label} at x=${o.x}%, y=${o.y}% (confidence ${o.score}%)`).join('\n')}\n`
+    : '';
 
   const base64 = imageBuffer.toString('base64');
 
-  const prompt = `You are a visual shopping assistant. Analyze this photo very carefully and thoroughly.
-
+  const prompt = `You are a visual shopping assistant. The user uploaded a photo — it could be anything: a room, a car interior, a desk setup, a garage, an outdoor space, a wardrobe, a kitchen counter, anything.
+${yoloContext}
 Your job: identify EVERY significant object or opportunity in the photo. Be comprehensive — scan the entire image.
 
 Look for:
-1. EVERY piece of furniture you can see (chair, desk, table, sofa, wardrobe, shelf, bed, etc.)
-2. EVERY decor item (lamp, rug, curtains, artwork, mirror, plant, etc.)
-3. EVERY empty space that needs something (bare wall, empty corner, bare floor, missing lighting, etc.)
-4. EVERY item that looks worn, mismatched, or could be upgraded
+1. EVERY physical object you can identify (furniture, electronics, tools, clothing, appliances, vehicles, equipment, etc.)
+2. EVERY decor or accessory item (lamp, rug, artwork, plants, organizers, etc.)
+3. EVERY empty space or missing item that would improve the scene
+4. EVERY item that looks worn, outdated, or could be upgraded
 
 Find between 5 and 8 items. Do NOT stop at 3. Scan every part of the image systematically: top-left, top-right, center, bottom-left, bottom-right.
 
 For each item, set x and y as percentage coordinates (0-100) indicating where on the image that object is located:
 - x=0 is far left, x=100 is far right
 - y=0 is top, y=100 is bottom
+- If YOLO detected this object above, use THOSE exact coordinates for the pin
 - Place the coordinate ON the object itself, not near it
 
 Respond ONLY with valid JSON:
@@ -196,7 +227,7 @@ Respond ONLY with valid JSON:
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
-        model: 'claude-opus-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1500,
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
