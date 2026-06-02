@@ -854,13 +854,6 @@
               <div class="option-price">${esc(prob.options.used.price||'')}</div>
               <div class="option-source">eBay</div>
             </a>` : ''}
-            ${prob.options?.repair ? `
-            <a href="${prob.options.repair.url || 'https://www.thumbtack.com/search/?q=' + encodeURIComponent(prob.title)}" target="_blank" rel="noopener" class="option-card option-repair" onclick="event.stopPropagation()">
-              <div class="option-icon">🔧</div>
-              <div class="option-label">Hire Someone</div>
-              <div class="option-price">${esc(prob.options.repair.note||'')}</div>
-              <div class="option-source">Thumbtack</div>
-            </a>` : ''}
             <button class="option-card" style="background:#f5f3ff;border-color:#c4b5fd" onclick="event.stopPropagation(); openWatchModal(${i})" id="watch-btn-${i}">
               <div class="option-icon">📡</div>
               <div class="option-label">Watch</div>

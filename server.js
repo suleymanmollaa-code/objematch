@@ -176,7 +176,7 @@ function optionalAuth(req, res, next) {
 // ── URL HELPERS ───────────────────────────────────────────────────────────────
 function amazonUrl(s) { return `https://www.amazon.com/s?k=${encodeURIComponent(s)}&tag=${AFFILIATE}`; }
 function ebayUrl(s)   { return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(s)}`; }
-function thumbtackUrl(s) { return `https://www.thumbtack.com/search/?q=${encodeURIComponent(s)}`; }
+
 
 // ── WATCH CRON ────────────────────────────────────────────────────────────────
 function getNextCheckAt(frequency) {
@@ -522,8 +522,7 @@ Respond ONLY with valid JSON:
     "x": 50, "y": 50,
     "options": {
       "new":    { "search": "amazon keywords", "price": "$XX-$XX" },
-      "used":   { "search": "ebay keywords",   "price": "$XX-$XX" },
-      "repair": { "search": "thumbtack service", "note": "service type" }
+      "used":   { "search": "ebay keywords",   "price": "$XX-$XX" }
     }
   }]
 }`;
@@ -554,9 +553,8 @@ Respond ONLY with valid JSON:
     parsed.problems = parsed.problems.map(p => ({
       ...p,
       options: {
-        new:    { ...p.options?.new,    url: amazonUrl(p.options?.new?.search    || p.title) },
-        used:   { ...p.options?.used,   url: ebayUrl(p.options?.used?.search     || p.title) },
-        repair: { ...p.options?.repair, url: thumbtackUrl(p.options?.repair?.search || p.title) }
+        new:  { ...p.options?.new,  url: amazonUrl(p.options?.new?.search  || p.title) },
+        used: { ...p.options?.used, url: ebayUrl(p.options?.used?.search   || p.title) }
       }
     }));
 
