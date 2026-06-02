@@ -310,6 +310,10 @@ Respond ONLY with valid JSON:
       body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 800, messages: [{ role: 'user', content: prompt }] }),
     });
     const data = await r.json();
+    if (!r.ok) {
+      console.error('Anthropic listing error:', JSON.stringify(data));
+      return res.status(500).json({ error: data?.error?.message || 'AI service error' });
+    }
     const text = data.content[0].text;
     const match = text.match(/\{[\s\S]*\}/);
     const parsed = JSON.parse(match ? match[0] : text);
@@ -318,7 +322,7 @@ Respond ONLY with valid JSON:
     res.json(parsed);
   } catch (err) {
     console.error('Listing error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: err.message || 'Server error' });
   }
 });
 

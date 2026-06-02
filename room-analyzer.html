@@ -773,12 +773,12 @@
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ title, description })
       });
-      if (!res.ok) throw new Error('Server error');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Server error');
       _sellCache[idx] = data;
       renderSellPanel(idx, data);
     } catch (err) {
-      panel.innerHTML = `<div class="sell-loading" style="color:#dc2626">Could not generate listing. Try again.</div>`;
+      panel.innerHTML = `<div class="sell-loading" style="color:#dc2626">${err.message || 'Could not generate listing. Try again.'}</div>`;
     }
   }
 
