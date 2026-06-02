@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 const upload       = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
-const API_KEY      = process.env.ANTHROPIC_API_KEY;
+const API_KEY      = process.env.ANTHROPIC_API_KEY?.trim();
 const JWT_SECRET   = process.env.JWT_SECRET || 'objematch-secret-2026';
 const AFFILIATE    = 'objematch-20';
 const DATA_DIR     = path.join(__dirname, 'data');
@@ -130,8 +130,23 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
   if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
   if (!req.file) return res.status(400).json({ error: 'No photo uploaded' });
 
-  const base64    = req.file.buffer.toString('base64');
-  const mediaType = req.file.mimetype || 'image/jpeg';
+  // Resize large images to stay within API limits
+  let imageBuffer = req.file.buffer;
+  let mediaType = req.file.mimetype || 'image/jpeg';
+
+  try {
+    const sharp = require('sharp');
+    imageBuffer = await sharp(req.file.buffer)
+      .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+    mediaType = 'image/jpeg';
+  } catch(e) {
+    console.error('Sharp error:', e.message);
+    // sharp failed, use original
+  }
+
+  const base64 = imageBuffer.toString('base64');
 
   const prompt = `You are an expert interior designer and home stylist analyzing a room photo. Look very carefully at the image.
 
@@ -181,7 +196,11 @@ Respond ONLY with valid JSON:
       }),
     });
 
-    if (!r.ok) return res.status(500).json({ error: 'AI service error' });
+    if (!r.ok) {
+      const errData = await r.json();
+      console.error('Anthropic error:', JSON.stringify(errData));
+      return res.status(500).json({ error: 'AI service error', detail: errData });
+    }
     const data  = await r.json();
     const text  = data.content[0].text;
     const match = text.match(/\{[\s\S]*\}/);
