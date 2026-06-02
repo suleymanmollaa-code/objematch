@@ -30,27 +30,36 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
     const meta    = session.metadata || {};
 
     if (meta.type === 'watch' && meta.userId && meta.itemTitle) {
-      // Calculate expiry based on frequency
-      const days = { daily: 30, weekly: 30, monthly: 90 };
-      const d    = days[meta.frequency] || 30;
-      const expiresAt = new Date(Date.now() + d * 24 * 60 * 60 * 1000).toISOString();
-
       const monitors = readJSON(MONITORS_FILE);
       monitors.push({
-        id:           Date.now().toString(),
-        userId:       meta.userId,
-        itemTitle:    meta.itemTitle,
-        itemDesc:     meta.itemDesc || '',
-        frequency:    meta.frequency,
-        active:       true,
-        expiresAt,
-        lastCheckedAt: null,
-        nextCheckAt:  new Date().toISOString(),
-        stripeSessionId: session.id,
-        createdAt:    new Date().toISOString()
+        id:                  Date.now().toString(),
+        userId:              meta.userId,
+        itemTitle:           meta.itemTitle,
+        itemDesc:            meta.itemDesc || '',
+        frequency:           meta.frequency,
+        active:              true,
+        expiresAt:           null, // active until cancelled
+        lastCheckedAt:       null,
+        nextCheckAt:         new Date().toISOString(),
+        stripeSessionId:     session.id,
+        stripeSubscriptionId: session.subscription || null,
+        createdAt:           new Date().toISOString()
       });
       writeJSON(MONITORS_FILE, monitors);
       console.log(`Watch created: "${meta.itemTitle}" (${meta.frequency}) for user ${meta.userId}`);
+    }
+  }
+
+  // Subscription cancelled — deactivate watch
+  if (event.type === 'customer.subscription.deleted') {
+    const sub      = event.data.object;
+    const monitors = readJSON(MONITORS_FILE);
+    const idx      = monitors.findIndex(m => m.stripeSubscriptionId === sub.id);
+    if (idx !== -1) {
+      monitors[idx].active    = false;
+      monitors[idx].cancelledAt = new Date().toISOString();
+      writeJSON(MONITORS_FILE, monitors);
+      console.log(`Watch cancelled: subscription ${sub.id}`);
     }
   }
 
@@ -73,10 +82,8 @@ const MONITORS_FILE = path.join(DATA_DIR, 'monitors.json');
 const FREE_LIMIT    = 100;
 const BASE_URL      = process.env.BASE_URL || 'https://www.objematch.com';
 
-// Watch pricing (cents)
+// Watch pricing (cents/month recurring)
 const WATCH_PRICES = { daily: 299, weekly: 99, monthly: 49 };
-// Watch durations (days)
-const WATCH_DAYS   = { daily: 30, weekly: 30, monthly: 90 };
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -214,11 +221,25 @@ app.get('/api/watches', requireAuth, (req, res) => {
   res.json({ watches: mine });
 });
 
-app.delete('/api/watches/:id', requireAuth, (req, res) => {
+app.delete('/api/watches/:id', requireAuth, async (req, res) => {
   const monitors = readJSON(MONITORS_FILE);
   const idx = monitors.findIndex(m => m.id === req.params.id && m.userId === req.user.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
-  monitors[idx].active = false;
+
+  // Cancel Stripe subscription if exists
+  const subId = monitors[idx].stripeSubscriptionId;
+  if (subId && process.env.STRIPE_SECRET_KEY) {
+    try {
+      const Stripe = require('stripe');
+      const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+      await stripe.subscriptions.cancel(subId);
+    } catch (e) {
+      console.error('Stripe cancel error:', e.message);
+    }
+  }
+
+  monitors[idx].active      = false;
+  monitors[idx].cancelledAt = new Date().toISOString();
   writeJSON(MONITORS_FILE, monitors);
   res.json({ ok: true });
 });
@@ -232,11 +253,11 @@ app.post('/api/watch/checkout', requireAuth, async (req, res) => {
   const Stripe = require('stripe');
   const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-  const freq_labels = { daily: 'Daily (30 days)', weekly: 'Weekly (30 days)', monthly: 'Monthly (90 days)' };
+  const freq_labels = { daily: 'Daily checks', weekly: 'Weekly checks', monthly: 'Monthly checks' };
 
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
+      mode: 'subscription',
       line_items: [{
         price_data: {
           currency: 'usd',
@@ -244,7 +265,8 @@ app.post('/api/watch/checkout', requireAuth, async (req, res) => {
             name: `Watch: "${itemTitle}"`,
             description: `${freq_labels[frequency]} — AI finds new deals automatically`
           },
-          unit_amount: WATCH_PRICES[frequency]
+          unit_amount: WATCH_PRICES[frequency],
+          recurring: { interval: 'month' }
         },
         quantity: 1
       }],
@@ -256,6 +278,13 @@ app.post('/api/watch/checkout', requireAuth, async (req, res) => {
         itemTitle: itemTitle.slice(0, 200),
         itemDesc:  (itemDesc || '').slice(0, 400),
         frequency
+      },
+      subscription_data: {
+        metadata: {
+          userId:    req.user.id,
+          itemTitle: itemTitle.slice(0, 200),
+          frequency
+        }
       }
     });
     res.json({ url: session.url });
