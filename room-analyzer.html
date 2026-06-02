@@ -187,7 +187,8 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
-    .photo-frame img { width: 100%; max-height: 480px; object-fit: cover; display: block; }
+    .photo-frame { aspect-ratio: unset; }
+    .photo-frame img { width: 100%; height: auto; display: block; }
 
     .pin {
       position: absolute; transform: translate(-50%, -50%);
@@ -567,10 +568,10 @@
 
     (data.problems || []).forEach((prob, i) => {
       const color = PIN_COLORS[i] || '#6b7280';
-      const x = Math.min(Math.max(prob.x || 25 + i * 30, 8), 92);
-      const y = Math.min(Math.max(prob.y || 50, 8), 88);
+      const x = Math.min(Math.max(prob.x ?? 25 + i * 20, 5), 95);
+      const y = Math.min(Math.max(prob.y ?? 50, 5), 95);
 
-      // Pin
+      // Pin — coordinates map 1:1 since img is height:auto (no cropping)
       const pin = document.createElement('div');
       pin.className = 'pin';
       pin.style.cssText = `left:${x}%;top:${y}%`;

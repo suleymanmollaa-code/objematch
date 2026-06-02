@@ -137,6 +137,7 @@ async function runYolo(imageBuffer) {
   try {
     const { pipeline, RawImage } = await import('@huggingface/transformers');
     if (!_detector) {
+      process.env.HF_HOME = process.env.HF_HOME || '/tmp/hf-cache';
       _detector = await pipeline('object-detection', 'Xenova/yolov8n', { device: 'cpu' });
     }
     // Convert buffer to base64 data URL for RawImage
