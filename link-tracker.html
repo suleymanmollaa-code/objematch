@@ -128,6 +128,17 @@
 <div class="main">
   <div id="errorMsg" class="error-msg" style="display:none"></div>
 
+  <!-- Manual entry fallback -->
+  <div id="manualBox" style="display:none;background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;padding:22px 24px;margin-bottom:20px;">
+    <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Enter details manually</div>
+    <div style="font-size:12px;color:#9ca3af;margin-bottom:16px;">We couldn't read this page automatically. Fill in what you know.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="manualName" type="text" placeholder="Product / listing name" style="padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#e5e7eb'">
+      <input id="manualPrice" type="text" placeholder="Current price (optional, e.g. ₺12.500)" style="padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#e5e7eb'">
+      <button onclick="useManualEntry()" style="background:#f97316;color:#fff;border:none;padding:11px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">Use These Details</button>
+    </div>
+  </div>
+
   <div class="limit-banner" id="limitBanner" style="display:none">
     <p>You've used all 5 free previews this month. Subscribe to keep watching.</p>
     <a href="/pricing.html">See Plans</a>
@@ -237,7 +248,12 @@
         setLoading(false);
         return;
       }
-      if (!r.ok) { showError(data.error || 'Could not analyze this link.'); setLoading(false); return; }
+      if (!r.ok) {
+        showError(data.message || data.error || 'Could not analyze this link.');
+        document.getElementById('manualBox').style.display = '';
+        setLoading(false);
+        return;
+      }
 
       currentProduct = data.product;
       currentUrl     = url;
@@ -365,6 +381,17 @@
     if (s < 3600) return Math.floor(s/60) + 'm ago';
     if (s < 86400) return Math.floor(s/3600) + 'h ago';
     return Math.floor(s/86400) + 'd ago';
+  }
+
+  function useManualEntry() {
+    const name  = document.getElementById('manualName').value.trim();
+    const price = document.getElementById('manualPrice').value.trim();
+    if (!name) { showToast('Please enter a name'); return; }
+    currentUrl = document.getElementById('urlInput').value.trim();
+    currentProduct = { name, currentPrice: price || null };
+    document.getElementById('manualBox').style.display = 'none';
+    hideError();
+    renderResult(currentProduct);
   }
 
   document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') analyzeLink(); });

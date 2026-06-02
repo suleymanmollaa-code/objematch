@@ -870,14 +870,35 @@ app.post('/api/link-analyze', requireAuth, async (req, res) => {
 
   try {
     const pageText = await fetchPageText(url);
-    const product  = await identifyProduct(pageText, url);
-    if (!product.name) return res.status(400).json({ error: 'No specific product found on this page. Try linking directly to a product listing (Amazon, Trendyol, eBay, etc.)' });
+    const textLen  = pageText.trim().length;
+    console.log(`[link-analyze] url=${url} textLen=${textLen} preview=${pageText.slice(0,200)}`);
+
+    // Detect bot-blocked / captcha pages
+    const blocked = textLen < 200 ||
+      /cloudflare|captcha|robot|access denied|just a moment|enable javascript/i.test(pageText);
+
+    if (blocked) {
+      return res.status(400).json({
+        error: 'page_blocked',
+        message: 'This site blocked our request. Enter the product details manually below.'
+      });
+    }
+
+    const product = await identifyProduct(pageText, url);
+    console.log(`[link-analyze] product=${JSON.stringify(product)}`);
+
+    if (!product.name) {
+      return res.status(400).json({
+        error: 'not_found',
+        message: 'Couldn\'t auto-detect the listing. Enter the product name manually below.'
+      });
+    }
 
     incrementLinkUsage(req.user.id);
     res.json({ product, used: check.used + 1, limit: LINK_FREE_LIMIT });
   } catch (e) {
     console.error('Link analyze error:', e.message);
-    res.status(500).json({ error: 'Failed to analyze link' });
+    res.status(500).json({ error: 'failed', message: 'Failed to reach this page. Try again or enter details manually.' });
   }
 });
 
