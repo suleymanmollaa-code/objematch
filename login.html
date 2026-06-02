@@ -67,7 +67,7 @@
 <div class="page">
   <div class="card">
     <div class="card-title">Welcome back</div>
-    <div class="card-sub">Sign in to access your room analyses</div>
+    <div class="card-sub">Sign in to track links and get price alerts</div>
 
     <div class="tabs">
       <div class="tab active" onclick="showTab('login')">Sign In</div>
@@ -107,8 +107,8 @@
     </div>
 
     <div class="benefit-list">
-      <div class="benefit"><span class="benefit-icon">📸</span> Save unlimited room analyses</div>
-      <div class="benefit"><span class="benefit-icon">🕐</span> Access your history anytime</div>
+      <div class="benefit"><span class="benefit-icon">🔗</span> 5 free link analyses per month</div>
+      <div class="benefit"><span class="benefit-icon">📡</span> Set price alerts on any product</div>
       <div class="benefit"><span class="benefit-icon">🔒</span> Free forever, no credit card</div>
     </div>
   </div>
@@ -171,7 +171,8 @@
       if (!res.ok) throw new Error(data.error);
       localStorage.setItem('om_token', data.token);
       localStorage.setItem('om_user', JSON.stringify(data.user));
-      location.href = '/room-analyzer.html';
+      const next = new URLSearchParams(location.search).get('next') || '/link-tracker.html';
+      location.href = next;
     } catch (err) {
       showError(err.message || 'Registration failed');
       btn.disabled = false; btn.textContent = 'Create Account';
@@ -187,7 +188,10 @@
   });
 
   // Redirect if already logged in
-  if (localStorage.getItem('om_token')) location.href = '/room-analyzer.html';
+  if (localStorage.getItem('om_token')) {
+    const next = new URLSearchParams(location.search).get('next') || '/link-tracker.html';
+    location.href = next;
+  }
 </script>
 </body>
 </html>
