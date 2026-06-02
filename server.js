@@ -154,29 +154,38 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
 
   const base64 = imageBuffer.toString('base64');
 
-  const prompt = `You are a visual shopping assistant. Analyze this photo carefully.
+  const prompt = `You are a visual shopping assistant. Analyze this photo very carefully and thoroughly.
 
-Find up to 5 items — both things already IN the photo AND missing opportunities:
-- PRESENT items: furniture, decor, electronics, accessories you can see → help user find similar/same on Amazon or eBay
-- MISSING items: empty walls, bare corners, poor lighting, gaps → suggest what to add
+Your job: identify EVERY significant object or opportunity in the photo. Be comprehensive — scan the entire image.
 
-For each item, estimate its location as x% from left and y% from top of the image.
+Look for:
+1. EVERY piece of furniture you can see (chair, desk, table, sofa, wardrobe, shelf, bed, etc.)
+2. EVERY decor item (lamp, rug, curtains, artwork, mirror, plant, etc.)
+3. EVERY empty space that needs something (bare wall, empty corner, bare floor, missing lighting, etc.)
+4. EVERY item that looks worn, mismatched, or could be upgraded
+
+Find between 5 and 8 items. Do NOT stop at 3. Scan every part of the image systematically: top-left, top-right, center, bottom-left, bottom-right.
+
+For each item, set x and y as percentage coordinates (0-100) indicating where on the image that object is located:
+- x=0 is far left, x=100 is far right
+- y=0 is top, y=100 is bottom
+- Place the coordinate ON the object itself, not near it
 
 Respond ONLY with valid JSON:
 {
-  "room": "Space type (e.g. Home Office, Living Room, Bedroom, Kitchen)",
+  "room": "Space type",
   "summary": "One sentence describing the space",
   "problems": [
     {
-      "title": "Short label (e.g. Desk Chair, Floor Lamp, Empty Wall)",
-      "type": "present" or "missing",
-      "description": "What you see or what's missing and why it matters",
-      "x": 45,
-      "y": 60,
+      "title": "Exact object name (e.g. White Wardrobe, Desk Chair, Empty Wall Above Desk)",
+      "type": "present",
+      "description": "What you see and what to do with it",
+      "x": 15,
+      "y": 45,
       "options": {
-        "new": { "search": "amazon keywords for this item", "price": "$XX-$XX" },
-        "used": { "search": "ebay keywords for this item", "price": "$XX-$XX" },
-        "repair": { "search": "thumbtack service if applicable", "note": "short note or null" }
+        "new": { "search": "specific amazon search keywords", "price": "$XX-$XX" },
+        "used": { "search": "specific ebay search keywords", "price": "$XX-$XX" },
+        "repair": { "search": "thumbtack service", "note": "assembly, painting, etc or null" }
       }
     }
   ]

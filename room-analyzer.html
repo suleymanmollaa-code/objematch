@@ -242,19 +242,19 @@
     }
 
     .pin-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.9);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.95);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
       transition: transform 0.15s;
       position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
     }
 
-    .pin:hover .pin-dot { transform: translate(-50%,-50%) scale(1.4); }
-    .pin.active .pin-dot { transform: translate(-50%,-50%) scale(1.6); }
+    .pin:hover .pin-dot { transform: translate(-50%,-50%) scale(1.5); }
+    .pin.active .pin-dot { transform: translate(-50%,-50%) scale(1.7); }
 
     .pin-pulse {
       position: absolute; top: 50%; left: 50%;
-      width: 10px; height: 10px; border-radius: 50%;
+      width: 14px; height: 14px; border-radius: 50%;
       animation: pinPulse 2s ease-out infinite;
     }
 
@@ -497,7 +497,7 @@
 </div>
 
 <script>
-  const PIN_COLORS = ['#f97316', '#7c6ff7', '#059669'];
+  const PIN_COLORS = ['#f97316', '#7c6ff7', '#059669', '#ef4444', '#0ea5e9', '#d97706', '#8b5cf6', '#10b981'];
   let selectedFile = null;
   let token = localStorage.getItem('om_token');
   let user  = JSON.parse(localStorage.getItem('om_user') || 'null');
