@@ -146,7 +146,7 @@
       if (!res.ok) throw new Error(data.error);
       localStorage.setItem('om_token', data.token);
       localStorage.setItem('om_user', JSON.stringify(data.user));
-      const next = new URLSearchParams(location.search).get('next') || '/room-analyzer.html';
+      const next = new URLSearchParams(location.search).get('next') || '/dashboard.html';
       location.href = next;
     } catch (err) {
       showError(err.message || 'Login failed');

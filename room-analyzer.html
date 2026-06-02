@@ -323,8 +323,6 @@
     .option-new:hover { border-color: #f97316; }
     .option-used { background: #f0fdf4; border-color: #bbf7d0; }
     .option-used:hover { border-color: #22c55e; }
-    .option-repair { background: #eff6ff; border-color: #bfdbfe; }
-    .option-repair:hover { border-color: #3b82f6; }
     .option-icon { font-size: 22px; }
     .option-label { font-size: 12px; font-weight: 700; color: var(--text); }
     .option-price { font-size: 11px; color: var(--muted); min-height: 14px; }
@@ -475,9 +473,7 @@
     <div class="usage-pill" id="usagePill" style="display:none"></div>
     <a href="/pricing.html" class="nav-btn" id="upgradeBtn" style="display:none">Upgrade</a>
     
-    <a href="/dashboard.html" class="nav-btn" id="historyBtn" style="display:none">
-      🕐 History
-    </a>
+    <a href="/dashboard.html" class="nav-btn" id="historyBtn" style="display:none">Dashboard</a>
     <button class="nav-btn" onclick="logout()" id="logoutBtn" style="display:none">Sign out</button>
     <a href="/login.html" class="nav-btn accent" id="loginBtn">Sign in</a>
   </div>
@@ -486,16 +482,16 @@
 <!-- UPGRADE MODAL -->
 <div class="modal-overlay" id="upgradeModal">
   <div class="modal-box">
-    <div class="modal-icon">🚀</div>
-    <div class="modal-title">You've hit your free limit</div>
-    <div class="modal-sub" id="modalSubText">You've used all 5 free analyses this month. Upgrade to Pro for unlimited access.</div>
+    <div class="modal-icon">📅</div>
+    <div class="modal-title">Monthly limit reached</div>
+    <div class="modal-sub" id="modalSubText">You've used all 100 free analyses this month. Your limit resets on the 1st of next month.</div>
     <div class="modal-perks">
-      <div class="modal-perk">✅ Unlimited analyses</div>
-      <div class="modal-perk">📡 Weekly deal monitoring</div>
-      <div class="modal-perk">📧 Email deal digest</div>
+      <div class="modal-perk">📡 Set up Watch to monitor any item automatically</div>
+      <div class="modal-perk">📧 Get deal alerts by email on your schedule</div>
+      <div class="modal-perk">🔄 100 new analyses available next month</div>
     </div>
-    <button class="modal-btn-primary" onclick="location.href='/pricing.html'">Get Pro — $9.99/mo</button>
-    <button class="modal-btn-secondary" onclick="closeUpgradeModal()">Maybe later</button>
+    <button class="modal-btn-primary" onclick="location.href='/pricing.html'">See Watch Plans</button>
+    <button class="modal-btn-secondary" onclick="closeUpgradeModal()">Got it</button>
   </div>
 </div>
 
@@ -652,13 +648,6 @@
     const upgrade = document.getElementById('upgradeBtn');
     if (!pill || !data) return;
 
-    if (data.unlimited || data.plan === 'pro') {
-      pill.textContent = 'Pro';
-      pill.className   = 'usage-pill pro';
-      pill.style.display = 'inline-flex';
-      return;
-    }
-
     const remaining = data.limit - data.used;
     pill.style.display = 'inline-flex';
     pill.className = remaining <= 1 ? 'usage-pill warn' : 'usage-pill';
@@ -672,7 +661,7 @@
   // ── UPGRADE MODAL ────────────────────────────────────────
   function showUpgradeModal(used, limit) {
     const sub = document.getElementById('modalSubText');
-    if (sub) sub.textContent = `You've used ${used || limit}/${limit} free analyses this month. Upgrade to Pro for unlimited access.`;
+    if (sub) sub.textContent = `You've used all ${limit} free analyses this month. Your limit resets on the 1st of next month.`;
     document.getElementById('upgradeModal').classList.add('active');
     document.getElementById('loading').classList.remove('active');
     document.getElementById('uploadSection').style.display = 'block';

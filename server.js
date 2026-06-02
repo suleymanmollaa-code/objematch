@@ -661,6 +661,11 @@ Respond ONLY with valid JSON:
 
 // ── SELL LISTING ──────────────────────────────────────────────────────────────
 
+// ── 404 ───────────────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, '404.html'));
+});
+
 // ── START ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`ObjeMatch running on http://localhost:${PORT}`));
