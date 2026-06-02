@@ -154,32 +154,29 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
 
   const base64 = imageBuffer.toString('base64');
 
-  const prompt = `You are a smart home shopping assistant analyzing a photo. Look carefully at the image.
+  const prompt = `You are a visual shopping assistant. Analyze this photo carefully.
 
-Identify exactly 3 items or areas in this photo. For each one:
-1. Items already visible that the user might want to buy new, find used, or get repaired
-2. Empty spaces or missing items that would improve the space
+Find up to 5 items — both things already IN the photo AND missing opportunities:
+- PRESENT items: furniture, decor, electronics, accessories you can see → help user find similar/same on Amazon or eBay
+- MISSING items: empty walls, bare corners, poor lighting, gaps → suggest what to add
 
-For each item provide:
-- A short title
-- What you see
-- Whether it's better to buy new, buy used, or repair/hire someone
-- Specific search keywords for Amazon (new), eBay (used), and Thumbtack (repair/install)
+For each item, estimate its location as x% from left and y% from top of the image.
 
 Respond ONLY with valid JSON:
 {
   "room": "Space type (e.g. Home Office, Living Room, Bedroom, Kitchen)",
-  "summary": "One sentence describing the space and main opportunity",
+  "summary": "One sentence describing the space",
   "problems": [
     {
-      "title": "Short title (e.g. Desk Chair, Floor Lamp, Empty Wall)",
-      "description": "What you see and what would improve this space",
+      "title": "Short label (e.g. Desk Chair, Floor Lamp, Empty Wall)",
+      "type": "present" or "missing",
+      "description": "What you see or what's missing and why it matters",
       "x": 45,
       "y": 60,
       "options": {
-        "new": { "label": "Buy New", "search": "amazon search keywords", "price": "$XX-$XX" },
-        "used": { "label": "Buy Used", "search": "ebay search keywords", "price": "$XX-$XX" },
-        "repair": { "label": "Hire Someone", "search": "thumbtack service keywords", "note": "e.g. furniture assembly, interior painter" }
+        "new": { "search": "amazon keywords for this item", "price": "$XX-$XX" },
+        "used": { "search": "ebay keywords for this item", "price": "$XX-$XX" },
+        "repair": { "search": "thumbtack service if applicable", "note": "short note or null" }
       }
     }
   ]
