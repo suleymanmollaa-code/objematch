@@ -209,17 +209,53 @@ function ebayUrl(s)   { return `https://www.ebay.com/sch/i.html?_nkw=${encodeURI
 // ── LINK TRACKER HELPERS ──────────────────────────────────────────────────────
 async function fetchPageText(url) {
   const r = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept-Language': 'tr,en;q=0.9',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    },
     signal: AbortSignal.timeout(12000)
   });
   const html = await r.text();
-  return html
+
+  // Extract high-signal meta tags first (work even on JS-rendered pages)
+  const meta = {};
+  const metaMatches = html.matchAll(/<meta[^>]+>/gi);
+  for (const m of metaMatches) {
+    const prop  = (m[0].match(/(?:property|name)=["']([^"']+)["']/i) || [])[1] || '';
+    const value = (m[0].match(/content=["']([^"']+)["']/i) || [])[1] || '';
+    if (prop && value) meta[prop.toLowerCase()] = value;
+  }
+  // Extract JSON-LD structured data (price, name often here)
+  const jsonLdMatches = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  const jsonLdTexts = jsonLdMatches.map(m => m[1].trim()).join('\n');
+
+  // Extract page title
+  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].trim() : '';
+
+  // Build a structured summary the AI can easily read
+  const metaSummary = [
+    title               ? `Title: ${title}` : '',
+    meta['og:title']    ? `OG Title: ${meta['og:title']}` : '',
+    meta['og:description'] ? `Description: ${meta['og:description']}` : '',
+    meta['og:price:amount'] ? `Price: ${meta['og:price:amount']} ${meta['og:price:currency'] || ''}` : '',
+    meta['product:price:amount'] ? `Price: ${meta['product:price:amount']} ${meta['product:price:currency'] || ''}` : '',
+    meta['twitter:title'] ? `Twitter Title: ${meta['twitter:title']}` : '',
+    meta['twitter:description'] ? `Twitter Desc: ${meta['twitter:description']}` : '',
+    jsonLdTexts ? `Structured Data: ${jsonLdTexts.slice(0, 800)}` : '',
+  ].filter(Boolean).join('\n');
+
+  // Also grab visible text (truncated) for fallback
+  const bodyText = html
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 4000);
+    .slice(0, 2000);
+
+  return (metaSummary + '\n\n' + bodyText).slice(0, 5000);
 }
 
 async function identifyProduct(pageText, url) {
