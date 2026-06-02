@@ -66,58 +66,12 @@
 
     /* ── LAYOUT ── */
     .layout {
-      display: grid;
-      grid-template-columns: 280px 1fr;
+      display: flex; justify-content: center;
       min-height: calc(100vh - 64px);
     }
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      background: var(--surface); border-right: 1px solid var(--border);
-      padding: 24px 16px; overflow-y: auto;
-      max-height: calc(100vh - 64px); position: sticky; top: 64px;
-    }
-
-    .sidebar-title {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--light); margin-bottom: 12px; padding: 0 8px;
-    }
-
-    .history-item {
-      border-radius: 12px; padding: 12px; cursor: pointer;
-      transition: background 0.15s; margin-bottom: 6px;
-      border: 1px solid transparent;
-    }
-
-    .history-item:hover { background: var(--bg); }
-    .history-item.active { background: var(--accent-light); border-color: var(--accent-border); }
-
-    .history-thumb {
-      width: 100%; aspect-ratio: 16/9; border-radius: 8px;
-      object-fit: cover; background: var(--bg); margin-bottom: 8px;
-      display: block;
-    }
-
-    .history-room { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .history-date { font-size: 11px; color: var(--light); }
-
-    .history-del {
-      float: right; background: none; border: none; color: var(--light);
-      cursor: pointer; font-size: 16px; line-height: 1; padding: 2px;
-      transition: color 0.15s;
-    }
-
-    .history-del:hover { color: var(--red); }
-
-    .empty-history {
-      text-align: center; padding: 32px 16px; color: var(--light);
-    }
-
-    .empty-history-icon { font-size: 36px; margin-bottom: 10px; }
-    .empty-history-text { font-size: 13px; line-height: 1.5; }
-
     /* ── MAIN ── */
-    .main { padding: clamp(24px, 4vw, 40px); max-width: 760px; }
+    .main { padding: clamp(24px, 4vw, 40px); max-width: 780px; width: 100%; }
 
     /* ── UPLOAD ── */
     .upload-section { margin-bottom: 32px; }
@@ -384,8 +338,7 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      .layout { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
+      .layout { padding: 0; }
     }
 
     @media (max-width: 480px) {
@@ -412,17 +365,6 @@
 </nav>
 
 <div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-title">Recent Analyses</div>
-    <div id="sidebarHistory">
-      <div class="empty-history">
-        <div class="empty-history-icon">📷</div>
-        <div class="empty-history-text">Your analyses will appear here after you sign in</div>
-      </div>
-    </div>
-  </aside>
-
   <!-- MAIN -->
   <main class="main">
 
@@ -511,7 +453,6 @@
       document.getElementById('historyBtn').style.display = 'flex';
       document.getElementById('logoutBtn').style.display = 'flex';
       document.getElementById('loginBtn').style.display = 'none';
-      loadSidebarHistory();
     }
   }
 
@@ -519,50 +460,6 @@
     localStorage.removeItem('om_token');
     localStorage.removeItem('om_user');
     location.reload();
-  }
-
-  // ── SIDEBAR HISTORY ──────────────────────────────────────
-  async function loadSidebarHistory() {
-    if (!token) return;
-    try {
-      const res = await fetch('/api/history', { headers: { Authorization: `Bearer ${token}` } });
-      const { analyses } = await res.json();
-      renderSidebar(analyses);
-    } catch {}
-  }
-
-  function renderSidebar(analyses) {
-    const el = document.getElementById('sidebarHistory');
-    if (!analyses?.length) {
-      el.innerHTML = `<div class="empty-history"><div class="empty-history-icon">📷</div><div class="empty-history-text">No analyses yet.<br>Upload a photo to start.</div></div>`;
-      return;
-    }
-    el.innerHTML = analyses.map(a => `
-      <div class="history-item" onclick="loadAnalysis('${a.id}')">
-        <button class="history-del" onclick="event.stopPropagation();deleteAnalysis('${a.id}')">×</button>
-        ${a.thumbnail ? `<img class="history-thumb" src="${a.thumbnail}" alt="${a.room}">` : ''}
-        <div class="history-room">${a.room}</div>
-        <div class="history-date">${new Date(a.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}</div>
-      </div>
-    `).join('');
-  }
-
-  async function deleteAnalysis(id) {
-    if (!confirm('Delete this analysis?')) return;
-    await fetch(`/api/history/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    loadSidebarHistory();
-  }
-
-  function loadAnalysis(id) {
-    // reload from server and display
-    fetch('/api/history', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(({ analyses }) => {
-        const a = analyses.find(x => x.id === id);
-        if (!a) return;
-        document.getElementById('uploadSection').style.display = 'none';
-        showResults(a, a.thumbnail);
-      });
   }
 
   // ── UPLOAD ──────────────────────────────────────────────
@@ -632,7 +529,6 @@
       }
       const data = await res.json();
       showResults(data, photoUrl, true);
-      if (token) loadSidebarHistory();
     } catch (err) {
       clearInterval(interval);
       document.getElementById('loading').classList.remove('active');
@@ -736,7 +632,10 @@
   }
 
   function activateCard(idx) {
-    document.querySelectorAll('.problem-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+    document.querySelectorAll('.problem-card').forEach((c, i) => {
+      c.classList.toggle('active', i === idx);
+      if (i === idx) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
     document.querySelectorAll('.pin').forEach((p, i) => p.classList.toggle('active', i === idx));
   }
 
