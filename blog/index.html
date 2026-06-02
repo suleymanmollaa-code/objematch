@@ -4,16 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog — Home, Office & Car Upgrade Guides | ObjeMatch</title>
-  <meta name="description" content="Practical guides for upgrading your living room, home office, car interior, gaming setup, and more. AI-powered product recommendations included.">
+  <meta name="description" content="Practical upgrade guides for your living room, home office, car interior, gaming setup, and more — with AI-powered product suggestions.">
   <link rel="canonical" href="https://www.objematch.com/blog/">
-  <meta property="og:title" content="ObjeMatch Blog — Upgrade Guides for Every Space">
-  <meta property="og:description" content="Practical upgrade guides for your home, office, car, and more. Powered by AI product matching.">
-  <meta property="og:url" content="https://www.objematch.com/blog/">
-  <meta property="og:type" content="website">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; }
+    body { font-family: 'Inter', sans-serif; background: #f3f4f6; color: #111827; }
     a { color: inherit; text-decoration: none; }
 
     nav {
@@ -25,67 +21,96 @@
     .logo { font-size: 20px; font-weight: 800; }
     .logo span { color: #f97316; }
     .nav-links { display: flex; gap: 4px; margin-left: auto; }
-    .nav-link { font-size: 13px; font-weight: 500; color: #6b7280; padding: 7px 12px; border-radius: 8px; }
+    .nav-link { font-size: 13px; font-weight: 500; color: #6b7280; padding: 7px 12px; border-radius: 8px; transition: all 0.15s; }
     .nav-link:hover { background: #f3f4f6; color: #111827; }
     .nav-cta { background: #f97316; color: #fff; font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 10px; }
 
-    .hero {
-      background: linear-gradient(160deg, #fff7ed 0%, #f9fafb 60%);
-      padding: clamp(48px,6vw,80px) clamp(20px,5vw,40px);
+    .page-header {
+      background: #fff; border-bottom: 1px solid #e5e7eb;
+      padding: clamp(32px,5vw,56px) clamp(20px,5vw,40px);
       text-align: center;
     }
-    .hero h1 { font-size: clamp(1.8rem,4vw,3rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 12px; }
-    .hero h1 span { color: #f97316; }
-    .hero p { font-size: 16px; color: #6b7280; max-width: 480px; margin: 0 auto; line-height: 1.7; }
+    .page-header h1 { font-size: clamp(1.6rem,3.5vw,2.4rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .page-header h1 span { color: #f97316; }
+    .page-header p { font-size: 15px; color: #6b7280; max-width: 420px; margin: 0 auto; line-height: 1.7; }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: clamp(40px,5vw,64px) clamp(20px,4vw,40px); }
+    .grid-wrap { max-width: 1160px; margin: 0 auto; padding: clamp(24px,4vw,48px) clamp(16px,3vw,32px); }
 
-    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #f97316; margin-bottom: 32px; }
-
-    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
-
-    .post-card {
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 20px; overflow: hidden;
-      transition: box-shadow 0.2s, transform 0.2s; display: flex; flex-direction: column;
-    }
-    .post-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); transform: translateY(-3px); }
-
-    .post-cover {
-      aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
-      font-size: 64px; position: relative; overflow: hidden;
-    }
-    .post-cover-label {
-      position: absolute; bottom: 12px; left: 12px;
-      background: rgba(0,0,0,0.55); color: #fff; font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 6px;
+    /* Pinterest-style masonry */
+    .pin-grid {
+      columns: 4 240px;
+      column-gap: 16px;
     }
 
-    .post-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .post-cat { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #f97316; margin-bottom: 8px; }
-    .post-title { font-size: 17px; font-weight: 800; color: #111827; line-height: 1.35; margin-bottom: 10px; letter-spacing: -0.01em; }
-    .post-excerpt { font-size: 13px; color: #6b7280; line-height: 1.65; flex: 1; }
-    .post-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid #f3f4f6; }
-    .post-read { font-size: 12px; color: #9ca3af; }
-    .post-cta { font-size: 12px; font-weight: 700; color: #f97316; }
+    .pin-card {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+    }
+    .pin-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
 
-    .cta-banner {
+    .pin-cover {
+      width: 100%; position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-end;
+      padding: 20px;
+    }
+    .pin-cover-emoji { font-size: 48px; margin-bottom: 12px; }
+    .pin-cover-cat {
+      font-size: 10px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .pin-cover-title {
+      font-size: 17px; font-weight: 900; color: #fff; line-height: 1.25;
+      letter-spacing: -0.01em; text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    }
+
+    .pin-body { padding: 16px 18px 20px; }
+    .pin-excerpt { font-size: 13px; color: #6b7280; line-height: 1.65; margin-bottom: 14px; }
+    .pin-footer { display: flex; align-items: center; justify-content: space-between; }
+    .pin-read { font-size: 11px; color: #9ca3af; font-weight: 500; }
+    .pin-btn {
+      font-size: 12px; font-weight: 700; color: #fff;
+      background: #f97316; padding: 6px 14px; border-radius: 8px;
+    }
+    .pin-card:hover .pin-btn { background: #ea580c; }
+
+    /* Tall card variant */
+    .pin-cover.tall { padding-bottom: 28px; min-height: 320px; }
+    .pin-cover.medium { min-height: 240px; }
+    .pin-cover.short { min-height: 180px; }
+
+    .cta-card {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      border-radius: 20px;
       background: linear-gradient(135deg, #111827, #1f2937);
-      border-radius: 20px; padding: clamp(32px,4vw,48px); text-align: center;
-      margin-top: 64px;
+      padding: 32px 24px;
+      text-align: center;
     }
-    .cta-banner h2 { font-size: clamp(1.4rem,3vw,2rem); font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: -0.02em; }
-    .cta-banner h2 span { color: #f97316; }
-    .cta-banner p { font-size: 15px; color: #9ca3af; margin-bottom: 28px; }
-    .btn-cta { background: #f97316; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 28px; border-radius: 12px; display: inline-block; }
-    .btn-cta:hover { background: #ea580c; }
+    .cta-card h3 { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 8px; line-height: 1.3; }
+    .cta-card h3 span { color: #f97316; }
+    .cta-card p { font-size: 13px; color: #9ca3af; margin-bottom: 20px; line-height: 1.6; }
+    .cta-card a { background: #f97316; color: #fff; font-size: 13px; font-weight: 700; padding: 11px 22px; border-radius: 10px; display: inline-block; }
 
-    footer { background: #111827; padding: clamp(24px,3vw,40px) clamp(20px,4vw,40px); margin-top: 80px; }
-    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    footer { background: #111827; padding: 32px clamp(16px,4vw,40px); margin-top: 40px; }
+    .footer-inner { max-width: 1160px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-logo { font-size: 16px; font-weight: 800; color: #fff; }
     .footer-logo span { color: #f97316; }
     .footer-copy { font-size: 12px; color: #4b5563; }
 
-    @media (max-width: 640px) { .nav-links { display: none; } }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .pin-grid { columns: 2 160px; }
+      .pin-cover-title { font-size: 14px; }
+    }
   </style>
 </head>
 <body>
@@ -93,124 +118,124 @@
 <nav>
   <a href="/" class="logo">Obje<span>Match</span></a>
   <div class="nav-links">
-    <a href="/blog/" class="nav-link">Blog</a>
+    <a href="/blog/" class="nav-link" style="color:#f97316;font-weight:700">Blog</a>
     <a href="/room-analyzer.html" class="nav-link">Analyzer</a>
+    <a href="/dashboard.html" class="nav-link">My Analyses</a>
   </div>
   <a href="/room-analyzer.html" class="nav-cta">Try Free</a>
 </nav>
 
-<div class="hero">
+<div class="page-header">
   <h1>Upgrade guides for <span>every space</span></h1>
-  <p>Practical tips for your living room, home office, car, garage, and more — each with AI-powered product suggestions.</p>
+  <p>Practical tips and product picks for your home, office, car, and more.</p>
 </div>
 
-<div class="container">
-  <div class="section-label">All Articles</div>
+<div class="grid-wrap">
+  <div class="pin-grid">
 
-  <div class="posts-grid">
-
-    <a href="/blog/living-room-upgrade-guide.html" class="post-card">
-      <div class="post-cover" style="background: linear-gradient(135deg,#e0e7ff,#c7d2fe)">
-        🛋️
-        <div class="post-cover-label">Living Room</div>
+    <!-- Living Room — tall -->
+    <a href="/blog/living-room-upgrade-guide.html" class="pin-card">
+      <div class="pin-cover tall" style="background: linear-gradient(160deg,#4f46e5,#7c3aed,#c026d3)">
+        <div class="pin-cover-emoji">🛋️</div>
+        <div class="pin-cover-cat">Living Room</div>
+        <div class="pin-cover-title">10 Things Your Living Room Is Missing</div>
       </div>
-      <div class="post-body">
-        <div class="post-cat">Living Room</div>
-        <div class="post-title">10 Things Your Living Room Is Missing (And Where to Find Them)</div>
-        <div class="post-excerpt">Most living rooms are 80% there — a rug, a lamp, or a piece of wall art away from feeling complete. Here's what to look for.</div>
-        <div class="post-footer">
-          <span class="post-read">5 min read</span>
-          <span class="post-cta">Read →</span>
+      <div class="pin-body">
+        <div class="pin-excerpt">Most living rooms are one rug, one lamp, or one piece of wall art away from feeling complete.</div>
+        <div class="pin-footer">
+          <span class="pin-read">5 min read</span>
+          <span class="pin-btn">Read →</span>
         </div>
       </div>
     </a>
 
-    <a href="/blog/home-office-setup-guide.html" class="post-card">
-      <div class="post-cover" style="background: linear-gradient(135deg,#dcfce7,#bbf7d0)">
-        💻
-        <div class="post-cover-label">Home Office</div>
+    <!-- Home Office — medium -->
+    <a href="/blog/home-office-setup-guide.html" class="pin-card">
+      <div class="pin-cover medium" style="background: linear-gradient(160deg,#059669,#0d9488,#0891b2)">
+        <div class="pin-cover-emoji">💻</div>
+        <div class="pin-cover-cat">Home Office</div>
+        <div class="pin-cover-title">12 Home Office Upgrades That Actually Matter</div>
       </div>
-      <div class="post-body">
-        <div class="post-cat">Home Office</div>
-        <div class="post-title">The Home Office Upgrade Checklist: 12 Items That Actually Matter</div>
-        <div class="post-excerpt">Bad ergonomics and poor lighting are productivity killers. Here's the exact list of upgrades that make the biggest difference.</div>
-        <div class="post-footer">
-          <span class="post-read">6 min read</span>
-          <span class="post-cta">Read →</span>
+      <div class="pin-body">
+        <div class="pin-excerpt">Bad ergonomics and poor lighting are the biggest productivity killers. Here's the fix.</div>
+        <div class="pin-footer">
+          <span class="pin-read">6 min read</span>
+          <span class="pin-btn">Read →</span>
         </div>
       </div>
     </a>
 
-    <a href="/blog/car-interior-upgrades.html" class="post-card">
-      <div class="post-cover" style="background: linear-gradient(135deg,#fef3c7,#fde68a)">
-        🚗
-        <div class="post-cover-label">Car Interior</div>
+    <!-- CTA card -->
+    <div class="cta-card">
+      <h3>Skip reading.<br><span>Just upload a photo.</span></h3>
+      <p>AI identifies every object and finds what to buy — new, used, or repaired.</p>
+      <a href="/room-analyzer.html">Analyze Free →</a>
+    </div>
+
+    <!-- Car Interior — tall -->
+    <a href="/blog/car-interior-upgrades.html" class="pin-card">
+      <div class="pin-cover tall" style="background: linear-gradient(160deg,#b45309,#d97706,#f59e0b)">
+        <div class="pin-cover-emoji">🚗</div>
+        <div class="pin-cover-cat">Car Interior</div>
+        <div class="pin-cover-title">Car Interior Upgrades That Look Expensive But Aren't</div>
       </div>
-      <div class="post-body">
-        <div class="post-cat">Car Interior</div>
-        <div class="post-title">Car Interior Upgrades That Look Expensive But Aren't</div>
-        <div class="post-excerpt">You don't need a new car to have a great interior. These accessories and upgrades transform how your car looks and feels.</div>
-        <div class="post-footer">
-          <span class="post-read">5 min read</span>
-          <span class="post-cta">Read →</span>
+      <div class="pin-body">
+        <div class="pin-excerpt">You don't need a new car to have a great interior. These upgrades transform how it looks and feels.</div>
+        <div class="pin-footer">
+          <span class="pin-read">5 min read</span>
+          <span class="pin-btn">Read →</span>
         </div>
       </div>
     </a>
 
-    <a href="/blog/gaming-setup-guide.html" class="post-card">
-      <div class="post-cover" style="background: linear-gradient(135deg,#f3e8ff,#e9d5ff)">
-        🎮
-        <div class="post-cover-label">Gaming Setup</div>
+    <!-- Gaming Setup — medium -->
+    <a href="/blog/gaming-setup-guide.html" class="pin-card">
+      <div class="pin-cover medium" style="background: linear-gradient(160deg,#6d28d9,#7c3aed,#4f46e5)">
+        <div class="pin-cover-emoji">🎮</div>
+        <div class="pin-cover-cat">Gaming Setup</div>
+        <div class="pin-cover-title">Gaming Setup Essentials: What Every Desk Is Missing</div>
       </div>
-      <div class="post-body">
-        <div class="post-cat">Gaming Setup</div>
-        <div class="post-title">Gaming Setup Essentials: What Every Desk Is Missing</div>
-        <div class="post-excerpt">From cable management to monitor arms — the upgrades that take a basic gaming desk to a clean, professional setup.</div>
-        <div class="post-footer">
-          <span class="post-read">5 min read</span>
-          <span class="post-cta">Read →</span>
+      <div class="pin-body">
+        <div class="pin-excerpt">Cable management, monitor arms, and the gear that transforms a basic desk into a clean setup.</div>
+        <div class="pin-footer">
+          <span class="pin-read">5 min read</span>
+          <span class="pin-btn">Read →</span>
         </div>
       </div>
     </a>
 
-    <a href="/blog/bedroom-upgrade-guide.html" class="post-card">
-      <div class="post-cover" style="background: linear-gradient(135deg,#fce7f3,#fbcfe8)">
-        🛏️
-        <div class="post-cover-label">Bedroom</div>
+    <!-- Bedroom — short -->
+    <a href="/blog/bedroom-upgrade-guide.html" class="pin-card">
+      <div class="pin-cover short" style="background: linear-gradient(160deg,#be185d,#db2777,#ec4899)">
+        <div class="pin-cover-emoji">🛏️</div>
+        <div class="pin-cover-cat">Bedroom</div>
+        <div class="pin-cover-title">Why Your Bedroom Doesn't Feel Relaxing</div>
       </div>
-      <div class="post-body">
-        <div class="post-cat">Bedroom</div>
-        <div class="post-title">Why Your Bedroom Doesn't Feel Relaxing (And How to Fix It)</div>
-        <div class="post-excerpt">The difference between a hotel room and your bedroom isn't the bed — it's the layers. Lighting, nightstands, and textures that make sleep better.</div>
-        <div class="post-footer">
-          <span class="post-read">5 min read</span>
-          <span class="post-cta">Read →</span>
+      <div class="pin-body">
+        <div class="pin-excerpt">The difference isn't the bed — it's the layers. Lighting, nightstands, and textures that make sleep better.</div>
+        <div class="pin-footer">
+          <span class="pin-read">5 min read</span>
+          <span class="pin-btn">Read →</span>
         </div>
       </div>
     </a>
 
-    <a href="/blog/garage-organization-guide.html" class="post-card">
-      <div class="post-cover" style="background: linear-gradient(135deg,#d1fae5,#a7f3d0)">
-        🔧
-        <div class="post-cover-label">Garage</div>
+    <!-- Garage — tall -->
+    <a href="/blog/garage-organization-guide.html" class="pin-card">
+      <div class="pin-cover tall" style="background: linear-gradient(160deg,#065f46,#047857,#059669)">
+        <div class="pin-cover-emoji">🔧</div>
+        <div class="pin-cover-cat">Garage</div>
+        <div class="pin-cover-title">Garage Organization: Turn Chaos Into a Functional Workshop</div>
       </div>
-      <div class="post-body">
-        <div class="post-cat">Garage</div>
-        <div class="post-title">Garage Organization: Turn Chaos Into a Functional Workshop</div>
-        <div class="post-excerpt">Wall systems, overhead storage, and the right shelving can double your usable garage space. Here's exactly what to get.</div>
-        <div class="post-footer">
-          <span class="post-read">6 min read</span>
-          <span class="post-cta">Read →</span>
+      <div class="pin-body">
+        <div class="pin-excerpt">Wall systems, overhead storage, and the right shelving can double your usable garage space.</div>
+        <div class="pin-footer">
+          <span class="pin-read">6 min read</span>
+          <span class="pin-btn">Read →</span>
         </div>
       </div>
     </a>
 
-  </div>
-
-  <div class="cta-banner">
-    <h2>Skip the reading.<br><span>Just upload your photo.</span></h2>
-    <p>AI identifies everything in your space and finds exactly what to buy — new, used, or repaired.</p>
-    <a href="/room-analyzer.html" class="btn-cta">Analyze My Space — Free</a>
   </div>
 </div>
 
