@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ObjeMatch — Pin Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#1a1a1a;color:#fff;padding:2rem}
+h1{font-size:1.1rem;font-weight:700;margin-bottom:.4rem;opacity:.7}
+p{font-size:.78rem;opacity:.4;margin-bottom:2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem;max-width:1200px}
+
+/* PIN KARTI */
+.pin{border-radius:16px;overflow:hidden;background:#2a2a2a;cursor:pointer;transition:transform .2s;position:relative}
+.pin:hover{transform:translateY(-3px)}
+.pin-img-wrap{position:relative;overflow:hidden}
+.pin-img-wrap img{width:100%;display:block;aspect-ratio:2/3;object-fit:cover}
+.pin-img-wrap .loading{width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,#2a2a2a,#333);display:flex;align-items:center;justify-content:center;font-size:.75rem;opacity:.4;flex-direction:column;gap:.5rem}
+.pin-overlay{position:absolute;bottom:0;left:0;right:0;padding:1rem;background:linear-gradient(0deg,rgba(0,0,0,.85) 0%,transparent 100%)}
+.pin-category{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#f97316;margin-bottom:.3rem}
+.pin-title{font-size:.82rem;font-weight:800;line-height:1.3;color:#fff}
+.pin-body{padding:.85rem}
+.pin-desc{font-size:.72rem;color:#aaa;line-height:1.6;margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pin-footer{display:flex;align-items:center;justify-content:space-between}
+.pin-url{font-size:.65rem;font-weight:700;color:#f97316}
+.pin-save{font-size:.68rem;font-weight:700;background:#f97316;color:#fff;padding:.28rem .7rem;border-radius:20px}
+
+/* KONTROLLER */
+.controls{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.ctrl-btn{background:#333;border:1px solid #444;color:#fff;padding:.45rem 1rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.ctrl-btn:hover{background:#444}
+.ctrl-btn.active{background:#f97316;border-color:#f97316}
+.ctrl-select{background:#333;border:1px solid #444;color:#fff;padding:.45rem .85rem;border-radius:8px;font-size:.78rem;font-family:inherit;cursor:pointer}
+.status{font-size:.72rem;color:#666;margin-left:auto}
+</style>
+</head>
+<body>
+
+<h1>ObjeMatch — Pinterest Pin Preview</h1>
+<p>Pollinations.ai ile üretilen görseller + otomatik metin. Her yenilediğinde farklı görsel gelir.</p>
+
+<div class="controls">
+  <button class="ctrl-btn active" onclick="filterCat('all',this)">All</button>
+  <button class="ctrl-btn" onclick="filterCat('kitchen',this)">Kitchen</button>
+  <button class="ctrl-btn" onclick="filterCat('closet',this)">Closet</button>
+  <button class="ctrl-btn" onclick="filterCat('bathroom',this)">Bathroom</button>
+  <button class="ctrl-btn" onclick="filterCat('office',this)">Office</button>
+  <select class="ctrl-select" onchange="changeCount(this.value)">
+    <option value="12">12 pins</option>
+    <option value="24">24 pins</option>
+    <option value="48">48 pins</option>
+  </select>
+  <button class="ctrl-btn" onclick="regenerate()">↻ Regenerate</button>
+  <span class="status" id="status">Loading...</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const pins = [
+  // Kitchen
+  { cat:'kitchen', title:'10 Pantry Organizers That Changed My Life', desc:'Stop digging through your pantry. These stackable bins, lazy susans and pull-out shelves will transform your kitchen storage in one afternoon.', tags:['pantry','organization','kitchen'], prompt:'minimalist modern pantry organization with clear bins and labels, bright clean kitchen, Pinterest style photography, white background' },
+  { cat:'kitchen', title:'Best Under-Sink Kitchen Organizers Under $30', desc:'Maximize every inch of cabinet space. These pull-out organizers, stackable bins and tension rods make the most chaotic cabinet look brand new.', tags:['kitchen','storage','budget'], prompt:'under kitchen sink organization with pull-out bins and cleaning supplies neatly arranged, modern home, bright photography' },
+  { cat:'kitchen', title:'Spice Rack Ideas That Actually Work', desc:'From wall-mounted racks to pull-out drawer inserts — we tested 15 spice storage solutions so you don\'t have to.', tags:['spice','kitchen','organization'], prompt:'beautiful spice rack organization in modern kitchen, labeled jars, warm lighting, Pinterest aesthetic' },
+  { cat:'kitchen', title:'Refrigerator Organization Tips & Products', desc:'A clean fridge isn\'t just aesthetic — it saves money and reduces food waste. Here\'s everything you need.', tags:['fridge','kitchen','storage'], prompt:'organized refrigerator with clear containers and labels, fresh food, bright clean photography, Pinterest style' },
+  { cat:'kitchen', title:'Small Kitchen Storage Hacks for Apartments', desc:'No pantry? No problem. These genius solutions make the most of tiny kitchens without drilling a single hole.', tags:['small kitchen','apartment','hacks'], prompt:'small apartment kitchen organized with clever storage solutions, compact and beautiful, modern design photography' },
+
+  // Closet
+  { cat:'closet', title:'Closet Organization Ideas for Small Bedrooms', desc:'Double your closet space without a renovation. These organizers, dividers and storage systems work in any closet size.', tags:['closet','bedroom','organization'], prompt:'beautifully organized small closet with matching hangers, storage bins and shoe rack, clean minimalist style' },
+  { cat:'closet', title:'Shoe Storage Solutions That Look Amazing', desc:'From clear boxes to over-door organizers — the best ways to store shoes without the chaos.', tags:['shoes','closet','storage'], prompt:'aesthetic shoe organization with clear boxes and shelves, clean modern closet, bright Pinterest photography' },
+  { cat:'closet', title:'Best Velvet Hangers vs Plastic — We Tested Both', desc:'Velvet hangers changed everything. Here\'s why, plus the best ones on Amazon right now.', tags:['hangers','closet','tips'], prompt:'neat closet rod with matching velvet hangers, organized clothes by color, minimal aesthetic photography' },
+
+  // Bathroom
+  { cat:'bathroom', title:'Under Sink Bathroom Storage That Looks Expensive', desc:'Transform the most chaotic spot in your bathroom. These organizers, stackable bins and pull-out trays do the heavy lifting.', tags:['bathroom','storage','organization'], prompt:'organized under bathroom sink with white bins and baskets, clean and beautiful, bright photography' },
+  { cat:'bathroom', title:'Small Bathroom Organization Ideas on a Budget', desc:'No square footage? No problem. These 8 products maximize every inch of your bathroom without breaking the bank.', tags:['small bathroom','budget','hacks'], prompt:'small bathroom beautifully organized with over-door storage and counter organizers, clean white aesthetic' },
+  { cat:'bathroom', title:'Shower Organization Caddy Ideas — Tested & Ranked', desc:'Hanging caddies, built-in shelves, corner organizers — we found the ones that actually stay put.', tags:['shower','bathroom','organizer'], prompt:'clean organized shower with minimalist caddy and neatly arranged products, spa-like aesthetic photography' },
+  { cat:'bathroom', title:'Makeup & Skincare Storage That Sparks Joy', desc:'Clear acrylic organizers, rotating displays and drawer inserts — everything you need to see your entire collection at once.', tags:['makeup','skincare','beauty'], prompt:'aesthetic makeup and skincare vanity organization with clear acrylic organizers, rose gold accents, Pinterest beauty photography' },
+
+  // Office
+  { cat:'office', title:'Home Office Desk Organization Ideas 2025', desc:'A clean desk = a clear mind. Here are the best organizers, cable management tools and storage solutions for your work-from-home setup.', tags:['desk','home office','organization'], prompt:'clean minimalist home office desk with monitor stand, cable management and organized supplies, modern aesthetic' },
+  { cat:'office', title:'Cable Management Solutions That Are Actually Easy', desc:'No more cable chaos. These raceways, velcro ties and desk grommets work for any setup.', tags:['cables','office','tech'], prompt:'clean desk setup with perfect cable management, organized tech workspace, minimalist modern photography' },
+  { cat:'office', title:'Best Drawer Organizers for Home Office', desc:'Everything in its place. These expandable drawer inserts keep pens, sticky notes and supplies sorted without effort.', tags:['drawer','office','organizer'], prompt:'organized home office drawer with dividers and supplies neatly sorted, clean flat lay photography' },
+
+  // Garage
+  { cat:'garage', title:'Garage Wall Organization Systems — Full Guide', desc:'Wall-mounted panels, pegboards and bin systems that turn a chaotic garage into a functional space.', tags:['garage','storage','wall'], prompt:'organized garage wall with pegboard, tools neatly hung, clean and functional space photography' },
+  { cat:'garage', title:'Best Stackable Garage Storage Bins 2025', desc:'Heavy-duty, weatherproof, clearly labeled. These bins survive temperature changes and actually hold what\'s on the label.', tags:['garage','bins','storage'], prompt:'organized garage shelving with labeled storage bins and tools, clean functional space, modern photography' },
+];
+
+let currentCat = 'all';
+let currentCount = 12;
+let version = 0;
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function changeCount(val) {
+  currentCount = parseInt(val);
+  render();
+}
+
+function regenerate() {
+  version++;
+  render();
+}
+
+function render() {
+  const filtered = currentCat === 'all' ? pins : pins.filter(p => p.cat === currentCat);
+  const shown = filtered.slice(0, currentCount);
+  const grid = document.getElementById('grid');
+
+  document.getElementById('status').textContent = `${shown.length} pins`;
+
+  grid.innerHTML = shown.map((pin, i) => {
+    const imgPrompt = encodeURIComponent(pin.prompt);
+    const seed = version * 100 + i;
+    const imgUrl = `https://image.pollinations.ai/prompt/${imgPrompt}?width=600&height=900&seed=${seed}&nologo=true`;
+    const slug = pin.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+    return `
+    <div class="pin" data-cat="${pin.cat}">
+      <div class="pin-img-wrap">
+        <div class="loading" id="load-${i}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#555" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#555" stroke-width="2" stroke-linecap="round"/></svg>
+          Generating image…
+        </div>
+        <img src="${imgUrl}"
+             style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover"
+             onload="this.style.display='block';document.getElementById('load-${i}').style.display='none'"
+             onerror="document.getElementById('load-${i}').innerHTML='⚠️ Image failed'"
+             alt="${pin.title}">
+      </div>
+      <div class="pin-overlay">
+        <div class="pin-category">${pin.cat.toUpperCase()}</div>
+        <div class="pin-title">${pin.title}</div>
+      </div>
+      <div class="pin-body">
+        <div class="pin-desc">${pin.desc}</div>
+        <div class="pin-footer">
+          <span class="pin-url">objematch.com</span>
+          <span class="pin-save">Save</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>

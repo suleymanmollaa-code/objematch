@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Home Organizer Finder | ObjeMatch</title>
+  <meta name="description" content="Tell us about your space and get personalized home organizer recommendations powered by AI. Find the perfect products for your kitchen, bathroom, bedroom and more.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --card: #22222f;
+      --border: #2e2e40;
+      --accent: #7c6ff7;
+      --accent2: #5ec8e4;
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --success: #4ade80;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .logo span { font-weight: 300; }
+
+    .hero {
+      text-align: center;
+      padding: 60px 24px 40px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(124, 111, 247, 0.15);
+      border: 1px solid rgba(124, 111, 247, 0.3);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    /* Quiz */
+    .quiz-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    .progress-bar {
+      background: var(--border);
+      border-radius: 999px;
+      height: 4px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-label {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .step h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      line-height: 1.3;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .options.three { grid-template-columns: 1fr 1fr 1fr; }
+    .options.single { grid-template-columns: 1fr; }
+
+    .option {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .option:hover {
+      border-color: var(--accent);
+      background: rgba(124, 111, 247, 0.08);
+    }
+
+    .option.selected {
+      border-color: var(--accent);
+      background: rgba(124, 111, 247, 0.15);
+    }
+
+    .option-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .option-text small {
+      display: block;
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: white;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .loading.active { display: block; }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .loading-steps {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    /* Results */
+    .results {
+      display: none;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    .results.active { display: block; animation: fadeIn 0.4s ease; }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .results-header h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .results-intro {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .product-card:hover { border-color: var(--accent); }
+
+    .product-num {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      color: white;
+    }
+
+    .product-info { flex: 1; }
+
+    .product-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .product-reason {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .product-price {
+      background: rgba(94, 200, 228, 0.15);
+      color: var(--accent2);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .product-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ff9900;
+      color: #000;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .product-link:hover { opacity: 0.85; }
+
+    .results-footer {
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .results-footer p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .btn-restart {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-restart:hover { border-color: var(--accent); }
+
+    .error-msg {
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: #f87171;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 15px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .options { grid-template-columns: 1fr; }
+      .options.three { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Obje<span>Match</span></a>
+  <span style="font-size:13px;color:var(--muted)">AI Home Organizer</span>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+    Powered by AI
+  </div>
+  <h1>Find Your Perfect<br><span>Home Organizer</span></h1>
+  <p>Answer 5 quick questions and get personalized product recommendations matched to your exact space and needs.</p>
+</div>
+
+<!-- Quiz -->
+<div class="quiz-container" id="quizContainer">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:20%"></div>
+  </div>
+
+  <!-- Step 1: Room -->
+  <div class="step active" id="step1">
+    <div class="step-label">Step 1 of 5</div>
+    <h2>Which room do you want to organize?</h2>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,'room','Kitchen')">
+        <span class="option-icon">🍳</span>
+        <div class="option-text">Kitchen<small>Pantry, cabinets, drawers</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Bathroom')">
+        <span class="option-icon">🚿</span>
+        <div class="option-text">Bathroom<small>Under sink, shower, vanity</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Bedroom & Closet')">
+        <span class="option-icon">🛏</span>
+        <div class="option-text">Bedroom & Closet<small>Clothes, shoes, jewelry</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Home Office')">
+        <span class="option-icon">💻</span>
+        <div class="option-text">Home Office<small>Desk, cables, files</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Garage')">
+        <span class="option-icon">🔧</span>
+        <div class="option-text">Garage<small>Tools, sports gear, bins</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Laundry Room')">
+        <span class="option-icon">🧺</span>
+        <div class="option-text">Laundry Room<small>Detergents, hampers</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Entryway')">
+        <span class="option-icon">🚪</span>
+        <div class="option-text">Entryway<small>Shoes, coats, keys</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'room','Kids Room')">
+        <span class="option-icon">🧸</span>
+        <div class="option-text">Kids Room<small>Toys, books, crafts</small></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="nextStep(2)" id="btn1" disabled>Continue →</button>
+  </div>
+
+  <!-- Step 2: Space size -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2 of 5</div>
+    <h2>How would you describe your space?</h2>
+    <div class="options single">
+      <div class="option" onclick="selectOption(this,'size','Very small — I need to use every inch')">
+        <span class="option-icon">📦</span>
+        <div class="option-text">Very small<small>I need to use every inch of space</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'size','Average — some room to work with')">
+        <span class="option-icon">🏠</span>
+        <div class="option-text">Average<small>Some room to work with</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'size','Larger space — needs proper systems')">
+        <span class="option-icon">🏡</span>
+        <div class="option-text">Larger space<small>Needs proper systems to stay organized</small></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="nextStep(3)" id="btn2" disabled>Continue →</button>
+    <button class="btn btn-secondary" onclick="nextStep(1)">← Back</button>
+  </div>
+
+  <!-- Step 3: Main problem -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3 of 5</div>
+    <h2>What's your biggest organization challenge?</h2>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,'problem','Everything is piled up and cluttered')">
+        <span class="option-icon">😩</span>
+        <div class="option-text">Too much clutter<small>Can't find anything</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'problem','No good storage solutions or space')">
+        <span class="option-icon">🤔</span>
+        <div class="option-text">No storage space<small>Items have nowhere to go</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'problem','Things keep falling out of place')">
+        <span class="option-icon">😤</span>
+        <div class="option-text">Nothing stays organized<small>Falls apart after a week</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'problem','Wasted vertical space not being used')">
+        <span class="option-icon">📏</span>
+        <div class="option-text">Unused vertical space<small>Only using floor space</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'problem','Too many small items with no place')">
+        <span class="option-icon">🔩</span>
+        <div class="option-text">Lots of small items<small>Scattered everywhere</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'problem','Hard to see what I have without digging')">
+        <span class="option-icon">🔍</span>
+        <div class="option-text">Can't see what I have<small>Always digging through things</small></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="nextStep(4)" id="btn3" disabled>Continue →</button>
+    <button class="btn btn-secondary" onclick="nextStep(2)">← Back</button>
+  </div>
+
+  <!-- Step 4: Budget -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4 of 5</div>
+    <h2>What's your budget for organizing products?</h2>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,'budget','Under $30 — just essentials')">
+        <span class="option-icon">💵</span>
+        <div class="option-text">Under $30<small>Just the essentials</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'budget','$30–$75 — good quality basics')">
+        <span class="option-icon">💰</span>
+        <div class="option-text">$30–$75<small>Good quality basics</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'budget','$75–$150 — willing to invest')">
+        <span class="option-icon">💳</span>
+        <div class="option-text">$75–$150<small>Willing to invest properly</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'budget','$150+ — I want the best solution')">
+        <span class="option-icon">🏆</span>
+        <div class="option-text">$150+<small>I want the best solution</small></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="nextStep(5)" id="btn4" disabled>Continue →</button>
+    <button class="btn btn-secondary" onclick="nextStep(3)">← Back</button>
+  </div>
+
+  <!-- Step 5: Style -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5 of 5</div>
+    <h2>What's your preferred style?</h2>
+    <div class="options">
+      <div class="option" onclick="selectOption(this,'style','Clean and minimal — white, clear, neutral')">
+        <span class="option-icon">🤍</span>
+        <div class="option-text">Clean & Minimal<small>White, clear, neutral tones</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'style','Natural and warm — wood, bamboo, wicker')">
+        <span class="option-icon">🌿</span>
+        <div class="option-text">Natural & Warm<small>Wood, bamboo, wicker</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'style','Modern and industrial — metal, black, sleek')">
+        <span class="option-icon">⚙️</span>
+        <div class="option-text">Modern & Industrial<small>Metal, black, sleek lines</small></div>
+      </div>
+      <div class="option" onclick="selectOption(this,'style','Practical — I just want it to work')">
+        <span class="option-icon">✅</span>
+        <div class="option-text">Just Practical<small>Function over form</small></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="getRecommendations()" id="btn5" disabled>
+      ✨ Get My Recommendations
+    </button>
+    <button class="btn btn-secondary" onclick="nextStep(4)">← Back</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Finding your perfect organizers...</div>
+  <div class="loading-steps" id="loadingSteps">Analyzing your space...</div>
+</div>
+
+<!-- Results -->
+<div class="results" id="results">
+  <div class="results-header">
+    <div style="font-size:40px;margin-bottom:12px">✨</div>
+    <h2>Your Personalized Picks</h2>
+    <p class="results-intro" id="resultsIntro"></p>
+  </div>
+  <div id="productList"></div>
+  <div class="error-msg" id="errorMsg"></div>
+  <div class="results-footer">
+    <p>Recommendations are AI-generated. Prices may vary on Amazon.</p>
+    <a href="/ai-finder.html" class="btn-restart">↩ Start Over</a>
+  </div>
+</div>
+
+<script>
+  const answers = {};
+  const AFFILATE_TAG = 'objematch-20';
+
+  function selectOption(el, key, value) {
+    const options = el.parentElement.querySelectorAll('.option');
+    options.forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[key] = value;
+    const stepNum = el.closest('.step').id.replace('step','');
+    document.getElementById('btn' + stepNum).disabled = false;
+  }
+
+  function nextStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    document.getElementById('progressFill').style.width = (n * 20) + '%';
+  }
+
+  const loadingMessages = [
+    'Analyzing your space...',
+    'Matching to top-rated products...',
+    'Checking Amazon bestsellers...',
+    'Personalizing recommendations...',
+  ];
+
+  async function getRecommendations() {
+    document.getElementById('quizContainer').style.display = 'none';
+    document.getElementById('loading').classList.add('active');
+
+    let msgIdx = 0;
+    const msgEl = document.getElementById('loadingSteps');
+    const msgInterval = setInterval(() => {
+      msgIdx = (msgIdx + 1) % loadingMessages.length;
+      msgEl.textContent = loadingMessages[msgIdx];
+    }, 1800);
+
+    try {
+      const res = await fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(answers),
+      });
+
+      clearInterval(msgInterval);
+
+      if (!res.ok) throw new Error('Server error');
+      const data = await res.json();
+
+      showResults(data);
+    } catch (err) {
+      clearInterval(msgInterval);
+      document.getElementById('loading').classList.remove('active');
+      document.getElementById('quizContainer').style.display = 'block';
+      nextStep(5);
+      const errEl = document.getElementById('errorMsg');
+      errEl.textContent = 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+    }
+  }
+
+  function makeAmazonUrl(searchTerm) {
+    const q = encodeURIComponent(searchTerm);
+    return `https://www.amazon.com/s?k=${q}&tag=${AFFILATE_TAG}`;
+  }
+
+  function showResults(data) {
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('resultsIntro').textContent = data.intro || '';
+
+    const list = document.getElementById('productList');
+    list.innerHTML = '';
+
+    (data.products || []).forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <div class="product-num">${i + 1}</div>
+        <div class="product-info">
+          <div class="product-name">${escHtml(p.name)}</div>
+          <div class="product-reason">${escHtml(p.reason)}</div>
+          <div class="product-meta">
+            <span class="product-price">${escHtml(p.price)}</span>
+            <a href="${makeAmazonUrl(p.search)}" target="_blank" rel="noopener" class="product-link">
+              View on Amazon ↗
+            </a>
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    document.getElementById('results').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function escHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>

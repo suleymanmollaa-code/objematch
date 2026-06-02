@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ObjeMatch — New, Used, or Hire Someone</title>
+<meta name="description" content="ObjeMatch matches you with new products, second-hand deals, and local services — all in one place.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#fafafa;color:#0f172a;line-height:1.5;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* ── NAV ── */
+nav{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid #e8edf2;padding:0 clamp(1rem,4vw,2.5rem);height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100}
+.logo{font-size:1.15rem;font-weight:900;letter-spacing:-.02em;flex-shrink:0}
+.logo span{color:#f97316}
+.nav-search{flex:1;max-width:380px;display:flex;align-items:center;gap:.5rem;background:#f1f5f9;border-radius:10px;padding:.5rem .9rem;border:1.5px solid transparent;transition:all .15s}
+.nav-search:focus-within{background:#fff;border-color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.nav-search input{border:none;background:transparent;font-size:.84rem;width:100%;color:#0f172a;outline:none;font-family:inherit}
+.nav-search input::placeholder{color:#94a3b8}
+.nav-links{display:flex;gap:.15rem;margin-left:auto}
+.nav-link{font-size:.8rem;font-weight:500;color:#64748b;padding:.38rem .7rem;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-link:hover{background:#f1f5f9;color:#0f172a}
+.nav-cta{background:#0f172a;color:#fff;font-size:.8rem;font-weight:700;padding:.38rem .9rem;border-radius:8px;transition:background .15s}
+.nav-cta:hover{background:#1e293b}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(160deg,#fff7ed 0%,#fafafa 60%);padding:5rem clamp(1rem,5vw,3rem) 4.5rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(249,115,22,.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:#fff7ed;border:1px solid #fed7aa;color:#ea580c;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:1.75rem}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#f97316;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:900;line-height:1.1;letter-spacing:-.03em;color:#0f172a;margin-bottom:1.25rem;max-width:750px;margin-left:auto;margin-right:auto}
+h1 em{font-style:normal;color:#f97316}
+.hero-sub{font-size:clamp(.88rem,1.8vw,1rem);color:#64748b;max-width:480px;margin:0 auto 2.75rem;line-height:1.8}
+
+/* SEARCH */
+.search-wrap{max-width:580px;margin:0 auto 1.5rem}
+.search-box{display:flex;background:#fff;border-radius:14px;padding:.55rem .55rem .55rem 1.15rem;box-shadow:0 4px 24px rgba(0,0,0,.08);border:1.5px solid #e2e8f0}
+.search-box input{flex:1;border:none;outline:none;font-size:.95rem;font-family:inherit;color:#0f172a;background:transparent}
+.search-box input::placeholder{color:#94a3b8}
+.search-btn{background:#f97316;color:#fff;border:none;padding:.65rem 1.5rem;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.search-btn:hover{background:#ea580c;transform:translateY(-1px)}
+.hints{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap}
+.hint{font-size:.72rem;color:#64748b;background:#fff;border:1px solid #e2e8f0;padding:.26rem .65rem;border-radius:20px;cursor:pointer;transition:all .15s}
+.hint:hover{background:#fff7ed;border-color:#fed7aa;color:#ea580c}
+
+/* PILLARS */
+.pillars{display:flex;justify-content:center;gap:0;max-width:600px;margin:3.5rem auto 0;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.pillar{flex:1;padding:1.1rem .75rem;text-align:center;background:#fff;transition:background .15s}
+.pillar:hover{background:#fff7ed}
+.pillar+.pillar{border-left:1px solid #e2e8f0}
+.pillar-icon{font-size:1.4rem;margin-bottom:.4rem}
+.pillar-label{font-size:.72rem;font-weight:700;color:#0f172a}
+.pillar-sub{font-size:.63rem;color:#94a3b8;margin-top:.1rem}
+
+/* ── CATEGORIES ── */
+.section{padding:3rem clamp(1rem,4vw,2.5rem);max-width:1200px;margin:0 auto}
+.section-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem}
+.section-title{font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
+.section-link{font-size:.78rem;font-weight:600;color:#f97316}
+.section-link:hover{text-decoration:underline}
+
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem}
+.cat-card{border-radius:14px;overflow:hidden;cursor:pointer;position:relative;aspect-ratio:1;transition:transform .2s,box-shadow .2s}
+.cat-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.12)}
+.cat-card-img{width:100%;height:100%;object-fit:cover;display:block}
+.cat-card-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.1) 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:.85rem .8rem}
+.cat-card-name{font-size:.82rem;font-weight:800;color:#fff;line-height:1.2}
+.cat-card-count{font-size:.62rem;color:rgba(255,255,255,.65);margin-top:.15rem}
+.cat-card-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+
+/* ── POPULAR GRID ── */
+.pop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.pop-card{border-radius:14px;overflow:hidden;background:#fff;cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid #e8edf2}
+.pop-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.pop-card-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#f1f5f9}
+.pop-card-body{padding:.9rem 1rem}
+.pop-card-cat{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#f97316;margin-bottom:.35rem}
+.pop-card-title{font-size:.84rem;font-weight:700;line-height:1.35;margin-bottom:.6rem;color:#0f172a}
+.pop-card-pills{display:flex;gap:.3rem;flex-wrap:wrap}
+.pill{font-size:.6rem;padding:.18rem .5rem;border-radius:5px;font-weight:700}
+.pill-new{background:#fff7ed;color:#ea580c}
+.pill-used{background:#f0fdf4;color:#16a34a}
+.pill-svc{background:#eff6ff;color:#2563eb}
+
+/* ── HOW IT WORKS ── */
+.how{background:#fff;border-top:1px solid #e8edf2;border-bottom:1px solid #e8edf2;padding:3.5rem clamp(1rem,4vw,2.5rem)}
+.how-inner{max-width:900px;margin:0 auto;text-align:center}
+.how-title{font-size:1.15rem;font-weight:800;margin-bottom:.5rem;letter-spacing:-.02em}
+.how-sub{font-size:.85rem;color:#64748b;margin-bottom:2.5rem}
+.how-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2rem}
+.how-step-num{width:40px;height:40px;border-radius:12px;background:#fff7ed;border:2px solid #fed7aa;color:#f97316;font-size:.9rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto .85rem}
+.how-step-title{font-size:.88rem;font-weight:700;margin-bottom:.4rem}
+.how-step-text{font-size:.75rem;color:#64748b;line-height:1.7}
+
+/* ── TRUST BAR ── */
+.trust{background:#fff7ed;border-top:1px solid #fed7aa;border-bottom:1px solid #fed7aa;padding:2.5rem clamp(1rem,4vw,2.5rem)}
+.trust-inner{max-width:900px;margin:0 auto;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;align-items:center}
+.trust-item{text-align:center}
+.trust-num{font-size:1.5rem;font-weight:900;color:#f97316}
+.trust-label{font-size:.72rem;color:#92400e;margin-top:.2rem}
+
+/* ── FOOTER ── */
+footer{background:#0f172a;border-top:1px solid #1e293b;color:#475569;padding:2.5rem clamp(1rem,4vw,2.5rem)}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:2rem;margin-bottom:2rem}
+.footer-logo{font-size:1.05rem;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.footer-logo span{color:#f97316}
+.footer-tagline{font-size:.75rem;color:#475569}
+.footer-col-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:.75rem}
+.footer-col a{display:block;font-size:.78rem;color:#475569;margin-bottom:.4rem;transition:color .15s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid #1e293b;padding-top:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.75rem;align-items:center}
+.footer-copy{font-size:.7rem;color:#334155}
+.footer-disc{font-size:.68rem;color:#334155;max-width:500px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Obje<span>Match</span></div>
+  <div class="nav-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/><path d="m20 20-3-3" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="Search…" id="navInput" onkeydown="if(event.key==='Enter')doSearch('navInput')">
+  </div>
+  <div class="nav-links">
+    <a href="#" class="nav-link">Kitchen</a>
+    <a href="#" class="nav-link">Closet</a>
+    <a href="#" class="nav-link">Bathroom</a>
+    <a href="#" class="nav-link">Office</a>
+    <a href="#" class="nav-link">Garage</a>
+  </div>
+  <a href="#" class="nav-cta">Get Matches</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><div class="hero-badge-dot"></div>New · Used · Services · Bundles</div>
+  <h1>Find it new, used,<br>or <em>hire someone</em> to do it.</h1>
+  <p class="hero-sub">One search. Every option. New from Amazon, second-hand from eBay, local pros from Thumbtack — side by side.</p>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" placeholder='Try "closet organizer" or "pantry storage ideas"…' id="searchInput" onkeydown="if(event.key==='Enter')doSearch('searchInput')">
+      <button class="search-btn" onclick="doSearch('searchInput')">Match It →</button>
+    </div>
+  </div>
+
+  <div class="hints">
+    <span class="hint" onclick="go('pantry organization')">pantry organization</span>
+    <span class="hint" onclick="go('closet organizer')">closet organizer</span>
+    <span class="hint" onclick="go('small bathroom storage')">small bathroom storage</span>
+    <span class="hint" onclick="go('home office setup')">home office setup</span>
+    <span class="hint" onclick="go('under sink organizer')">under sink organizer</span>
+    <span class="hint" onclick="go('garage storage bins')">garage storage bins</span>
+  </div>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-icon">🛒</div>
+      <div class="pillar-label">New Products</div>
+      <div class="pillar-sub">Amazon picks</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">♻️</div>
+      <div class="pillar-label">Second-Hand</div>
+      <div class="pillar-sub">eBay deals</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🔧</div>
+      <div class="pillar-label">Local Services</div>
+      <div class="pillar-sub">Thumbtack pros</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">✨</div>
+      <div class="pillar-label">Bundles</div>
+      <div class="pillar-sub">What's missing</div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="section">
+  <div class="section-hd">
+    <div class="section-title">Browse by Category</div>
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card" onclick="location.href='pages/pantry-organization.html'">
+      <img class="cat-card-img" src="output/images/pantry-organization.jpg" alt="Kitchen" onerror="this.style.display='none'">
+      <div class="cat-card-placeholder" style="display:none">🍽️</div>
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Kitchen</div>
+        <div class="cat-card-count">168 guides</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="location.href='pages/closet-organization.html'">
+      <img class="cat-card-img" src="output/images/closet-organization.jpg" alt="Closet" onerror="this.style.display='none'">
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Closet</div>
+        <div class="cat-card-count">106 guides</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="location.href='pages/bathroom-storage.html'">
+      <img class="cat-card-img" src="output/images/bathroom-storage.jpg" alt="Bathroom" onerror="this.style.display='none'">
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Bathroom</div>
+        <div class="cat-card-count">86 guides</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="location.href='pages/bedroom-organization.html'">
+      <img class="cat-card-img" src="output/images/bedroom-organization.jpg" alt="Bedroom" onerror="this.style.display='none'">
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Bedroom</div>
+        <div class="cat-card-count">82 guides</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="location.href='pages/home-office-organization.html'">
+      <img class="cat-card-img" src="output/images/home-office-organization.jpg" alt="Office" onerror="this.style.display='none'">
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Home Office</div>
+        <div class="cat-card-count">86 guides</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="location.href='pages/garage-storage.html'">
+      <img class="cat-card-img" src="output/images/living-room-organization.jpg" alt="Living Room" onerror="this.style.display='none'">
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Living Room</div>
+        <div class="cat-card-count">62 guides</div>
+      </div>
+    </div>
+    <div class="cat-card" onclick="location.href='pages/garage-storage.html'">
+      <div class="cat-card-placeholder">🔨</div>
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Garage</div>
+        <div class="cat-card-count">141 guides</div>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-card-placeholder">🧺</div>
+      <div class="cat-card-overlay">
+        <div class="cat-card-name">Laundry</div>
+        <div class="cat-card-count">Coming soon</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POPULAR -->
+<div class="section" style="padding-top:0">
+  <div class="section-hd">
+    <div class="section-title">Popular Right Now</div>
+    <a href="#" class="section-link">See all →</a>
+  </div>
+  <div class="pop-grid">
+    <div class="pop-card" onclick="location.href='pages/pantry-organization.html'">
+      <img class="pop-card-img" src="output/images/pantry-organization.jpg" alt="Pantry Organization">
+      <div class="pop-card-body">
+        <div class="pop-card-cat">Kitchen</div>
+        <div class="pop-card-title">Best Pantry Organization Ideas 2025</div>
+        <div class="pop-card-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-used">Used</span>
+          <span class="pill pill-svc">Services</span>
+        </div>
+      </div>
+    </div>
+    <div class="pop-card" onclick="location.href='pages/closet-organization.html'">
+      <img class="pop-card-img" src="output/images/closet-organization.jpg" alt="Closet Organization">
+      <div class="pop-card-body">
+        <div class="pop-card-cat">Closet</div>
+        <div class="pop-card-title">Closet Organization System — Full Guide</div>
+        <div class="pop-card-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-used">Used</span>
+          <span class="pill pill-svc">Services</span>
+        </div>
+      </div>
+    </div>
+    <div class="pop-card" onclick="location.href='pages/bathroom-storage-ideas.html'">
+      <img class="pop-card-img" src="output/images/bathroom-storage-ideas.jpg" alt="Bathroom Storage">
+      <div class="pop-card-body">
+        <div class="pop-card-cat">Bathroom</div>
+        <div class="pop-card-title">Small Bathroom Storage Solutions</div>
+        <div class="pop-card-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-used">Used</span>
+          <span class="pill pill-svc">Services</span>
+        </div>
+      </div>
+    </div>
+    <div class="pop-card" onclick="location.href='pages/home-office-storage.html'">
+      <img class="pop-card-img" src="output/images/home-office-storage.jpg" alt="Home Office">
+      <div class="pop-card-body">
+        <div class="pop-card-cat">Office</div>
+        <div class="pop-card-title">Home Office Storage & Cable Management</div>
+        <div class="pop-card-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-used">Used</span>
+          <span class="pill pill-svc">Services</span>
+        </div>
+      </div>
+    </div>
+    <div class="pop-card" onclick="location.href='pages/bedroom-storage-ideas.html'">
+      <img class="pop-card-img" src="output/images/bedroom-storage-ideas.jpg" alt="Bedroom Storage">
+      <div class="pop-card-body">
+        <div class="pop-card-cat">Bedroom</div>
+        <div class="pop-card-title">Bedroom Storage Ideas for Small Spaces</div>
+        <div class="pop-card-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-used">Used</span>
+        </div>
+      </div>
+    </div>
+    <div class="pop-card" onclick="location.href='pages/living-room-storage.html'">
+      <img class="pop-card-img" src="output/images/living-room-storage.jpg" alt="Living Room">
+      <div class="pop-card-body">
+        <div class="pop-card-cat">Living Room</div>
+        <div class="pop-card-title">Living Room Storage & Organization</div>
+        <div class="pop-card-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-used">Used</span>
+          <span class="pill pill-svc">Services</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how">
+  <div class="how-inner">
+    <div class="how-title">How ObjeMatch Works</div>
+    <div class="how-sub">One search returns every option — so you actually make the best choice.</div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <div class="how-step-title">Search Your Need</div>
+        <div class="how-step-text">Type naturally — "small kitchen storage" or "closet ideas for renters." We handle the rest.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <div class="how-step-title">We Match All Options</div>
+        <div class="how-step-text">New from Amazon, second-hand from eBay, local pros from Thumbtack — pulled together instantly.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <div class="how-step-title">Compare & Decide</div>
+        <div class="how-step-text">New vs. used vs. hire, side by side. Pick what fits your budget and situation.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">4</div>
+        <div class="how-step-title">Click & Go</div>
+        <div class="how-step-text">Head straight to Amazon, eBay, or Thumbtack. No friction, no extra steps.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <div class="trust-num">863+</div>
+      <div class="trust-label">Product Guides</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">3</div>
+      <div class="trust-label">Options Per Search</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">8</div>
+      <div class="trust-label">Home Categories</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">$0</div>
+      <div class="trust-label">Extra Cost to You</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Obje<span>Match</span></div>
+        <div class="footer-tagline">Find it new, used, or hire someone.</div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Categories</div>
+        <a href="pages/pantry-organization.html">Kitchen</a>
+        <a href="pages/closet-organization.html">Closet</a>
+        <a href="pages/bathroom-storage.html">Bathroom</a>
+        <a href="pages/bedroom-organization.html">Bedroom</a>
+        <a href="pages/home-office-organization.html">Office</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Popular</div>
+        <a href="pages/pantry-organization.html">Pantry Organization</a>
+        <a href="pages/closet-organization.html">Closet Systems</a>
+        <a href="pages/bathroom-storage-ideas.html">Bathroom Storage</a>
+        <a href="pages/home-office-storage.html">Home Office</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Info</div>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Affiliate Disclosure</a>
+        <a href="#">About</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 ObjeMatch</div>
+      <div class="footer-disc">ObjeMatch participates in the Amazon Associates Program and other affiliate programs. We earn commissions on qualifying purchases at no extra cost to you.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toSlug(str){return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function doSearch(id){
+  const val=document.getElementById(id).value.trim();
+  if(!val)return;
+  location.href='pages/'+toSlug(val)+'.html';
+}
+function go(val){
+  location.href='pages/'+toSlug(val)+'.html';
+}
+// Fix image placeholders
+document.querySelectorAll('.cat-card-img').forEach(img=>{
+  img.addEventListener('error',function(){
+    this.style.display='none';
+    const ph=this.nextElementSibling;
+    if(ph&&ph.classList.contains('cat-card-placeholder'))ph.style.display='flex';
+  });
+});
+</script>
+</body>
+</html>

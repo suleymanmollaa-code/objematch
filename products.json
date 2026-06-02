@@ -1,0 +1,166 @@
+{
+  "tag": "objematch-20",
+  "categories": {
+    "kitchen": [
+      { "title": "iDesign Linus Stackable Pantry Bins, Set of 4", "brand": "iDesign", "price": 34.99, "was": 44.99, "stars": 4.7, "reviews": 18432, "badge": "Best Seller", "search": "iDesign Linus Stackable Pantry Bins", "emoji": "🗂️" },
+      { "title": "OXO Good Grips Under-Shelf Basket", "brand": "OXO", "price": 19.99, "was": null, "stars": 4.6, "reviews": 9821, "badge": "Editor's Pick", "search": "OXO Good Grips Under Shelf Basket", "emoji": "🧺" },
+      { "title": "mDesign Plastic Kitchen Drawer Organizer Set of 4", "brand": "mDesign", "price": 22.49, "was": 29.99, "stars": 4.5, "reviews": 12043, "badge": null, "search": "mDesign Plastic Kitchen Drawer Organizer", "emoji": "📦" },
+      { "title": "Rubbermaid Brilliance Pantry Food Storage Set 10-Piece", "brand": "Rubbermaid", "price": 39.99, "was": 54.99, "stars": 4.8, "reviews": 31201, "badge": "Best Seller", "search": "Rubbermaid Brilliance Pantry Food Storage Set", "emoji": "🍱" },
+      { "title": "SimpleHouseware Pull-Out Cabinet Basket Organizer", "brand": "SimpleHouseware", "price": 27.99, "was": 35.99, "stars": 4.6, "reviews": 7654, "badge": null, "search": "SimpleHouseware Pull Out Cabinet Basket Organizer", "emoji": "🏠" }
+    ],
+    "bathroom": [
+      { "title": "iDesign Clarity Plastic Bathroom Organizer Set", "brand": "iDesign", "price": 28.99, "was": 39.99, "stars": 4.6, "reviews": 14320, "badge": "Best Seller", "search": "iDesign Clarity Bathroom Organizer", "emoji": "🧴" },
+      { "title": "Zenna Home Over-the-Toilet Storage, 3-Tier", "brand": "Zenna Home", "price": 44.99, "was": 59.99, "stars": 4.4, "reviews": 8762, "badge": null, "search": "Zenna Home Over the Toilet Storage 3 Tier", "emoji": "🚽" },
+      { "title": "mDesign Shower Caddy Basket Shelf — Rust Proof", "brand": "mDesign", "price": 18.99, "was": 24.99, "stars": 4.5, "reviews": 11203, "badge": "Editor's Pick", "search": "mDesign Shower Caddy Basket Shelf Rust Proof", "emoji": "🚿" },
+      { "title": "SimpleHouseware Over Door Bathroom Organizer 4 Baskets", "brand": "SimpleHouseware", "price": 22.99, "was": null, "stars": 4.4, "reviews": 6543, "badge": null, "search": "SimpleHouseware Over Door Bathroom Organizer", "emoji": "🚪" },
+      { "title": "Sorbus Bathroom Organizer Counter Storage, Bamboo", "brand": "Sorbus", "price": 32.99, "was": 42.99, "stars": 4.7, "reviews": 5432, "badge": null, "search": "Sorbus Bamboo Bathroom Countertop Organizer", "emoji": "🌿" }
+    ],
+    "bedroom": [
+      { "title": "SONGMICS 6-Shelf Portable Wardrobe Closet Organizer", "brand": "SONGMICS", "price": 59.99, "was": 79.99, "stars": 4.6, "reviews": 22341, "badge": "Best Seller", "search": "SONGMICS Portable Wardrobe Closet Organizer", "emoji": "👗" },
+      { "title": "ClosetMaid 3-Tier Shelf Dividers, Set of 6", "brand": "ClosetMaid", "price": 19.99, "was": null, "stars": 4.4, "reviews": 9871, "badge": null, "search": "ClosetMaid Shelf Dividers", "emoji": "🗂️" },
+      { "title": "HAUSSE Velvet Hangers Non-Slip 50 Pack", "brand": "HAUSSE", "price": 16.99, "was": 22.99, "stars": 4.7, "reviews": 41230, "badge": "Best Seller", "search": "Velvet Hangers Non Slip 50 Pack", "emoji": "👔" },
+      { "title": "SimpleHouseware Crystal Clear Over Door Shoe Organizer 24 Pockets", "brand": "SimpleHouseware", "price": 14.99, "was": 19.99, "stars": 4.5, "reviews": 18932, "badge": "Editor's Pick", "search": "SimpleHouseware Over Door Shoe Organizer 24 Pockets", "emoji": "👟" },
+      { "title": "StorageWorks Herringbone Fabric Storage Bins, Set of 3", "brand": "StorageWorks", "price": 27.99, "was": 34.99, "stars": 4.7, "reviews": 7823, "badge": null, "search": "StorageWorks Herringbone Fabric Storage Bins", "emoji": "📦" }
+    ],
+    "office": [
+      { "title": "VEVOR Mesh Desk Organizer 6-Piece Set", "brand": "VEVOR", "price": 29.99, "was": 39.99, "stars": 4.5, "reviews": 6732, "badge": null, "search": "VEVOR Mesh Desk Organizer Set", "emoji": "💼" },
+      { "title": "SONGMICS Bamboo Desk Organizer with 4 Compartments", "brand": "SONGMICS", "price": 24.99, "was": 32.99, "stars": 4.6, "reviews": 9341, "badge": "Best Seller", "search": "SONGMICS Bamboo Desk Organizer", "emoji": "🎋" },
+      { "title": "Simple Trending 3-Tier Monitor Stand Riser with Storage", "brand": "Simple Trending", "price": 32.99, "was": 42.99, "stars": 4.5, "reviews": 12043, "badge": "Editor's Pick", "search": "Simple Trending Monitor Stand Riser Storage Drawer", "emoji": "🖥️" },
+      { "title": "Rolodex Mesh Collection 6-Piece Desktop Set", "brand": "Rolodex", "price": 27.48, "was": null, "stars": 4.4, "reviews": 8765, "badge": null, "search": "Rolodex Mesh Desktop Organizer Set", "emoji": "📋" },
+      { "title": "Cable Management Box Organizer — Large, Cord Hider", "brand": "Bluelounge", "price": 34.95, "was": 44.95, "stars": 4.6, "reviews": 15432, "badge": "Best Seller", "search": "Cable Management Box Organizer Cord Hider", "emoji": "🔌" }
+    ],
+    "garage": [
+      { "title": "Rubbermaid FastTrack Garage Wall Storage System", "brand": "Rubbermaid", "price": 89.99, "was": 119.99, "stars": 4.6, "reviews": 14321, "badge": "Best Seller", "search": "Rubbermaid FastTrack Garage Wall Storage System", "emoji": "🔧" },
+      { "title": "Wall Control Metal Pegboard 2-Pack", "brand": "Wall Control", "price": 69.98, "was": 89.98, "stars": 4.7, "reviews": 11203, "badge": "Editor's Pick", "search": "Wall Control Metal Pegboard Pack", "emoji": "🪛" },
+      { "title": "Muscle Rack 5-Tier Steel Freestanding Shelving Unit", "brand": "Muscle Rack", "price": 79.99, "was": 99.99, "stars": 4.5, "reviews": 19832, "badge": "Best Seller", "search": "Muscle Rack Steel Freestanding Shelving Unit", "emoji": "🏗️" },
+      { "title": "SafeRacks Overhead Garage Storage Rack 4x8", "brand": "SafeRacks", "price": 149.99, "was": 199.99, "stars": 4.7, "reviews": 8923, "badge": null, "search": "SafeRacks Overhead Garage Storage Rack", "emoji": "⬆️" },
+      { "title": "Akro-Mils 10124 AkroBins Plastic Storage Bin Pack of 24", "brand": "Akro-Mils", "price": 23.99, "was": null, "stars": 4.6, "reviews": 21043, "badge": null, "search": "Akro-Mils AkroBins Plastic Storage Bin", "emoji": "📦" }
+    ],
+    "kids": [
+      { "title": "SONGMICS Kids Toy Organizer 12-Bin Storage", "brand": "SONGMICS", "price": 49.99, "was": 64.99, "stars": 4.6, "reviews": 13421, "badge": "Best Seller", "search": "SONGMICS Kids Toy Organizer 12 Bin Storage", "emoji": "🧸" },
+      { "title": "Humble Crew Toy Storage Organizer 20 Bins", "brand": "Humble Crew", "price": 79.99, "was": 99.99, "stars": 4.5, "reviews": 9872, "badge": "Editor's Pick", "search": "Humble Crew Toy Storage Organizer Bins", "emoji": "🪀" },
+      { "title": "LEGO Sorting and Storage System Large", "brand": "LEGO", "price": 34.99, "was": 44.99, "stars": 4.7, "reviews": 18321, "badge": "Best Seller", "search": "LEGO Sorting Storage System", "emoji": "🧱" },
+      { "title": "KidKraft Children's Bookcase with 3 Shelves", "brand": "KidKraft", "price": 89.99, "was": 119.99, "stars": 4.7, "reviews": 11023, "badge": null, "search": "KidKraft Childrens Bookcase Shelves", "emoji": "📚" },
+      { "title": "Sorbus Kids Art Supply Organizer Trolley with 5 Drawers", "brand": "Sorbus", "price": 39.99, "was": 54.99, "stars": 4.5, "reviews": 6723, "badge": null, "search": "Sorbus Kids Art Supply Organizer Trolley Drawers", "emoji": "🎨" }
+    ],
+    "laundry": [
+      { "title": "Honey-Can-Do 3-Bag Heavy-Duty Laundry Sorter", "brand": "Honey-Can-Do", "price": 44.99, "was": 59.99, "stars": 4.5, "reviews": 16732, "badge": "Best Seller", "search": "Honey Can Do 3 Bag Laundry Sorter Cart", "emoji": "🧺" },
+      { "title": "SONGMICS Over Washer Dryer Shelf Utility Cart", "brand": "SONGMICS", "price": 54.99, "was": 72.99, "stars": 4.5, "reviews": 9821, "badge": "Editor's Pick", "search": "SONGMICS Over Washer Dryer Shelf Cart", "emoji": "🛒" },
+      { "title": "Seville Classics 3-Tier Laundry Organizer Shelf", "brand": "Seville Classics", "price": 79.99, "was": 99.99, "stars": 4.6, "reviews": 7432, "badge": null, "search": "Seville Classics Laundry Organizer Shelf", "emoji": "🏗️" },
+      { "title": "mDesign Laundry Room Organizer Wall Mount Storage", "brand": "mDesign", "price": 28.99, "was": 36.99, "stars": 4.4, "reviews": 8912, "badge": null, "search": "mDesign Laundry Room Wall Mount Storage Organizer", "emoji": "📦" },
+      { "title": "Whitmor Ironing Board Holder and Laundry Rack", "brand": "Whitmor", "price": 24.99, "was": null, "stars": 4.3, "reviews": 5432, "badge": null, "search": "Whitmor Ironing Board Holder Laundry Rack", "emoji": "👕" }
+    ],
+    "entryway": [
+      { "title": "Prepac Wall Mounted Floating Entryway Shelf and Coat Rack", "brand": "Prepac", "price": 79.99, "was": 99.99, "stars": 4.6, "reviews": 14321, "badge": "Best Seller", "search": "Prepac Wall Mounted Entryway Shelf Coat Rack", "emoji": "🪝" },
+      { "title": "VASAGLE Entryway Bench with Shoe Storage 3-Tier", "brand": "VASAGLE", "price": 89.99, "was": 119.99, "stars": 4.7, "reviews": 21032, "badge": "Editor's Pick", "search": "VASAGLE Entryway Bench Shoe Storage", "emoji": "🪑" },
+      { "title": "SimpleHouseware Heavy Duty Over Door Hook Rack 5 Hooks", "brand": "SimpleHouseware", "price": 17.99, "was": 24.99, "stars": 4.6, "reviews": 19821, "badge": "Best Seller", "search": "SimpleHouseware Over Door Hook Rack", "emoji": "🧥" },
+      { "title": "mDesign Stackable Shoe Storage Box Set of 12", "brand": "mDesign", "price": 29.99, "was": 39.99, "stars": 4.4, "reviews": 8742, "badge": null, "search": "mDesign Stackable Shoe Storage Box", "emoji": "👟" },
+      { "title": "Umbra Trigg Wall Shelf and Display — Set of 3", "brand": "Umbra", "price": 34.99, "was": null, "stars": 4.6, "reviews": 12032, "badge": null, "search": "Umbra Trigg Wall Shelf Display", "emoji": "📐" }
+    ],
+    "linen": [
+      { "title": "Lifewit Bed Sheet Organizer Set of 6", "brand": "Lifewit", "price": 19.99, "was": 27.99, "stars": 4.7, "reviews": 23421, "badge": "Best Seller", "search": "Lifewit Bed Sheet Organizer Set", "emoji": "🛏️" },
+      { "title": "Simple Houseware Closet Shelf Divider Set of 6", "brand": "SimpleHouseware", "price": 15.99, "was": null, "stars": 4.4, "reviews": 11032, "badge": null, "search": "Simple Houseware Closet Shelf Divider", "emoji": "🗂️" },
+      { "title": "Ziploc Space Bag Vacuum Seal Storage Bags 10-Pack", "brand": "Ziploc", "price": 24.99, "was": 32.99, "stars": 4.5, "reviews": 41230, "badge": "Best Seller", "search": "Ziploc Space Bag Vacuum Seal Storage", "emoji": "🛍️" },
+      { "title": "StorageWorks Linen Closet Baskets Set of 3", "brand": "StorageWorks", "price": 31.99, "was": 42.99, "stars": 4.7, "reviews": 8732, "badge": null, "search": "StorageWorks Linen Closet Baskets", "emoji": "🧺" },
+      { "title": "Whitmor Blanket Storage Bags with Zipper Set of 3", "brand": "Whitmor", "price": 22.99, "was": null, "stars": 4.4, "reviews": 7841, "badge": null, "search": "Whitmor Blanket Storage Bags Zipper", "emoji": "🛌" }
+    ],
+    "living room": [
+      { "title": "SONGMICS Storage Ottoman Bench with Removable Lid", "brand": "SONGMICS", "price": 59.99, "was": 79.99, "stars": 4.7, "reviews": 24312, "badge": "Best Seller", "search": "SONGMICS Storage Ottoman Bench", "emoji": "🛋️" },
+      { "title": "Latitude Run Floating Wall Shelves Set of 3", "brand": "Latitude Run", "price": 44.99, "was": 59.99, "stars": 4.6, "reviews": 9821, "badge": "Editor's Pick", "search": "Floating Wall Shelves Living Room Set of 3", "emoji": "📚" },
+      { "title": "mDesign TV Console Media Organizer with Doors", "brand": "mDesign", "price": 54.99, "was": 72.99, "stars": 4.4, "reviews": 7832, "badge": null, "search": "mDesign TV Console Media Organizer", "emoji": "📺" },
+      { "title": "Sorbus Coffee Table Organizer Tray with Handles", "brand": "Sorbus", "price": 29.99, "was": null, "stars": 4.5, "reviews": 6732, "badge": null, "search": "Sorbus Coffee Table Organizer Tray", "emoji": "☕" },
+      { "title": "Whitmor Wicker Magazine Storage Basket", "brand": "Whitmor", "price": 19.99, "was": 27.99, "stars": 4.4, "reviews": 8921, "badge": null, "search": "Wicker Magazine Storage Basket Living Room", "emoji": "📰" }
+    ],
+    "craft": [
+      { "title": "Craft Storage Cart with 5 Drawers on Wheels", "brand": "Iris USA", "price": 49.99, "was": 64.99, "stars": 4.6, "reviews": 12432, "badge": "Best Seller", "search": "Craft Storage Cart Drawers Wheels", "emoji": "🎨" },
+      { "title": "ArtBin Super Satchel Deluxe Storage Box", "brand": "ArtBin", "price": 34.99, "was": null, "stars": 4.7, "reviews": 8921, "badge": "Editor's Pick", "search": "ArtBin Super Satchel Art Storage Box", "emoji": "🖌️" },
+      { "title": "Iris USA Scrapbook Rolling Tote with Trays", "brand": "Iris USA", "price": 44.99, "was": 59.99, "stars": 4.5, "reviews": 7832, "badge": null, "search": "Iris USA Scrapbook Rolling Tote Trays", "emoji": "📦" },
+      { "title": "SONGMICS Pegboard Wall Organizer for Craft Room", "brand": "SONGMICS", "price": 37.99, "was": 49.99, "stars": 4.6, "reviews": 9421, "badge": null, "search": "SONGMICS Pegboard Wall Organizer Craft Room", "emoji": "📌" },
+      { "title": "Yarn Storage Bag Tote with Handles — 3-Pack", "brand": "Teamoy", "price": 19.99, "was": null, "stars": 4.5, "reviews": 11023, "badge": null, "search": "Yarn Storage Bag Tote Knitting Organizer", "emoji": "🧶" }
+    ],
+    "cleaning": [
+      { "title": "SimpleHouseware Broom and Mop Holder Wall Mount", "brand": "SimpleHouseware", "price": 22.99, "was": 29.99, "stars": 4.6, "reviews": 31204, "badge": "Best Seller", "search": "SimpleHouseware Broom Mop Holder Wall Mount", "emoji": "🧹" },
+      { "title": "Casabella Under Sink Cleaning Organizer Caddy", "brand": "Casabella", "price": 18.99, "was": null, "stars": 4.5, "reviews": 9821, "badge": "Editor's Pick", "search": "Casabella Under Sink Cleaning Organizer", "emoji": "🧴" },
+      { "title": "Rubbermaid Cleaning Caddy Tote 2-Pack", "brand": "Rubbermaid", "price": 24.99, "was": 32.99, "stars": 4.7, "reviews": 14320, "badge": "Best Seller", "search": "Rubbermaid Cleaning Caddy Tote", "emoji": "🪣" },
+      { "title": "mDesign Stackable Bin Recycling Center — 3-Bag", "brand": "mDesign", "price": 44.99, "was": 59.99, "stars": 4.4, "reviews": 6732, "badge": null, "search": "mDesign Stackable Recycling Bin Center", "emoji": "♻️" },
+      { "title": "Rev-A-Shelf Under Sink Pull-Out Organizer", "brand": "Rev-A-Shelf", "price": 54.99, "was": 69.99, "stars": 4.6, "reviews": 8321, "badge": null, "search": "Rev-A-Shelf Under Sink Pull Out Organizer", "emoji": "🏗️" }
+    ],
+    "bedding": [
+      { "title": "Ziploc Space Bag Bedding Vacuum Storage Bags 4-Pack", "brand": "Ziploc", "price": 22.99, "was": 29.99, "stars": 4.5, "reviews": 38921, "badge": "Best Seller", "search": "Ziploc Space Bag Bedding Storage", "emoji": "🛏️" },
+      { "title": "Lifewit Pillow Storage Bag Organizer Set of 2", "brand": "Lifewit", "price": 17.99, "was": null, "stars": 4.6, "reviews": 14320, "badge": null, "search": "Lifewit Pillow Storage Bag Organizer", "emoji": "🛌" },
+      { "title": "Whitmor Blanket Bag with Sturdy Zipper Closure", "brand": "Whitmor", "price": 14.99, "was": 19.99, "stars": 4.4, "reviews": 9821, "badge": null, "search": "Whitmor Blanket Storage Bag Zipper", "emoji": "🧸" },
+      { "title": "Homyfort Duvet Storage Bag Linen Set", "brand": "Homyfort", "price": 24.99, "was": 32.99, "stars": 4.7, "reviews": 7832, "badge": "Editor's Pick", "search": "Duvet Storage Bag Linen Organizer", "emoji": "☁️" },
+      { "title": "Simple Houseware Shelf Dividers for Linen Closet 6-Pack", "brand": "SimpleHouseware", "price": 15.99, "was": null, "stars": 4.4, "reviews": 11032, "badge": null, "search": "Shelf Dividers Linen Closet Organizer", "emoji": "🗂️" }
+    ],
+    "cookware": [
+      { "title": "T-fal Signature Nonstick Cookware Set 12-Piece", "brand": "T-fal", "price": 79.99, "was": 119.99, "stars": 4.6, "reviews": 41230, "badge": "Best Seller", "search": "T-fal Signature Nonstick Cookware Set", "emoji": "🍳" },
+      { "title": "Lodge Pre-Seasoned Cast Iron Skillet 12 Inch", "brand": "Lodge", "price": 29.90, "was": null, "stars": 4.8, "reviews": 89432, "badge": "Best Seller", "search": "Lodge Cast Iron Skillet 12 Inch", "emoji": "🥘" },
+      { "title": "Victorinox Fibrox Pro Chef's Knife 8-Inch", "brand": "Victorinox", "price": 44.95, "was": 59.95, "stars": 4.8, "reviews": 52341, "badge": "Editor's Pick", "search": "Victorinox Fibrox Pro Chef Knife 8 Inch", "emoji": "🔪" },
+      { "title": "OXO Good Grips 3-Piece Cutting Board Set", "brand": "OXO", "price": 28.99, "was": 39.99, "stars": 4.7, "reviews": 18032, "badge": null, "search": "OXO Good Grips Cutting Board Set", "emoji": "🍽️" },
+      { "title": "Pyrex Simply Store Meal Prep Glass Containers 10-Piece", "brand": "Pyrex", "price": 34.99, "was": 44.99, "stars": 4.7, "reviews": 34201, "badge": "Best Seller", "search": "Pyrex Simply Store Glass Containers Set", "emoji": "🫙" }
+    ],
+    "smart home": [
+      { "title": "Amazon Smart Plug, Works with Alexa", "brand": "Amazon", "price": 24.99, "was": 34.99, "stars": 4.7, "reviews": 89231, "badge": "Best Seller", "search": "Amazon Smart Plug Works with Alexa", "emoji": "🔌" },
+      { "title": "Kasa Smart Bulb Full Color LED A19 4-Pack", "brand": "Kasa", "price": 29.99, "was": 39.99, "stars": 4.6, "reviews": 41230, "badge": "Best Seller", "search": "Kasa Smart Bulb Color A19 4 Pack", "emoji": "💡" },
+      { "title": "Ring Video Doorbell Wired", "brand": "Ring", "price": 59.99, "was": 79.99, "stars": 4.5, "reviews": 34210, "badge": "Editor's Pick", "search": "Ring Video Doorbell Wired", "emoji": "🔔" },
+      { "title": "Blink Indoor Security Camera 3-Camera System", "brand": "Blink", "price": 79.99, "was": 109.99, "stars": 4.4, "reviews": 28321, "badge": null, "search": "Blink Indoor Security Camera 3 Camera System", "emoji": "📷" },
+      { "title": "schlage Encode Smart WiFi Deadbolt", "brand": "Schlage", "price": 169.99, "was": 219.99, "stars": 4.6, "reviews": 12043, "badge": null, "search": "Schlage Encode Smart WiFi Deadbolt", "emoji": "🔒" }
+    ],
+    "cleaning tech": [
+      { "title": "iRobot Roomba i3 EVO Self-Emptying Robot Vacuum", "brand": "iRobot", "price": 299.99, "was": 399.99, "stars": 4.6, "reviews": 34210, "badge": "Best Seller", "search": "iRobot Roomba i3 Robot Vacuum", "emoji": "🤖" },
+      { "title": "Shark IZ362H Cordless Vacuum with Self-Cleaning Brush", "brand": "Shark", "price": 179.99, "was": 249.99, "stars": 4.5, "reviews": 21032, "badge": "Editor's Pick", "search": "Shark Cordless Vacuum Self Cleaning", "emoji": "🌀" },
+      { "title": "BLACK+DECKER Handheld Vacuum Dustbuster", "brand": "BLACK+DECKER", "price": 44.99, "was": 59.99, "stars": 4.5, "reviews": 31204, "badge": "Best Seller", "search": "BLACK DECKER Handheld Vacuum Dustbuster", "emoji": "🌬️" },
+      { "title": "Eufy RoboVac 11S Robot Vacuum Slim", "brand": "eufy", "price": 149.99, "was": 199.99, "stars": 4.5, "reviews": 42310, "badge": null, "search": "Eufy RoboVac Robot Vacuum Slim", "emoji": "🤖" },
+      { "title": "Dyson V8 Animal Cordless Vacuum Cleaner", "brand": "Dyson", "price": 299.99, "was": 399.99, "stars": 4.7, "reviews": 18932, "badge": null, "search": "Dyson V8 Cordless Vacuum", "emoji": "💨" }
+    ],
+    "air quality": [
+      { "title": "Levoit Core 300 Air Purifier for Bedroom", "brand": "Levoit", "price": 99.99, "was": 129.99, "stars": 4.7, "reviews": 41230, "badge": "Best Seller", "search": "Levoit Core 300 Air Purifier Bedroom", "emoji": "🌬️" },
+      { "title": "Winix 5500-2 Air Purifier with True HEPA", "brand": "Winix", "price": 149.99, "was": 199.99, "stars": 4.7, "reviews": 34210, "badge": "Editor's Pick", "search": "Winix 5500-2 Air Purifier True HEPA", "emoji": "💨" },
+      { "title": "Vicks Cool Mist Humidifier 1 Gallon", "brand": "Vicks", "price": 29.99, "was": 39.99, "stars": 4.5, "reviews": 21032, "badge": "Best Seller", "search": "Vicks Cool Mist Humidifier", "emoji": "💧" },
+      { "title": "hOmeLabs 4,500 Sq Ft Energy Star Dehumidifier", "brand": "hOmeLabs", "price": 219.99, "was": 279.99, "stars": 4.5, "reviews": 18921, "badge": null, "search": "hOmeLabs Energy Star Dehumidifier", "emoji": "☁️" },
+      { "title": "Coway AP-1512HH Mighty Air Purifier", "brand": "Coway", "price": 89.99, "was": 119.99, "stars": 4.7, "reviews": 51032, "badge": "Best Seller", "search": "Coway Mighty Air Purifier AP-1512HH", "emoji": "🌀" }
+    ],
+    "lighting": [
+      { "title": "BenQ e-Reading LED Desk Lamp Eye Care", "brand": "BenQ", "price": 89.99, "was": 119.99, "stars": 4.7, "reviews": 12032, "badge": "Editor's Pick", "search": "BenQ e-Reading LED Desk Lamp", "emoji": "💡" },
+      { "title": "TaoTronics LED Floor Lamp with 4 USB Charging Ports", "brand": "TaoTronics", "price": 54.99, "was": 72.99, "stars": 4.5, "reviews": 21043, "badge": "Best Seller", "search": "TaoTronics LED Floor Lamp USB Charging", "emoji": "🕯️" },
+      { "title": "GOVEE Smart LED Strip Lights 32.8ft RGBIC", "brand": "Govee", "price": 19.99, "was": 29.99, "stars": 4.5, "reviews": 42310, "badge": "Best Seller", "search": "Govee Smart LED Strip Lights RGBIC", "emoji": "🌈" },
+      { "title": "Globe Electric 2-Pack Bedside Table Lamp", "brand": "Globe Electric", "price": 34.99, "was": null, "stars": 4.5, "reviews": 8921, "badge": null, "search": "Globe Electric Bedside Table Lamp Set", "emoji": "🏮" },
+      { "title": "Brightech Sparq Arc LED Floor Lamp", "brand": "Brightech", "price": 99.99, "was": 129.99, "stars": 4.6, "reviews": 14032, "badge": null, "search": "Brightech Sparq Arc Floor Lamp Living Room", "emoji": "🌟" }
+    ],
+    "outdoor": [
+      { "title": "Keter Westwood Plastic Deck Box 150-Gallon", "brand": "Keter", "price": 129.99, "was": 169.99, "stars": 4.6, "reviews": 18321, "badge": "Best Seller", "search": "Keter Westwood Plastic Deck Box 150 Gallon", "emoji": "📦" },
+      { "title": "Suncast BMO1250D Vertical Shed 2.5 ft", "brand": "Suncast", "price": 189.99, "was": 249.99, "stars": 4.4, "reviews": 12032, "badge": null, "search": "Suncast Vertical Shed Outdoor Storage", "emoji": "🏠" },
+      { "title": "COSCO 7-Piece Outdoor Patio Furniture Set", "brand": "COSCO", "price": 299.99, "was": 399.99, "stars": 4.5, "reviews": 9821, "badge": "Editor's Pick", "search": "COSCO Outdoor Patio Furniture Set", "emoji": "🌿" },
+      { "title": "Achla Designs Scroll Balcony Planter — 2 Pack", "brand": "Achla Designs", "price": 44.99, "was": null, "stars": 4.5, "reviews": 7832, "badge": null, "search": "Balcony Rail Planter Boxes Outdoor", "emoji": "🌺" },
+      { "title": "Suncast Hose Hideaway 100 Ft Garden Hose Storage", "brand": "Suncast", "price": 39.99, "was": 52.99, "stars": 4.5, "reviews": 21043, "badge": "Best Seller", "search": "Suncast Garden Hose Storage Hideaway", "emoji": "🌱" }
+    ],
+    "health": [
+      { "title": "Etekcity Smart Body Weight Scale BMI", "brand": "Etekcity", "price": 29.99, "was": 39.99, "stars": 4.6, "reviews": 34210, "badge": "Best Seller", "search": "Etekcity Smart Body Weight Scale BMI", "emoji": "⚖️" },
+      { "title": "Johnson & Johnson All-Purpose First Aid Kit 140-Piece", "brand": "Johnson & Johnson", "price": 19.99, "was": null, "stars": 4.7, "reviews": 28321, "badge": "Best Seller", "search": "Johnson Johnson First Aid Kit 140 Piece", "emoji": "🩹" },
+      { "title": "Apex Pill Organizer Weekly AM/PM 7-Day", "brand": "Apex", "price": 12.99, "was": null, "stars": 4.7, "reviews": 41230, "badge": "Best Seller", "search": "Apex Pill Organizer Weekly AM PM 7 Day", "emoji": "💊" },
+      { "title": "Sterilite Medicine Cabinet 3-Shelf Organizer", "brand": "Sterilite", "price": 17.99, "was": 24.99, "stars": 4.4, "reviews": 9821, "badge": null, "search": "Sterilite Medicine Cabinet Shelf Organizer", "emoji": "🏥" },
+      { "title": "mDesign Plastic Medicine Cabinet Organizer Bins", "brand": "mDesign", "price": 22.99, "was": null, "stars": 4.5, "reviews": 8732, "badge": null, "search": "mDesign Medicine Cabinet Organizer Bins", "emoji": "💉" }
+    ],
+    "bathroom upgrade": [
+      { "title": "Moen Attract Magnetix 6-Function Handheld Shower Head", "brand": "Moen", "price": 74.95, "was": 99.95, "stars": 4.7, "reviews": 18321, "badge": "Best Seller", "search": "Moen Attract Handheld Shower Head", "emoji": "🚿" },
+      { "title": "Gorilla Grip Bath Mat Non-Slip, 2-Piece Set", "brand": "Gorilla Grip", "price": 29.99, "was": 39.99, "stars": 4.7, "reviews": 41230, "badge": "Best Seller", "search": "Gorilla Grip Bath Mat Non Slip Set", "emoji": "🛁" },
+      { "title": "AmazonBasics Shower Curtain with Hooks 72x72", "brand": "AmazonBasics", "price": 14.99, "was": null, "stars": 4.5, "reviews": 21043, "badge": null, "search": "Shower Curtain 72x72 with Hooks", "emoji": "🪞" },
+      { "title": "mDesign Modern Freestanding Toilet Paper Holder Stand", "brand": "mDesign", "price": 22.99, "was": 29.99, "stars": 4.5, "reviews": 12032, "badge": null, "search": "mDesign Toilet Paper Holder Stand Freestanding", "emoji": "🧻" },
+      { "title": "Umbra Touch Automatic Soap Dispenser", "brand": "Umbra", "price": 34.99, "was": 44.99, "stars": 4.5, "reviews": 8921, "badge": null, "search": "Automatic Soap Dispenser Bathroom Kitchen", "emoji": "🧼" }
+    ],
+    "bedroom upgrade": [
+      { "title": "Neutype Large Full-Length Floor Mirror 65x22", "brand": "Neutype", "price": 99.99, "was": 139.99, "stars": 4.7, "reviews": 24310, "badge": "Best Seller", "search": "Full Length Floor Mirror Bedroom", "emoji": "🪞" },
+      { "title": "Amazon Basics Portable Garment Clothing Rack", "brand": "AmazonBasics", "price": 29.99, "was": null, "stars": 4.5, "reviews": 18321, "badge": null, "search": "Portable Garment Clothing Rack", "emoji": "👗" },
+      { "title": "iDesign Vanity Makeup Organizer 3-Piece", "brand": "iDesign", "price": 24.99, "was": 34.99, "stars": 4.6, "reviews": 11032, "badge": null, "search": "iDesign Vanity Makeup Organizer", "emoji": "💄" },
+      { "title": "Conair Infiniti Pro Luxe Black Wand Set", "brand": "Conair", "price": 39.99, "was": 54.99, "stars": 4.4, "reviews": 9821, "badge": null, "search": "Hair Tool Organizer Holder Wall Mount", "emoji": "💇" },
+      { "title": "Hausprofi Wall Mirror Decorative Round 24 Inch", "brand": "Hausprofi", "price": 44.99, "was": 59.99, "stars": 4.6, "reviews": 7832, "badge": "Editor's Pick", "search": "Decorative Round Wall Mirror Bedroom 24 Inch", "emoji": "⭕" }
+    ],
+    "decor": [
+      { "title": "AmazonBasics Area Rug 5x8 Feet — Charcoal", "brand": "AmazonBasics", "price": 79.99, "was": 109.99, "stars": 4.4, "reviews": 18321, "badge": null, "search": "Area Rug 5x8 Living Room Charcoal", "emoji": "🏠" },
+      { "title": "Rivet Casual Throw Pillow Cover Set of 2", "brand": "Rivet", "price": 29.99, "was": null, "stars": 4.5, "reviews": 12032, "badge": null, "search": "Throw Pillow Cover Sofa Couch Set 2", "emoji": "🛋️" },
+      { "title": "SIGNLEADER Framed Landscape Canvas Wall Art Set of 3", "brand": "SIGNLEADER", "price": 54.99, "was": 72.99, "stars": 4.6, "reviews": 9821, "badge": "Best Seller", "search": "Framed Canvas Wall Art Living Room Set 3", "emoji": "🖼️" },
+      { "title": "Costa Farms Live Indoor Plant in Ceramic Planter", "brand": "Costa Farms", "price": 22.99, "was": null, "stars": 4.5, "reviews": 21043, "badge": "Best Seller", "search": "Costa Farms Live Indoor Plant Ceramic Planter", "emoji": "🌿" },
+      { "title": "Mkono Macrame Wall Hanging Large Bohemian Decor", "brand": "Mkono", "price": 34.99, "was": 44.99, "stars": 4.6, "reviews": 14320, "badge": null, "search": "Macrame Wall Hanging Large Bohemian", "emoji": "🎨" }
+    ]
+  }
+}
