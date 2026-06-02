@@ -228,19 +228,20 @@ async function identifyProduct(pageText, url) {
     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001', max_tokens: 300,
-      messages: [{ role: 'user', content: `You are a price monitoring assistant. Extract info from this product page.
+      messages: [{ role: 'user', content: `You are a price monitoring assistant. Extract info from this listing or product page.
 
 URL: ${url}
 Page content: ${pageText}
 
 RULES:
-- Only extract if this is a SINGLE product listing/detail page where one item is for sale.
-- If it is a video, article, blog, social feed, search results, or multi-product page → {"name":null}
-- Extract the exact price currently shown on the page (as-is, e.g. "₺1.299,00" or "$49.99").
+- Extract info if this page is a SINGLE listing or item detail page — this includes: physical products, real estate listings, vehicle listings, classified ads, rental listings, second-hand items, any single item being sold or rented.
+- If it is a video, article, blog, social feed, search/results page, or general homepage → {"name":null}
+- Extract the exact price or rent amount shown on the page (as-is, e.g. "₺12.500", "$49.99", "€250/ay").
+- For real estate/vehicles: include key detail in the name (e.g. "1+1 Daire - Empire Istanbul, Kiralik" or "2020 Toyota Corolla 1.6").
 - Do NOT invent or guess. Only return what is clearly on the page.
 
 Return ONLY valid JSON:
-{"name":"full product name with brand and model, or null","currentPrice":"exact price shown or null","available":true}` }]
+{"name":"listing title or item name, or null","currentPrice":"exact price shown or null","available":true}` }]
     })
   });
   const data = await r.json();
