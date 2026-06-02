@@ -830,28 +830,13 @@ app.post('/api/link-analyze', requireAuth, async (req, res) => {
 
   try {
     const pageText = await fetchPageText(url);
-    const textLen  = pageText.trim().length;
-    console.log(`[link-analyze] url=${url} textLen=${textLen} preview=${pageText.slice(0,200)}`);
-
-    // Detect bot-blocked / captcha pages
-    const blocked = textLen < 200 ||
-      /cloudflare|captcha|robot|access denied|just a moment|enable javascript/i.test(pageText);
-
-    if (blocked) {
-      return res.status(400).json({
-        error: 'page_blocked',
-        message: 'This site blocked our request. Enter the product details manually below.'
-      });
-    }
+    console.log(`[link-analyze] url=${url} textLen=${pageText.length} preview=${pageText.slice(0,300)}`);
 
     const product = await identifyProduct(pageText, url);
     console.log(`[link-analyze] product=${JSON.stringify(product)}`);
 
     if (!product.name) {
-      return res.status(400).json({
-        error: 'not_found',
-        message: 'Couldn\'t auto-detect the listing. Enter the product name manually below.'
-      });
+      return res.status(400).json({ error: 'Couldn\'t detect a listing on this page. Make sure the link goes directly to a product or listing detail page.' });
     }
 
     incrementLinkUsage(req.user.id);
