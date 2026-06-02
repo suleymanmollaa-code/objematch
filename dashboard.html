@@ -229,7 +229,7 @@
 <nav>
   <a href="/" class="logo">Obje<span>Match</span></a>
   <div class="nav-right">
-    <a href="/room-analyzer.html" class="nav-btn accent">+ Analyze</a>
+    <a href="/link-tracker.html" class="nav-btn accent">+ Track Link</a>
   </div>
 </nav>
 
@@ -237,7 +237,7 @@
   <div class="auth-gate">
     <div style="font-size:48px;margin-bottom:16px">🔒</div>
     <h2>Sign in to view your dashboard</h2>
-    <p>Track your analyses, watches, and deal alerts in one place.</p>
+    <p>Track your watched links, price alerts, and account settings in one place.</p>
     <a href="/login.html" style="display:inline-block;background:var(--accent);color:white;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:700;">Sign in</a>
   </div>
 </div>
@@ -246,8 +246,8 @@
   <!-- Mobile tabs -->
   <div class="mob-tabs" id="mobTabs">
     <div class="mob-tab active" onclick="switchTab('overview')">Overview</div>
-    <div class="mob-tab" onclick="switchTab('analyses')">Analyses</div>
     <div class="mob-tab" onclick="switchTab('alerts')">Alerts</div>
+    <div class="mob-tab" onclick="switchTab('plan')">Watches</div>
     <div class="mob-tab" onclick="switchTab('settings')">Settings</div>
   </div>
 
@@ -267,8 +267,8 @@
         <div class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
           <span class="icon">📊</span> Overview
         </div>
-        <div class="nav-item" onclick="switchTab('analyses')" id="nav-analyses">
-          <span class="icon">📸</span> Analyses
+        <div class="nav-item" onclick="switchTab('plan')" id="nav-plan">
+          <span class="icon">📡</span> My Watches
         </div>
         <div class="nav-item" onclick="switchTab('alerts')" id="nav-alerts">
           <span class="icon">🔔</span> Deal Alerts
@@ -281,8 +281,8 @@
         <div class="nav-item" onclick="switchTab('settings')" id="nav-settings">
           <span class="icon">⚙️</span> Settings
         </div>
-        <div class="nav-item" onclick="switchTab('plan')" id="nav-plan">
-          <span class="icon">📡</span> My Watches
+        <div class="nav-item" onclick="location.href='/link-tracker.html'" style="color:var(--accent);font-weight:700">
+          <span class="icon">🔗</span> Track New Link
         </div>
       </div>
 
@@ -356,7 +356,7 @@
     if (navEl) navEl.classList.add('active');
     // Mobile tabs
     document.querySelectorAll('.mob-tab').forEach((el, i) => {
-      const tabs = ['overview','analyses','alerts','settings'];
+      const tabs = ['overview','alerts','plan','settings'];
       el.classList.toggle('active', tabs[i] === tab);
     });
     if (dashData) renderTab(tab);
@@ -365,7 +365,6 @@
   function renderTab(tab) {
     const el = document.getElementById('mainContent');
     if (tab === 'overview')  el.innerHTML = renderOverview();
-    if (tab === 'analyses')  el.innerHTML = renderAnalyses();
     if (tab === 'alerts')    el.innerHTML = renderAlerts();
     if (tab === 'settings')  el.innerHTML = renderSettings();
     if (tab === 'plan')      el.innerHTML = renderPlan();
@@ -392,12 +391,14 @@
   function renderOverview() {
     const { user: u, watches, alerts } = dashData;
     const activeWatches = (watches||[]).filter(w => w.active);
+    const linkUsed  = u?.linkAnalysisCount || u?.used || 0;
+    const linkLimit = u?.linkAnalysisLimit  || 5;
 
     const watchesHtml = activeWatches.length === 0
-      ? `<div class="empty"><div class="empty-icon">📡</div>No active watches. <a href="/room-analyzer.html" style="color:var(--purple);font-weight:600">Analyze a photo</a> and click Watch on any item.</div>`
+      ? `<div class="empty"><div class="empty-icon">📡</div>No active watches yet. <a href="/link-tracker.html" style="color:var(--purple);font-weight:600">Track a link</a> and click Watch to get price alerts.</div>`
       : activeWatches.slice(0,5).map(w => `
           <div class="watch-card active">
-            <div style="font-size:20px">📡</div>
+            <div style="font-size:20px">🔗</div>
             <div class="watch-info">
               <div class="watch-title">${esc(w.itemTitle)}</div>
               <div class="watch-meta">${freqLabel(w.frequency)} · ${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</div>
@@ -409,8 +410,8 @@
     return `
       <div class="stats">
         <div class="stat-card">
-          <div class="stat-val">${u?.used||0}<span style="font-size:14px;color:var(--muted)">/${u?.limit||100}</span></div>
-          <div class="stat-label">Analyses this month</div>
+          <div class="stat-val">${linkUsed}<span style="font-size:14px;color:var(--muted)">/${linkLimit}</span></div>
+          <div class="stat-label">Link analyses this month</div>
         </div>
         <div class="stat-card" style="border-color:#c4b5fd">
           <div class="stat-val" style="color:var(--purple)">${activeWatches.length}</div>
@@ -430,47 +431,6 @@
       </div>`;
   }
 
-  /* ── Analyses ────────────────────────────────────────────── */
-  function renderAnalyses() {
-    const { analyses } = dashData;
-    if (!analyses || analyses.length === 0)
-      return `<div class="section"><div class="section-title" style="margin-bottom:12px">Recent Analyses</div><div class="empty"><div class="empty-icon">📸</div>No analyses yet. <a href="/room-analyzer.html" style="color:var(--accent);font-weight:600">Upload a photo</a> to get started.</div></div>`;
-
-    const cards = analyses.map((a, i) => {
-      const aid = 'an-' + i;
-      const thumb = a.thumbnail
-        ? `<img class="analysis-thumb-sm" src="${a.thumbnail}" alt="" loading="lazy">`
-        : `<div class="analysis-thumb-ph">📸</div>`;
-      const items = (a.problems||[]).length === 0
-        ? `<div style="font-size:12px;color:var(--muted);padding:6px 0">No items found.</div>`
-        : (a.problems||[]).map(p => `
-            <div class="item-row">
-              <div>
-                <div class="item-name">${esc(p.title)}</div>
-                ${p.options?.new?.price ? `<div class="item-price">New ~${esc(p.options.new.price)}</div>` : ''}
-              </div>
-              <div class="item-links">
-                ${p.options?.new?.url  ? `<a href="${esc(p.options.new.url)}"  target="_blank" class="amz-btn" rel="noopener">Amazon</a>` : ''}
-                ${p.options?.used?.url ? `<a href="${esc(p.options.used.url)}" target="_blank" class="ebay-btn" rel="noopener">eBay</a>` : ''}
-              </div>
-            </div>`).join('');
-      return `
-        <div class="analysis-item" id="${aid}">
-          <div class="analysis-head" onclick="document.getElementById('${aid}').classList.toggle('open')">
-            ${thumb}
-            <div class="analysis-head-info">
-              <div class="analysis-room-title">${esc(a.room||'Photo')}</div>
-              <div class="analysis-summary">${esc(a.summary||'')} · ${(a.problems||[]).length} items</div>
-            </div>
-            <div class="analysis-date-sm">${timeAgo(a.createdAt)}</div>
-            <div class="analysis-chevron">⌄</div>
-          </div>
-          <div class="analysis-items">${items}</div>
-        </div>`;
-    }).join('');
-
-    return `<div class="section"><div class="section-head"><div class="section-title">Recent Analyses</div><span class="section-link" onclick="location.href='/room-analyzer.html'">New analysis</span></div>${cards}</div>`;
-  }
 
   /* ── Alerts ──────────────────────────────────────────────── */
   function renderAlerts() {
@@ -524,7 +484,7 @@
       </div>`;
 
     const activeHtml = active.length === 0
-      ? `<div class="empty"><div class="empty-icon">📡</div>No active watches. <a href="/room-analyzer.html" style="color:var(--purple);font-weight:600">Analyze a photo</a> to add one.</div>`
+      ? `<div class="empty"><div class="empty-icon">📡</div>No active watches yet. <a href="/link-tracker.html" style="color:var(--purple);font-weight:600">Track a link</a> to get price alerts.</div>`
       : `<div class="settings-card"><div class="settings-card-head"><div class="settings-card-title">Active Watches</div><div class="settings-card-sub">Cancel anytime — billing stops immediately</div></div><div style="padding:4px 20px">${active.map(makeRow).join('')}</div></div>`;
 
     const inactiveHtml = inactive.length === 0 ? '' :
