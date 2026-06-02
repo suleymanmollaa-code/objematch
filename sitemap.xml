@@ -3,6 +3,16 @@
   <url><loc>https://www.objematch.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://www.objematch.com/room-analyzer.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.objematch.com/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/living-room.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/home-office.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/bedroom.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/car-interior.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/gaming-setup.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/garage.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/kitchen.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/bathroom.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/closet.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.objematch.com/category/outdoor-patio.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.objematch.com/blog/living-room-upgrade-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.objematch.com/blog/home-office-setup-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.objematch.com/blog/car-interior-upgrades.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
