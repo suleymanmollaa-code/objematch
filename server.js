@@ -71,11 +71,13 @@ const upload        = multer({ storage: multer.memoryStorage(), limits: { fileSi
 const API_KEY       = process.env.ANTHROPIC_API_KEY?.replace(/\s/g, '');
 const JWT_SECRET    = process.env.JWT_SECRET || 'objematch-secret-2026';
 const AFFILIATE     = 'objematch-20';
-const DATA_DIR      = process.env.DATA_DIR || path.join(__dirname, 'data');
-const USERS_FILE    = path.join(DATA_DIR, 'users.json');
-const ANALYSES_FILE = path.join(DATA_DIR, 'analyses.json');
-const MONITORS_FILE = path.join(DATA_DIR, 'monitors.json');
-const ALERTS_FILE   = path.join(DATA_DIR, 'alerts.json');
+const DATA_DIR           = process.env.DATA_DIR || path.join(__dirname, 'data');
+const USERS_FILE         = path.join(DATA_DIR, 'users.json');
+const ANALYSES_FILE      = path.join(DATA_DIR, 'analyses.json');
+const MONITORS_FILE      = path.join(DATA_DIR, 'monitors.json');
+const ALERTS_FILE        = path.join(DATA_DIR, 'alerts.json');
+const LINK_WATCHES_FILE  = path.join(DATA_DIR, 'link-watches.json');
+const SERPAPI_KEY        = process.env.SERPAPI_KEY;
 const FREE_LIMIT    = 100;
 const BASE_URL      = process.env.BASE_URL || 'https://www.objematch.com';
 const LS_API_KEY    = process.env.LEMONSQUEEZY_API_KEY;
@@ -183,6 +185,107 @@ function optionalAuth(req, res, next) {
 function amazonUrl(s) { return `https://www.amazon.com/s?k=${encodeURIComponent(s)}&tag=${AFFILIATE}`; }
 function ebayUrl(s)   { return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(s)}`; }
 
+// ── LINK TRACKER HELPERS ──────────────────────────────────────────────────────
+async function fetchPageText(url) {
+  const r = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+    signal: AbortSignal.timeout(12000)
+  });
+  const html = await r.text();
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 4000);
+}
+
+async function identifyProduct(pageText, url) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 300,
+      messages: [{ role: 'user', content: `Identify the main product on this webpage.
+URL: ${url}
+Content: ${pageText}
+
+Respond ONLY with JSON:
+{"name":"product name with brand and model","searchQuery":"best Google Shopping search query","category":"product category","estimatedPrice":"$XX-$XX or null"}` }]
+    })
+  });
+  const data = await r.json();
+  const text = data.content?.[0]?.text || '{}';
+  const match = text.match(/\{[\s\S]*\}/);
+  try { return JSON.parse(match ? match[0] : '{}'); } catch { return {}; }
+}
+
+async function searchShopping(query) {
+  if (SERPAPI_KEY) {
+    try {
+      const r = await fetch(`https://serpapi.com/search?engine=google_shopping&q=${encodeURIComponent(query)}&api_key=${SERPAPI_KEY}&num=10`);
+      const data = await r.json();
+      if (data.shopping_results?.length) {
+        return data.shopping_results.slice(0, 8).map(item => ({
+          title: item.title, price: item.price, source: item.source,
+          link: item.link, thumbnail: item.thumbnail,
+          rating: item.rating, reviews: item.reviews
+        }));
+      }
+    } catch (e) { console.error('SerpAPI error:', e.message); }
+  }
+  // Fallback: Claude-generated seller list
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 600,
+      messages: [{ role: 'user', content: `For this product: "${query}"
+List 6 places where it can be purchased online with realistic prices.
+Respond ONLY with JSON array:
+[{"title":"product name","price":"$XX","source":"Store name","link":"https://...","thumbnail":null}]
+Use real stores: Amazon, eBay, Walmart, Target, Best Buy, Newegg, etc.` }]
+    })
+  });
+  const data = await r.json();
+  const text = data.content?.[0]?.text || '[]';
+  const match = text.match(/\[[\s\S]*\]/);
+  try { return JSON.parse(match ? match[0] : '[]'); } catch { return []; }
+}
+
+async function sendLinkAlertEmail(to, productName, sourceUrl, sellers) {
+  if (!mailer || !sellers.length) return;
+  const rows = sellers.slice(0, 5).map(s => `
+    <div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;background:#fff;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#111827">${esc(s.source || '')}</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px">${esc(s.title || '')}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:15px;font-weight:800;color:#059669">${esc(s.price || '')}</div>
+        ${s.link ? `<a href="${s.link}" style="font-size:11px;color:#f97316;font-weight:600">View →</a>` : ''}
+      </div>
+    </div>`).join('');
+
+  await mailer.sendMail({
+    from:    `"ObjeMatch" <${process.env.SMTP_USER}>`,
+    to,
+    subject: `Price update: "${productName}"`,
+    html: `<div style="max-width:520px;margin:0 auto;font-family:Inter,Arial,sans-serif;background:#f9fafb;padding:32px 16px;">
+      <div style="background:#fff;border-radius:20px;padding:28px;">
+        <div style="font-size:20px;font-weight:800;color:#111827;margin-bottom:4px;">🔔 Price update</div>
+        <div style="color:#6b7280;font-size:13px;margin-bottom:20px;">Here's where <strong>${esc(productName)}</strong> is selling right now:</div>
+        ${rows}
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6;">
+          <a href="${BASE_URL}/link-tracker.html" style="background:#f97316;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">Open Link Tracker</a>
+        </div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:14px">You're watching this product. <a href="${BASE_URL}/dashboard.html" style="color:#6b7280">Manage watches</a></div>
+      </div>
+    </div>`
+  });
+}
+
 
 // ── WATCH CRON ────────────────────────────────────────────────────────────────
 function getNextCheckAt(frequency) {
@@ -274,9 +377,45 @@ async function runWatchCron() {
   }
 }
 
+async function runLinkWatchCron() {
+  if (!API_KEY) return;
+  const watches = readJSON(LINK_WATCHES_FILE);
+  const now = new Date();
+  const due = watches.filter(w => w.active && (!w.nextCheckAt || new Date(w.nextCheckAt) <= now));
+  if (due.length > 0) console.log(`Link watch cron: ${due.length} due`);
+
+  for (const watch of due) {
+    try {
+      const sellers = await searchShopping(watch.searchQuery || watch.productName);
+      const alerts  = readJSON(ALERTS_FILE);
+      alerts.push({
+        id: Date.now().toString(), type: 'link',
+        watchId: watch.id, userId: watch.userId,
+        productName: watch.productName, sourceUrl: watch.url,
+        sellers, createdAt: new Date().toISOString()
+      });
+      writeJSON(ALERTS_FILE, alerts);
+
+      const users = readJSON(USERS_FILE);
+      const user  = users.find(u => u.id === watch.userId);
+      if (user?.email && mailer) {
+        await sendLinkAlertEmail(user.email, watch.productName, watch.url, sellers);
+      }
+
+      const idx = watches.findIndex(w => w.id === watch.id);
+      if (idx !== -1) {
+        watches[idx].lastCheckedAt = new Date().toISOString();
+        watches[idx].nextCheckAt   = getNextCheckAt(watch.frequency);
+        writeJSON(LINK_WATCHES_FILE, watches);
+      }
+      console.log(`Link watch processed: "${watch.productName}"`);
+    } catch (e) { console.error('Link watch cron error:', e.message); }
+  }
+}
+
 // Run every hour, and once 1 minute after startup
-setInterval(runWatchCron, 60 * 60 * 1000);
-setTimeout(runWatchCron, 60 * 1000);
+setInterval(() => { runWatchCron(); runLinkWatchCron(); }, 60 * 60 * 1000);
+setTimeout(() => { runWatchCron(); runLinkWatchCron(); }, 60 * 1000);
 
 // ── AUTH ROUTES ───────────────────────────────────────────────────────────────
 app.post('/api/auth/register', async (req, res) => {
@@ -666,7 +805,64 @@ Respond ONLY with valid JSON, no markdown, no explanation:
   }
 });
 
-// ── SELL LISTING ──────────────────────────────────────────────────────────────
+// ── LINK TRACKER ROUTES ───────────────────────────────────────────────────────
+app.post('/api/link-analyze', optionalAuth, async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'URL required' });
+  if (!API_KEY) return res.status(500).json({ error: 'API not configured' });
+
+  try {
+    new URL(url); // validate URL
+  } catch {
+    return res.status(400).json({ error: 'Invalid URL' });
+  }
+
+  try {
+    const pageText = await fetchPageText(url);
+    const product  = await identifyProduct(pageText, url);
+    if (!product.name) return res.status(400).json({ error: 'Could not identify a product on this page' });
+
+    const sellers = await searchShopping(product.searchQuery || product.name);
+    res.json({ product, sellers });
+  } catch (e) {
+    console.error('Link analyze error:', e.message);
+    res.status(500).json({ error: 'Failed to analyze link' });
+  }
+});
+
+app.post('/api/link-watches', requireAuth, (req, res) => {
+  const { url, productName, searchQuery, frequency } = req.body;
+  if (!url || !productName) return res.status(400).json({ error: 'url and productName required' });
+
+  const watches = readJSON(LINK_WATCHES_FILE);
+  const watch = {
+    id: Date.now().toString(), userId: req.user.id,
+    url, productName, searchQuery: searchQuery || productName,
+    frequency: ['daily', 'weekly', 'monthly'].includes(frequency) ? frequency : 'daily',
+    active: true, lastCheckedAt: null,
+    nextCheckAt: getNextCheckAt(frequency || 'daily'),
+    createdAt: new Date().toISOString()
+  };
+  watches.push(watch);
+  writeJSON(LINK_WATCHES_FILE, watches);
+  res.json({ watch });
+});
+
+app.get('/api/link-watches', requireAuth, (req, res) => {
+  const watches = readJSON(LINK_WATCHES_FILE)
+    .filter(w => w.userId === req.user.id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  res.json({ watches });
+});
+
+app.delete('/api/link-watches/:id', requireAuth, (req, res) => {
+  const watches = readJSON(LINK_WATCHES_FILE);
+  const idx = watches.findIndex(w => w.id === req.params.id && w.userId === req.user.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  watches[idx].active = false;
+  writeJSON(LINK_WATCHES_FILE, watches);
+  res.json({ ok: true });
+});
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
