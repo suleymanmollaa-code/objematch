@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Room Analyzer — Find Perfect Products for Your Space | ObjeMatch</title>
-  <meta name="description" content="Upload a photo of any room. Our AI identifies what's missing and recommends the perfect furniture, decor, and organizers — with Amazon links.">
+  <title>AI Object Finder — Identify, Buy & Sell Anything | ObjeMatch</title>
+  <meta name="description" content="Upload any photo. Our AI identifies every object, finds where to buy similar items, and helps you sell what you already own — all in one click.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -332,6 +332,90 @@
 
     .aff-note { font-size: 12px; color: var(--light); margin-top: 24px; line-height: 1.5; }
 
+    /* ── SELL MODE ── */
+    .option-sell { background: #fffbeb; border-color: #fde68a; }
+    .option-sell:hover { border-color: #f59e0b; }
+
+    .sell-panel {
+      margin-top: 14px; background: #fffbeb; border: 1.5px solid #fde68a;
+      border-radius: 14px; overflow: hidden; animation: fadeUp 0.3s ease;
+    }
+
+    .sell-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid #fde68a;
+      background: linear-gradient(135deg, #f59e0b08, #f59e0b14);
+    }
+
+    .sell-header-left { display: flex; align-items: center; gap: 8px; }
+    .sell-badge { font-size: 11px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 0.08em; }
+    .sell-price-pill {
+      background: #f59e0b; color: white; font-size: 12px; font-weight: 700;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .sell-close {
+      background: none; border: none; font-size: 18px; cursor: pointer;
+      color: var(--muted); line-height: 1; padding: 2px 6px; border-radius: 6px;
+    }
+    .sell-close:hover { background: #fde68a; }
+
+    .sell-body { padding: 14px 16px; }
+
+    .sell-title-row { margin-bottom: 10px; }
+    .sell-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+    .sell-title-text {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      background: white; border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; width: 100%; line-height: 1.4;
+    }
+
+    .sell-condition-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .condition-chip {
+      padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid var(--border); background: white; cursor: pointer;
+      transition: all 0.15s; color: var(--muted);
+    }
+    .condition-chip.active { background: #f59e0b; border-color: #f59e0b; color: white; }
+    .condition-chip:hover:not(.active) { border-color: #f59e0b; color: #92400e; }
+
+    .sell-desc-area {
+      width: 100%; border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; font-size: 13px; font-family: inherit; line-height: 1.6;
+      color: var(--text); resize: vertical; min-height: 120px; margin-bottom: 12px;
+      background: white;
+    }
+    .sell-desc-area:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+
+    .sell-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .sell-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit; border: 1.5px solid; transition: all 0.15s;
+      text-decoration: none;
+    }
+    .sell-btn-copy { background: white; border-color: var(--border); color: var(--text); }
+    .sell-btn-copy:hover { border-color: #f59e0b; color: #92400e; }
+    .sell-btn-copy.copied { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
+    .sell-btn-ebay { background: #e53238; border-color: #e53238; color: white; }
+    .sell-btn-ebay:hover { background: #cc2028; }
+    .sell-btn-search { background: white; border-color: var(--border); color: var(--muted); font-size: 12px; }
+    .sell-btn-search:hover { border-color: var(--border); color: var(--text); }
+
+    .sell-loading {
+      text-align: center; padding: 24px 16px; color: var(--muted); font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+
+    .sell-spinner {
+      width: 18px; height: 18px; border: 2px solid #fde68a;
+      border-top-color: #f59e0b; border-radius: 50%;
+      animation: spin 0.7s linear infinite; flex-shrink: 0;
+    }
+
+    .avg-sold-note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .avg-sold-note strong { color: #059669; }
+
     .error-box {
       background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
       padding: 14px; border-radius: 12px; font-size: 14px; display: none; margin-top: 14px;
@@ -372,8 +456,8 @@
 
     <!-- Upload -->
     <div class="upload-section" id="uploadSection">
-      <div class="section-title">Analyze Your Room</div>
-      <div class="section-sub">Upload a photo and our AI will identify exactly what your space needs — furniture, decor, organizers, and more.</div>
+      <div class="section-title">AI Object Finder</div>
+      <div class="section-sub">Upload any photo — room, car, desk, closet, garage. AI identifies every object so you can buy similar items or sell what you have.</div>
 
       <div class="drop-area" id="dropArea">
         <input type="file" id="fileInput" accept="image/*" capture="environment">
@@ -381,12 +465,12 @@
         <div class="drop-title">Drop a photo or tap to upload</div>
         <div class="drop-sub">Works best with a clear view of the full room or area</div>
         <div class="room-tags">
-          <span class="room-tag">Kitchen</span>
-          <span class="room-tag">Bedroom</span>
-          <span class="room-tag">Living Room</span>
-          <span class="room-tag">Office</span>
-          <span class="room-tag">Bathroom</span>
-          <span class="room-tag">Any room</span>
+          <span class="room-tag">Room</span>
+          <span class="room-tag">Car Interior</span>
+          <span class="room-tag">Desk Setup</span>
+          <span class="room-tag">Garage</span>
+          <span class="room-tag">Closet</span>
+          <span class="room-tag">Anything</span>
         </div>
       </div>
 
@@ -399,7 +483,7 @@
           </div>
         </div>
         <button class="btn-analyze" id="analyzeBtn" onclick="analyzeRoom()">
-          <span>✨</span> Analyze My Room
+          <span>✨</span> Identify Objects
         </button>
       </div>
 
@@ -409,7 +493,7 @@
     <!-- Loading -->
     <div class="loading" id="loading">
       <div class="loading-ring"></div>
-      <div class="loading-title">Analyzing your room...</div>
+      <div class="loading-title">Analyzing your photo...</div>
       <div class="loading-step" id="loadingStep">Identifying what your space needs...</div>
     </div>
 
@@ -429,7 +513,7 @@
       <div id="problemList"></div>
 
       <div class="results-actions">
-        <button class="btn-new" onclick="resetAll()">📸 Analyze Another Room</button>
+        <button class="btn-new" onclick="resetAll()">📸 Analyze Another Photo</button>
       </div>
 
       <div class="aff-note">
@@ -503,7 +587,7 @@
   }
 
   // ── ANALYZE ─────────────────────────────────────────────
-  const steps = ['Identifying your room type...', 'Spotting what\'s missing...', 'Matching perfect products...', 'Almost done...'];
+  const steps = ['Identifying objects...', 'Finding buy & sell options...', 'Matching products...', 'Almost done...'];
 
   async function analyzeRoom() {
     if (!selectedFile) return;
@@ -587,6 +671,8 @@
       const card = document.createElement('div');
       card.className = 'problem-card';
       card.id = `card-${i}`;
+      card.dataset.title = prob.title || '';
+      card.dataset.desc  = prob.description || '';
       card.onclick = () => activateCard(i);
       card.innerHTML = `
         <div class="problem-header">
@@ -600,7 +686,7 @@
         <div class="problem-body">
           <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px">${esc(prob.description)}</p>
           <div class="products-label">Your Options</div>
-          <div class="options-grid">
+          <div class="options-grid" style="grid-template-columns:repeat(4,1fr)">
             ${prob.options?.new ? `
             <a href="${prob.options.new.url}" target="_blank" rel="noopener" class="option-card option-new" onclick="event.stopPropagation()">
               <div class="option-icon">🛒</div>
@@ -622,7 +708,14 @@
               <div class="option-price">${esc(prob.options.repair.note||'')}</div>
               <div class="option-source">Thumbtack</div>
             </a>` : ''}
+            <button class="option-card option-sell" onclick="event.stopPropagation(); toggleSell(${i})">
+              <div class="option-icon">💰</div>
+              <div class="option-label">Sell This</div>
+              <div class="option-price">Get cash</div>
+              <div class="option-source">eBay</div>
+            </button>
           </div>
+          <div id="sell-panel-${i}" class="sell-panel" style="display:none"></div>
         </div>
       `;
       list.appendChild(card);
@@ -643,6 +736,109 @@
 
   function esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── SELL MODE ────────────────────────────────────────────
+  const _sellCache = {};      // cardIdx -> listing data
+  const _sellOpen  = {};      // cardIdx -> bool
+
+  async function toggleSell(idx) {
+    const panel = document.getElementById(`sell-panel-${idx}`);
+    if (!panel) return;
+
+    if (_sellOpen[idx]) {
+      _sellOpen[idx] = false;
+      panel.style.display = 'none';
+      return;
+    }
+
+    _sellOpen[idx] = true;
+    panel.style.display = 'block';
+
+    if (_sellCache[idx]) {
+      renderSellPanel(idx, _sellCache[idx]);
+      return;
+    }
+
+    // Get card data from DOM (title + description stored as data attrs)
+    const card = document.getElementById(`card-${idx}`);
+    const title = card.dataset.title || '';
+    const description = card.dataset.desc || '';
+
+    panel.innerHTML = `<div class="sell-loading"><div class="sell-spinner"></div> Generating your listing...</div>`;
+
+    try {
+      const res = await fetch('/api/generate-listing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ title, description })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const data = await res.json();
+      _sellCache[idx] = data;
+      renderSellPanel(idx, data);
+    } catch (err) {
+      panel.innerHTML = `<div class="sell-loading" style="color:#dc2626">Could not generate listing. Try again.</div>`;
+    }
+  }
+
+  function renderSellPanel(idx, d) {
+    const panel = document.getElementById(`sell-panel-${idx}`);
+    const conditions = ['Like New', 'Very Good', 'Good', 'Fair'];
+    const activeCondition = d.condition || 'Very Good';
+
+    panel.innerHTML = `
+      <div class="sell-header">
+        <div class="sell-header-left">
+          <span class="sell-badge">Sell Listing</span>
+          <span class="sell-price-pill">${esc(d.suggestedPrice || '')}</span>
+        </div>
+        <button class="sell-close" onclick="toggleSell(${idx})">×</button>
+      </div>
+      <div class="sell-body">
+        <div class="sell-title-row">
+          <div class="sell-label">Listing Title</div>
+          <div class="sell-title-text" id="sell-title-${idx}" contenteditable="true">${esc(d.listingTitle || '')}</div>
+        </div>
+        <div class="sell-label">Condition</div>
+        <div class="sell-condition-row" id="sell-cond-${idx}">
+          ${conditions.map(c => `<button class="condition-chip${c === activeCondition ? ' active' : ''}" onclick="setCondition(${idx}, this)">${c}</button>`).join('')}
+        </div>
+        <div class="sell-label">Description</div>
+        <textarea class="sell-desc-area" id="sell-desc-${idx}">${esc(d.description || '')}</textarea>
+        ${d.avgSold ? `<div class="avg-sold-note">eBay avg sold: <strong>${esc(d.avgSold)}</strong> — price competitively to sell fast</div>` : ''}
+        <div class="sell-actions" style="margin-top:12px">
+          <button class="sell-btn sell-btn-copy" id="sell-copy-${idx}" onclick="copySellListing(${idx})">📋 Copy Listing</button>
+          <a href="${esc(d.ebaySellUrl || 'https://www.ebay.com/sell')}" target="_blank" rel="noopener" class="sell-btn sell-btn-ebay" onclick="event.stopPropagation()">🏷️ List on eBay</a>
+          <a href="${esc(d.ebaySearchUrl || '')}" target="_blank" rel="noopener" class="sell-btn sell-btn-search" onclick="event.stopPropagation()">See sold prices</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function setCondition(idx, btn) {
+    document.querySelectorAll(`#sell-cond-${idx} .condition-chip`).forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function copySellListing(idx) {
+    const titleEl = document.getElementById(`sell-title-${idx}`);
+    const descEl  = document.getElementById(`sell-desc-${idx}`);
+    const condEl  = document.querySelector(`#sell-cond-${idx} .condition-chip.active`);
+    const text = [
+      titleEl?.innerText || '',
+      condEl ? `Condition: ${condEl.textContent}` : '',
+      '',
+      descEl?.value || ''
+    ].filter(Boolean).join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById(`sell-copy-${idx}`);
+      if (!btn) return;
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy Listing'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {});
   }
 
   // ── INIT ─────────────────────────────────────────────────
