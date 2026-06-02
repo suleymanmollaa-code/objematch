@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 const upload       = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
-const API_KEY      = process.env.ANTHROPIC_API_KEY?.trim();
+const API_KEY      = process.env.ANTHROPIC_API_KEY?.replace(/\s/g, '');
 const JWT_SECRET   = process.env.JWT_SECRET || 'objematch-secret-2026';
 const AFFILIATE    = 'objematch-20';
 const DATA_DIR     = path.join(__dirname, 'data');
