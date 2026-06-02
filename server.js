@@ -176,8 +176,11 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
     console.error('Sharp error:', e.message);
   }
 
-  // Run YOLO detection for precise object coordinates
-  const yoloObjects = await runYolo(imageBuffer);
+  // Run YOLO detection for precise object coordinates (8s timeout, non-blocking)
+  const yoloObjects = await Promise.race([
+    runYolo(imageBuffer),
+    new Promise(resolve => setTimeout(() => resolve([]), 8000))
+  ]);
   const yoloContext = yoloObjects.length > 0
     ? `\n\nPrecise object detections from YOLO (use these x,y coordinates for pins):\n${yoloObjects.map(o => `- ${o.label} at x=${o.x}%, y=${o.y}% (confidence ${o.score}%)`).join('\n')}\n`
     : '';

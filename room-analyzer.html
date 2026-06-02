@@ -626,16 +626,19 @@
         body: form
       });
       clearInterval(interval);
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error ${res.status}`);
+      }
       const data = await res.json();
       showResults(data, photoUrl, true);
       if (token) loadSidebarHistory();
-    } catch {
+    } catch (err) {
       clearInterval(interval);
       document.getElementById('loading').classList.remove('active');
       document.getElementById('uploadSection').style.display = 'block';
       const errEl = document.getElementById('errorBox');
-      errEl.textContent = 'Something went wrong. Please try again.';
+      errEl.textContent = err?.message || 'Something went wrong. Please try again.';
       errEl.style.display = 'block';
     }
   }
