@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ObjeMatcher — Find Exactly What You Need</title>
-<meta name="description" content="Not just products. ObjeMatcher matches you with new items, second-hand deals, local services, and everything that completes the picture.">
+<title>ObjeMatch — AI Object Finder. Upload Any Photo, Find Any Item.</title>
+<meta name="description" content="Upload any photo and AI instantly identifies every object with buy, sell, and watch links. Free to analyze. Pay only to monitor items automatically.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -13,274 +13,271 @@ html { scroll-behavior: smooth; }
 body { font-family: 'Inter', sans-serif; background: #fff; color: #0f172a; line-height: 1.6; overflow-x: hidden; }
 a { color: inherit; text-decoration: none; }
 
-/* ── NAV ── */
+/* NAV */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  height: 60px;
-  background: rgba(255,255,255,.92);
+  height: 64px;
+  background: rgba(255,255,255,.95);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid #f1f5f9;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 clamp(1.25rem,5vw,3rem);
 }
-.logo { font-size: 1.1rem; font-weight: 900; }
+.logo { font-size: 1.15rem; font-weight: 900; }
 .logo span { color: #f97316; }
-.nav-cta {
-  background: #0f172a; color: #fff;
-  padding: .45rem 1.1rem; border-radius: 8px;
+.nav-links { display: flex; gap: 1.5rem; align-items: center; }
+.nav-links a { font-size: .85rem; font-weight: 500; color: #64748b; transition: color .15s; }
+.nav-links a:hover { color: #0f172a; }
+.nav-right { display: flex; gap: .6rem; align-items: center; }
+.nav-btn {
+  padding: .45rem 1rem; border-radius: 8px;
   font-size: .82rem; font-weight: 600;
-  transition: background .15s;
+  border: 1.5px solid #e2e8f0; color: #64748b;
+  background: #fff; cursor: pointer; transition: all .15s;
 }
-.nav-cta:hover { background: #1e293b; }
+.nav-btn:hover { border-color: #cbd5e1; color: #0f172a; }
+.nav-btn.accent { background: #f97316; color: #fff; border-color: #f97316; }
+.nav-btn.accent:hover { background: #ea580c; border-color: #ea580c; }
+@media (max-width: 640px) { .nav-links { display: none; } }
 
-/* ── HERO ── */
+/* HERO */
 .hero {
-  padding: 8rem clamp(1.25rem,5vw,3rem) 5rem;
+  padding: 7rem clamp(1.25rem,5vw,3rem) 5rem;
   text-align: center;
-  background: radial-gradient(ellipse 80% 60% at 50% -10%, #fff7ed 0%, #fff 70%);
-  position: relative;
-  overflow: hidden;
+  background: radial-gradient(ellipse 80% 55% at 50% -5%, #fff7ed 0%, #fff 65%);
+  position: relative; overflow: hidden;
 }
-.hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle 600px at 80% 50%, rgba(249,115,22,.05) 0%, transparent 70%),
-              radial-gradient(circle 600px at 20% 80%, rgba(99,102,241,.04) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-eyebrow {
-  display: inline-flex; align-items: center; gap: .5rem;
+.hero-badge {
+  display: inline-flex; align-items: center; gap: .45rem;
   background: #fff7ed; border: 1px solid #fed7aa;
-  color: #ea580c; font-size: .75rem; font-weight: 700;
-  letter-spacing: .04em; text-transform: uppercase;
-  padding: .3rem .85rem; border-radius: 20px;
+  color: #ea580c; font-size: .72rem; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  padding: .28rem .9rem; border-radius: 20px;
   margin-bottom: 1.75rem;
 }
-.hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
 .hero h1 {
-  font-size: clamp(2.4rem, 6vw, 4.2rem);
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -.03em;
-  max-width: 800px;
-  margin: 0 auto 1.5rem;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 900; line-height: 1.1; letter-spacing: -.03em;
+  max-width: 760px; margin: 0 auto 1.5rem;
 }
 .hero h1 em { font-style: normal; color: #f97316; }
 .hero-sub {
-  font-size: clamp(.95rem, 2vw, 1.15rem);
-  color: #64748b;
-  max-width: 560px;
-  margin: 0 auto 2.5rem;
-  line-height: 1.75;
+  font-size: clamp(.95rem, 2vw, 1.1rem); color: #64748b;
+  max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.75;
 }
-.hero-btns { display: flex; gap: .85rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; }
+.hero-btns { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
 .btn-primary {
   background: #f97316; color: #fff;
-  padding: .8rem 2rem; border-radius: 10px;
-  font-size: .95rem; font-weight: 700;
-  box-shadow: 0 4px 16px rgba(249,115,22,.35);
-  transition: all .15s;
+  padding: .85rem 2.25rem; border-radius: 12px;
+  font-size: 1rem; font-weight: 700;
+  box-shadow: 0 4px 18px rgba(249,115,22,.35);
+  transition: all .15s; display: inline-flex; align-items: center; gap: .5rem;
 }
-.btn-primary:hover { background: #ea580c; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(249,115,22,.4); }
+.btn-primary:hover { background: #ea580c; transform: translateY(-1px); box-shadow: 0 6px 22px rgba(249,115,22,.4); }
 .btn-ghost {
   background: transparent; color: #0f172a;
   border: 1.5px solid #e2e8f0;
-  padding: .8rem 1.75rem; border-radius: 10px;
-  font-size: .95rem; font-weight: 600;
+  padding: .85rem 1.75rem; border-radius: 12px;
+  font-size: 1rem; font-weight: 600;
   transition: all .15s;
 }
 .btn-ghost:hover { border-color: #cbd5e1; background: #f8fafc; }
+.hero-free-note { font-size: .78rem; color: #94a3b8; }
+.hero-free-note strong { color: #22c55e; }
 
-/* SEARCH PREVIEW */
-.search-preview {
-  max-width: 580px; margin: 0 auto;
-  background: #fff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1.25rem;
-  box-shadow: 0 8px 40px rgba(0,0,0,.08);
-  text-align: left;
-  position: relative;
-  z-index: 1;
+/* DEMO PREVIEW */
+.demo-wrap {
+  max-width: 720px; margin: 3.5rem auto 0;
+  background: #fff; border: 1.5px solid #e2e8f0;
+  border-radius: 20px; overflow: hidden;
+  box-shadow: 0 16px 60px rgba(0,0,0,.1);
+  position: relative; z-index: 1;
 }
-.search-bar {
-  display: flex; gap: .6rem; align-items: center;
-  background: #f8fafc; border: 1px solid #e2e8f0;
-  border-radius: 10px; padding: .7rem 1rem;
-  margin-bottom: 1rem;
+.demo-bar {
+  background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+  padding: .65rem 1rem; display: flex; align-items: center; gap: .5rem;
 }
-.search-bar-icon { color: #94a3b8; flex-shrink: 0; }
-.search-bar-text { flex: 1; font-size: .88rem; color: #64748b; }
-.search-bar-btn {
-  background: #f97316; color: #fff;
-  padding: .35rem .9rem; border-radius: 7px;
-  font-size: .78rem; font-weight: 700; flex-shrink: 0;
-}
-.match-results { display: flex; flex-direction: column; gap: .6rem; }
-.match-row {
-  display: flex; align-items: center; gap: .75rem;
-  padding: .65rem .85rem;
-  border-radius: 9px;
-  border: 1px solid transparent;
-  transition: all .2s;
-}
-.match-row:hover { background: #f8fafc; border-color: #e2e8f0; }
-.match-icon {
-  width: 36px; height: 36px; border-radius: 9px;
+.demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+.demo-body { padding: 1.5rem; }
+.demo-img-wrap { position: relative; border-radius: 12px; overflow: hidden; background: #f1f5f9; height: 240px; }
+.demo-img-bg {
+  width: 100%; height: 100%; object-fit: cover;
   display: flex; align-items: center; justify-content: center;
-  font-size: .95rem; flex-shrink: 0;
+  background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 50%, #fef3c7 100%);
+  font-size: 5rem;
 }
-.match-icon.new { background: #fff7ed; }
-.match-icon.used { background: #f0fdf4; }
-.match-icon.service { background: #eff6ff; }
-.match-icon.plus { background: #fdf4ff; }
-.match-label { flex: 1; }
-.match-label-title { font-size: .82rem; font-weight: 700; }
-.match-label-sub { font-size: .72rem; color: #94a3b8; }
-.match-price { font-size: .82rem; font-weight: 800; color: #0f172a; }
-.match-tag { font-size: .65rem; font-weight: 700; padding: .15rem .45rem; border-radius: 5px; }
-.tag-amazon { background: #fff7ed; color: #ea580c; }
-.tag-ebay { background: #f0fdf4; color: #16a34a; }
-.tag-local { background: #eff6ff; color: #2563eb; }
-.tag-plus { background: #fdf4ff; color: #9333ea; }
+.demo-pin {
+  position: absolute;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .55rem; font-weight: 900; color: #fff;
+  cursor: pointer;
+  animation: pinpop .5s ease both;
+}
+@keyframes pinpop { from{transform:scale(0)}to{transform:scale(1)} }
+.demo-pin:nth-child(1) { background: #f97316; top: 28%; left: 25%; animation-delay: .3s; }
+.demo-pin:nth-child(2) { background: #7c6ff7; top: 55%; left: 60%; animation-delay: .5s; }
+.demo-pin:nth-child(3) { background: #22c55e; top: 20%; left: 65%; animation-delay: .7s; }
+.demo-pin:nth-child(4) { background: #0ea5e9; top: 70%; left: 35%; animation-delay: .9s; }
+.demo-results { margin-top: 1rem; display: flex; flex-direction: column; gap: .5rem; }
+.demo-result-row {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6rem .85rem; border-radius: 10px; background: #f8fafc;
+  border: 1px solid #f1f5f9;
+}
+.demo-result-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.demo-result-name { flex: 1; font-size: .82rem; font-weight: 700; }
+.demo-result-opts { display: flex; gap: .3rem; flex-wrap: wrap; }
+.demo-opt {
+  font-size: .65rem; font-weight: 700; padding: .18rem .5rem;
+  border-radius: 5px; white-space: nowrap;
+}
+.opt-buy { background: #fff7ed; color: #ea580c; }
+.opt-used { background: #f0fdf4; color: #16a34a; }
+.opt-sell { background: #eff6ff; color: #2563eb; }
+.opt-watch { background: #f5f3ff; color: #7c3aed; }
 
-/* ── SECTION ── */
+/* SECTION BASE */
 .section { padding: 5rem clamp(1.25rem,5vw,3rem); }
 .section-inner { max-width: 1100px; margin: 0 auto; }
 .section-label {
   font-size: .7rem; font-weight: 800; letter-spacing: .1em;
-  text-transform: uppercase; color: #f97316;
-  margin-bottom: .75rem;
+  text-transform: uppercase; color: #f97316; margin-bottom: .75rem;
 }
-.section-h { font-size: clamp(1.6rem, 3.5vw, 2.5rem); font-weight: 900; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 1rem; }
+.section-h { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 900; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 1rem; }
 .section-p { font-size: 1rem; color: #64748b; max-width: 520px; line-height: 1.75; }
 
-/* ── HOW IT WORKS ── */
-.how-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
+/* HOW IT WORKS */
+.steps-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
+  gap: 1.25rem; margin-top: 3rem;
 }
-.how-card {
-  background: #fafafa;
-  border: 1px solid #f1f5f9;
-  border-radius: 16px;
-  padding: 1.75rem;
-  position: relative;
+.step-card {
+  background: #fafafa; border: 1px solid #f1f5f9;
+  border-radius: 16px; padding: 1.75rem; position: relative;
 }
-.how-num {
-  font-size: 3rem; font-weight: 900; color: #f1f5f9;
-  line-height: 1; position: absolute; top: 1rem; right: 1.25rem;
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #f97316; color: #fff;
+  font-size: .8rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem;
 }
-.how-icon { font-size: 1.6rem; margin-bottom: 1rem; }
-.how-title { font-size: .95rem; font-weight: 800; margin-bottom: .4rem; }
-.how-text { font-size: .82rem; color: #64748b; line-height: 1.65; }
+.step-icon { font-size: 1.5rem; margin-bottom: .75rem; }
+.step-title { font-size: .95rem; font-weight: 800; margin-bottom: .4rem; }
+.step-text { font-size: .82rem; color: #64748b; line-height: 1.65; }
 
-/* ── PILLARS ── */
+/* FEATURES / PILLARS */
 .bg-slate { background: #f8fafc; }
-.pillars-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-  margin-top: 3rem;
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+  gap: 1.25rem; margin-top: 3rem;
 }
-.pillar-card {
-  background: #fff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1.75rem;
+.feature-card {
+  background: #fff; border: 1.5px solid #e2e8f0;
+  border-radius: 16px; padding: 1.75rem;
   transition: box-shadow .2s;
 }
-.pillar-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.07); }
-.pillar-emoji { font-size: 2rem; margin-bottom: 1rem; }
-.pillar-title { font-size: 1.05rem; font-weight: 800; margin-bottom: .4rem; }
-.pillar-sub { font-size: .8rem; color: #f97316; font-weight: 600; margin-bottom: .65rem; }
-.pillar-text { font-size: .83rem; color: #64748b; line-height: 1.7; }
-.pillar-platforms { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
-.platform-pill {
-  font-size: .67rem; font-weight: 700;
-  padding: .2rem .55rem; border-radius: 5px;
-  background: #f1f5f9; color: #475569;
-}
+.feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.07); }
+.feature-emoji { font-size: 2rem; margin-bottom: 1rem; }
+.feature-title { font-size: 1rem; font-weight: 800; margin-bottom: .4rem; }
+.feature-sub { font-size: .78rem; color: #f97316; font-weight: 600; margin-bottom: .65rem; }
+.feature-text { font-size: .82rem; color: #64748b; line-height: 1.7; }
 
-/* ── WHY ── */
-.why-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  margin-top: 3rem;
+/* PRICING TEASER */
+.pricing-strip {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 1rem; margin-top: 3rem;
 }
-@media (max-width: 700px) { .why-grid { grid-template-columns: 1fr; } }
-.why-list { display: flex; flex-direction: column; gap: 1.25rem; }
-.why-item { display: flex; gap: 1rem; align-items: flex-start; }
-.why-check {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: #fff7ed; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  margin-top: .1rem;
+.price-card {
+  background: #fff; border: 2px solid #e2e8f0;
+  border-radius: 18px; padding: 1.75rem; text-align: center;
+  transition: all .2s; position: relative;
 }
-.why-item-title { font-size: .9rem; font-weight: 700; margin-bottom: .15rem; }
-.why-item-text { font-size: .82rem; color: #64748b; line-height: 1.65; }
-.why-visual {
-  background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
-  border-radius: 20px; padding: 2.5rem;
-  display: flex; flex-direction: column; gap: 1rem;
+.price-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+.price-card.highlight { border-color: #7c6ff7; box-shadow: 0 8px 32px rgba(124,111,247,.12); }
+.price-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: #7c6ff7; color: #fff; font-size: .62rem; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .2rem 1rem; border-radius: 20px; white-space: nowrap;
 }
-.why-stat { text-align: center; }
-.why-stat-num { font-size: 2.2rem; font-weight: 900; color: #f97316; }
-.why-stat-label { font-size: .78rem; color: #92400e; font-weight: 500; }
-.why-divider { height: 1px; background: rgba(249,115,22,.2); }
+.price-icon { font-size: 2rem; margin-bottom: .75rem; }
+.price-name { font-size: 1rem; font-weight: 800; margin-bottom: .25rem; }
+.price-amount { font-size: 2.2rem; font-weight: 900; color: #7c6ff7; line-height: 1; margin-bottom: .25rem; }
+.price-desc { font-size: .75rem; color: #94a3b8; margin-bottom: 1.25rem; }
+.price-features { list-style: none; text-align: left; font-size: .78rem; color: #64748b; margin-bottom: 1.5rem; }
+.price-features li { padding: .25rem 0; display: flex; gap: .5rem; }
+.price-features li::before { content: '✓'; color: #7c6ff7; font-weight: 700; flex-shrink: 0; }
+.price-free { background: #f0fdf4; border-color: #bbf7d0; }
+.price-free .price-amount { color: #16a34a; }
+.price-free .price-features li::before { color: #16a34a; }
+.price-link {
+  display: block; width: 100%; padding: .7rem;
+  border-radius: 10px; font-size: .85rem; font-weight: 700;
+  text-align: center; transition: all .15s;
+  background: #7c6ff7; color: #fff; border: none; cursor: pointer;
+}
+.price-link:hover { background: #6558d4; }
+.price-link.green { background: #22c55e; }
+.price-link.green:hover { background: #16a34a; }
 
-/* ── CATEGORIES ── */
+/* CATEGORIES */
 .cat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: .85rem;
-  margin-top: 2.5rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+  gap: .75rem; margin-top: 2.5rem;
 }
-.cat-pill {
+.cat-card {
   background: #fff; border: 1.5px solid #e2e8f0;
-  border-radius: 12px; padding: 1rem;
-  text-align: center; font-size: .82rem; font-weight: 600;
+  border-radius: 14px; padding: 1.1rem .75rem;
+  text-align: center; font-size: .8rem; font-weight: 600;
   transition: all .15s; cursor: pointer;
 }
-.cat-pill:hover { border-color: #f97316; color: #f97316; background: #fff7ed; }
-.cat-pill-icon { font-size: 1.5rem; margin-bottom: .4rem; }
+.cat-card:hover { border-color: #f97316; color: #f97316; background: #fff7ed; }
+.cat-icon { font-size: 1.6rem; margin-bottom: .4rem; }
 
-/* ── CTA ── */
+/* SOCIAL PROOF */
+.proof-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap: 1rem; margin-top: 3rem;
+}
+.proof-card {
+  background: #fff; border: 1px solid #f1f5f9;
+  border-radius: 16px; padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+}
+.proof-stars { color: #f97316; font-size: .85rem; margin-bottom: .65rem; }
+.proof-text { font-size: .85rem; color: #475569; line-height: 1.7; margin-bottom: 1rem; }
+.proof-author { display: flex; align-items: center; gap: .65rem; }
+.proof-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#f97316,#7c6ff7); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .8rem; font-weight: 800; flex-shrink: 0; }
+.proof-name { font-size: .8rem; font-weight: 700; }
+.proof-role { font-size: .72rem; color: #94a3b8; }
+
+/* CTA SECTION */
 .cta-section {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border-radius: 24px;
-  padding: 4rem clamp(2rem,6vw,5rem);
-  text-align: center;
-  margin: 0 clamp(1.25rem,5vw,3rem) 5rem;
+  border-radius: 24px; padding: 4rem clamp(2rem,6vw,5rem);
+  text-align: center; margin: 0 clamp(1.25rem,5vw,3rem) 5rem;
 }
 .cta-section h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 900; color: #fff; margin-bottom: 1rem; letter-spacing: -.02em; }
 .cta-section p { color: #94a3b8; font-size: 1rem; margin-bottom: 2rem; }
-.cta-input-wrap {
-  display: flex; gap: .6rem; justify-content: center;
-  flex-wrap: wrap; max-width: 420px; margin: 0 auto;
-}
-.cta-input {
-  flex: 1; min-width: 200px;
-  padding: .8rem 1.1rem; border-radius: 10px;
-  border: none; font-size: .9rem;
-  background: rgba(255,255,255,.1); color: #fff;
-  border: 1px solid rgba(255,255,255,.15);
-}
-.cta-input::placeholder { color: rgba(255,255,255,.4); }
-.cta-input:focus { outline: none; border-color: #f97316; }
-.btn-cta {
+.cta-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
   background: #f97316; color: #fff;
-  padding: .8rem 1.5rem; border-radius: 10px;
-  font-size: .9rem; font-weight: 700; border: none; cursor: pointer;
-  transition: background .15s;
+  padding: .9rem 2.5rem; border-radius: 12px;
+  font-size: 1rem; font-weight: 700;
+  box-shadow: 0 4px 18px rgba(249,115,22,.35);
+  transition: all .15s;
 }
-.btn-cta:hover { background: #ea580c; }
+.cta-btn:hover { background: #ea580c; transform: translateY(-1px); }
+.cta-note { margin-top: 1rem; font-size: .78rem; color: #475569; }
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer {
   background: #0f172a; color: #475569;
   padding: 3rem clamp(1.25rem,5vw,3rem) 2rem;
@@ -289,15 +286,11 @@ footer {
 .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; margin-bottom: 2.5rem; }
 .footer-logo { font-size: 1.1rem; font-weight: 900; color: #fff; }
 .footer-logo span { color: #f97316; }
-.footer-logo-sub { font-size: .78rem; color: #475569; margin-top: .25rem; }
-.footer-links { display: flex; gap: 1.75rem; flex-wrap: wrap; align-items: center; }
+.footer-tagline { font-size: .78rem; color: #475569; margin-top: .25rem; }
+.footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
 .footer-links a { font-size: .8rem; color: #475569; transition: color .15s; }
 .footer-links a:hover { color: #fff; }
 .footer-bottom { border-top: 1px solid #1e293b; padding-top: 1.5rem; font-size: .75rem; }
-
-@media (max-width: 640px) {
-  .hero { padding-top: 6rem; }
-}
 </style>
 </head>
 <body>
@@ -305,74 +298,77 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="logo">Obje<span>Match</span></div>
-  <a href="#explore" class="nav-cta">Explore Now</a>
+  <div class="nav-links">
+    <a href="/room-analyzer.html">Analyze</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/blog/">Blog</a>
+  </div>
+  <div class="nav-right">
+    <a href="/login.html" class="nav-btn" id="loginBtn">Sign in</a>
+    <a href="/room-analyzer.html" class="nav-btn accent">Try Free</a>
+    <span class="nav-btn" id="userChip" style="display:none"></span>
+  </div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-eyebrow">
-    <div class="hero-eyebrow-dot"></div>
-    The smarter way to find anything
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    100 free analyses every month
   </div>
-  <h1>Don't just search.<br><em>Match.</em></h1>
+  <h1>Upload any photo.<br><em>AI finds every item.</em></h1>
   <p class="hero-sub">
-    ObjeMatcher finds you the right product — new, second-hand, or local service. Plus everything you didn't know you'd need alongside it.
+    Point AI at any photo — room, car, outfit, desk. It pins every object and instantly finds Amazon and eBay listings for each one.
   </p>
   <div class="hero-btns">
-    <a href="#explore" class="btn-primary">Start Matching →</a>
-    <a href="#how" class="btn-ghost">See How It Works</a>
+    <a href="/room-analyzer.html" class="btn-primary">
+      Upload a Photo Free
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="/pricing.html" class="btn-ghost">See Pricing</a>
   </div>
+  <p class="hero-free-note"><strong>Free forever</strong> for 100 analyses/month &nbsp;·&nbsp; No credit card required</p>
 
-  <!-- SEARCH PREVIEW -->
-  <div class="search-preview">
-    <div class="search-bar">
-      <svg class="search-bar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/><path d="m20 20-3-3" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/></svg>
-      <span class="search-bar-text">closet organization for small bedroom</span>
-      <span class="search-bar-btn">Match</span>
+  <!-- DEMO PREVIEW -->
+  <div class="demo-wrap">
+    <div class="demo-bar">
+      <div class="demo-dot" style="background:#ff5f57"></div>
+      <div class="demo-dot" style="background:#febc2e"></div>
+      <div class="demo-dot" style="background:#28c840"></div>
+      <span style="margin-left:.5rem;font-size:.75rem;color:#94a3b8">AI Object Finder — Live Analysis</span>
     </div>
-    <div class="match-results">
-      <div class="match-row">
-        <div class="match-icon new">🛒</div>
-        <div class="match-label">
-          <div class="match-label-title">iDesign Stackable Organizer Set</div>
-          <div class="match-label-sub">New · Amazon Prime · Ships today</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">
-          <div class="match-price">$34.99</div>
-          <span class="match-tag tag-amazon">Amazon</span>
-        </div>
+    <div class="demo-body">
+      <div class="demo-img-wrap">
+        <div class="demo-img-bg">🛋️</div>
+        <div class="demo-pin">1</div>
+        <div class="demo-pin">2</div>
+        <div class="demo-pin">3</div>
+        <div class="demo-pin">4</div>
       </div>
-      <div class="match-row">
-        <div class="match-icon used">♻️</div>
-        <div class="match-label">
-          <div class="match-label-title">Similar organizer set — like new</div>
-          <div class="match-label-sub">Second-hand · Save 60%</div>
+      <div class="demo-results">
+        <div class="demo-result-row">
+          <div class="demo-result-dot" style="background:#f97316"></div>
+          <div class="demo-result-name">Mid-Century Sofa</div>
+          <div class="demo-result-opts">
+            <span class="demo-opt opt-buy">Buy New</span>
+            <span class="demo-opt opt-used">Buy Used</span>
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">
-          <div class="match-price">$14.00</div>
-          <span class="match-tag tag-ebay">eBay</span>
+        <div class="demo-result-row">
+          <div class="demo-result-dot" style="background:#7c6ff7"></div>
+          <div class="demo-result-name">Floor Lamp</div>
+          <div class="demo-result-opts">
+            <span class="demo-opt opt-buy">Buy New</span>
+            <span class="demo-opt opt-used">Buy Used</span>
+          </div>
         </div>
-      </div>
-      <div class="match-row">
-        <div class="match-icon service">🔧</div>
-        <div class="match-label">
-          <div class="match-label-title">Professional closet organizer near you</div>
-          <div class="match-label-sub">Service · 4.9★ · 2hr job</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">
-          <div class="match-price">from $80</div>
-          <span class="match-tag tag-local">Local</span>
-        </div>
-      </div>
-      <div class="match-row">
-        <div class="match-icon plus">✨</div>
-        <div class="match-label">
-          <div class="match-label-title">You'll also need: Label maker + S-hooks</div>
-          <div class="match-label-sub">Completes the setup</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">
-          <div class="match-price">$18.99</div>
-          <span class="match-tag tag-plus">Bundles</span>
+        <div class="demo-result-row">
+          <div class="demo-result-dot" style="background:#22c55e"></div>
+          <div class="demo-result-name">Coffee Table</div>
+          <div class="demo-result-opts">
+            <span class="demo-opt opt-buy">Buy New</span>
+            <span class="demo-opt opt-used">Buy Used</span>
+          </div>
         </div>
       </div>
     </div>
@@ -383,157 +379,126 @@ footer {
 <div class="section" id="how">
   <div class="section-inner">
     <div class="section-label">How It Works</div>
-    <h2 class="section-h">Four steps to the perfect match</h2>
-    <p class="section-p">Tell us what you need. We find every option — not just one store, not just one category.</p>
-    <div class="how-grid">
-      <div class="how-card">
-        <div class="how-num">01</div>
-        <div class="how-icon">💬</div>
-        <div class="how-title">Describe What You Need</div>
-        <div class="how-text">Type your need naturally. "Organization for a tiny kitchen" or "home office on a budget." No need for exact product names.</div>
+    <h2 class="section-h">From photo to results in seconds</h2>
+    <p class="section-p">No typing product names. No guessing model numbers. Just upload and let AI do the searching.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon">📸</div>
+        <div class="step-title">Upload Any Photo</div>
+        <div class="step-text">Room, car, closet, desk, outfit — anything with objects in it. First 100 analyses per month are completely free.</div>
       </div>
-      <div class="how-card">
-        <div class="how-num">02</div>
-        <div class="how-icon">🔍</div>
-        <div class="how-title">We Scan Every Option</div>
-        <div class="how-text">New products, second-hand deals, local services, and add-ons — all matched to your exact situation.</div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon">🤖</div>
+        <div class="step-title">AI Identifies Every Object</div>
+        <div class="step-text">AI scans your photo and places a colored pin on each item it recognizes. Click any pin to explore results.</div>
       </div>
-      <div class="how-card">
-        <div class="how-num">03</div>
-        <div class="how-icon">⚖️</div>
-        <div class="how-title">Compare Side by Side</div>
-        <div class="how-text">See prices, ratings, and trade-offs at a glance. New vs. used. Buy vs. hire. Big brand vs. local.</div>
-      </div>
-      <div class="how-card">
-        <div class="how-num">04</div>
-        <div class="how-icon">✅</div>
-        <div class="how-title">Pick & Go</div>
-        <div class="how-text">Click through to the best option for you. No regrets, no returns, no "I wish I'd known about this."</div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon">🔍</div>
+        <div class="step-title">Instant Search Results</div>
+        <div class="step-text">Get direct Amazon and eBay links for each identified item — new and used — without typing a single keyword.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PILLARS -->
-<div class="section bg-slate" id="explore">
+<!-- FEATURES -->
+<div class="section bg-slate">
   <div class="section-inner">
-    <div class="section-label">What We Match</div>
-    <h2 class="section-h">Every option. Not just one store.</h2>
-    <p class="section-p">Most comparison sites only show you new products. We go further — because the best answer isn't always "buy new."</p>
-    <div class="pillars-grid">
-      <div class="pillar-card">
-        <div class="pillar-emoji">🛒</div>
-        <div class="pillar-title">New Products</div>
-        <div class="pillar-sub">Best price, brand new</div>
-        <div class="pillar-text">Curated picks from trusted brands. Honest reviews, no sponsored fluff. Best value for your money.</div>
-        <div class="pillar-platforms">
-          <span class="platform-pill">Amazon</span>
-          <span class="platform-pill">Target</span>
-          <span class="platform-pill">Walmart</span>
-        </div>
+    <div class="section-label">How It Helps</div>
+    <h2 class="section-h">Find anything in any photo</h2>
+    <p class="section-p">Spotted something you like? AI identifies it and searches Amazon and eBay so you don't have to.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-emoji">📌</div>
+        <div class="feature-title">Precise Object Detection</div>
+        <div class="feature-sub">AI pins every item</div>
+        <div class="feature-text">AI scans your photo and places a pin on each recognizable object — furniture, electronics, clothing, accessories and more.</div>
       </div>
-      <div class="pillar-card">
-        <div class="pillar-emoji">♻️</div>
-        <div class="pillar-title">Second-Hand</div>
-        <div class="pillar-sub">Same thing, 40-70% less</div>
-        <div class="pillar-text">Why pay full price? We surface the best pre-owned options for every product we recommend.</div>
-        <div class="pillar-platforms">
-          <span class="platform-pill">eBay</span>
-          <span class="platform-pill">Facebook</span>
-          <span class="platform-pill">Craigslist</span>
-        </div>
+      <div class="feature-card">
+        <div class="feature-emoji">🛒</div>
+        <div class="feature-title">Buy New on Amazon</div>
+        <div class="feature-sub">Instant product links</div>
+        <div class="feature-text">AI searches Amazon for the exact item it spotted and surfaces the best-matched new listings — no typing required.</div>
       </div>
-      <div class="pillar-card">
-        <div class="pillar-emoji">🔧</div>
-        <div class="pillar-title">Local Services</div>
-        <div class="pillar-sub">Sometimes hire beats buy</div>
-        <div class="pillar-text">Assembly, installation, organization help — matched to your ZIP code and budget. No need to DIY everything.</div>
-        <div class="pillar-platforms">
-          <span class="platform-pill">Thumbtack</span>
-          <span class="platform-pill">TaskRabbit</span>
-          <span class="platform-pill">Angi</span>
-        </div>
+      <div class="feature-card">
+        <div class="feature-emoji">♻️</div>
+        <div class="feature-title">Buy Used on eBay</div>
+        <div class="feature-sub">Same item, less money</div>
+        <div class="feature-text">Find the same object second-hand on eBay. Same AI match, typically 40-70% less than buying new.</div>
       </div>
-      <div class="pillar-card">
-        <div class="pillar-emoji">✨</div>
-        <div class="pillar-title">Complementary</div>
-        <div class="pillar-sub">What completes the picture</div>
-        <div class="pillar-text">The products you'll need next — before you realize you need them. Accessories, add-ons, and the finishing touches.</div>
-        <div class="pillar-platforms">
-          <span class="platform-pill">Amazon</span>
-          <span class="platform-pill">Curated</span>
-        </div>
+      <div class="feature-card">
+        <div class="feature-emoji">📡</div>
+        <div class="feature-title">Watch for New Deals</div>
+        <div class="feature-sub">Automatic alerts · coming soon</div>
+        <div class="feature-text">Set AI to keep searching for any item on a daily, weekly, or monthly schedule and email you when new deals appear.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- WHY -->
+<!-- PRICING TEASER -->
 <div class="section">
   <div class="section-inner">
-    <div class="why-grid">
-      <div>
-        <div class="section-label">Why ObjeMatcher</div>
-        <h2 class="section-h">Buying smart shouldn't be hard work</h2>
-        <div class="why-list" style="margin-top:2rem">
-          <div class="why-item">
-            <div class="why-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div class="why-item-title">No algorithm bias</div>
-              <div class="why-item-text">We don't push sponsored products. Every recommendation is based on real value, real reviews.</div>
-            </div>
-          </div>
-          <div class="why-item">
-            <div class="why-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div class="why-item-title">All options in one place</div>
-              <div class="why-item-text">Stop switching between 6 tabs. New, used, hire, bundle — all matched in one result.</div>
-            </div>
-          </div>
-          <div class="why-item">
-            <div class="why-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div class="why-item-title">Situation-aware matches</div>
-              <div class="why-item-text">"Small apartment" gets different results than "large house." We match to your context, not just keywords.</div>
-            </div>
-          </div>
-          <div class="why-item">
-            <div class="why-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div class="why-item-title">No regret purchases</div>
-              <div class="why-item-text">We show you everything you'll need upfront — so you don't make three trips to the store.</div>
-            </div>
-          </div>
-        </div>
+    <div class="section-label">Simple Pricing</div>
+    <h2 class="section-h">Free to analyze. Pay only to watch.</h2>
+    <p class="section-p">Upload and analyze any photo for free. The Watch feature — where AI keeps searching for you automatically — is the only paid part.</p>
+    <div class="pricing-strip">
+      <div class="price-card price-free">
+        <div class="price-icon">🎁</div>
+        <div class="price-name">Analyze</div>
+        <div class="price-amount">Free</div>
+        <div class="price-desc">100 analyses / month · always free</div>
+        <ul class="price-features">
+          <li>Upload any photo</li>
+          <li>AI identifies all objects</li>
+          <li>Amazon &amp; eBay links</li>
+          <li>AI-generated sell listings</li>
+          <li>No credit card needed</li>
+        </ul>
+        <a href="/room-analyzer.html" class="price-link green">Start Analyzing</a>
       </div>
-      <div class="why-visual">
-        <div class="why-stat">
-          <div class="why-stat-num">4 sources</div>
-          <div class="why-stat-label">matched for every search</div>
-        </div>
-        <div class="why-divider"></div>
-        <div class="why-stat">
-          <div class="why-stat-num">40-70%</div>
-          <div class="why-stat-label">average savings on second-hand picks</div>
-        </div>
-        <div class="why-divider"></div>
-        <div class="why-stat">
-          <div class="why-stat-num">0</div>
-          <div class="why-stat-label">sponsored recommendations</div>
-        </div>
-        <div class="why-divider"></div>
-        <div class="why-stat">
-          <div class="why-stat-num">100+</div>
-          <div class="why-stat-label">categories covered</div>
-        </div>
+      <div class="price-card">
+        <div class="price-icon">🗓️</div>
+        <div class="price-name">Monthly Watch</div>
+        <div class="price-amount">$0.49</div>
+        <div class="price-desc">per item / month · cancel anytime</div>
+        <ul class="price-features">
+          <li>1 AI search per month</li>
+          <li>Amazon &amp; eBay results</li>
+          <li>Email notification</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <a href="/pricing.html" class="price-link">See All Plans</a>
+      </div>
+      <div class="price-card highlight">
+        <div class="price-badge">BEST VALUE</div>
+        <div class="price-icon">📅</div>
+        <div class="price-name">Weekly Watch</div>
+        <div class="price-amount">$0.99</div>
+        <div class="price-desc">per item / month · cancel anytime</div>
+        <ul class="price-features">
+          <li>4 AI searches per month</li>
+          <li>Amazon &amp; eBay results</li>
+          <li>Email notification</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <a href="/pricing.html" class="price-link">See All Plans</a>
+      </div>
+      <div class="price-card">
+        <div class="price-icon">⚡</div>
+        <div class="price-name">Daily Watch</div>
+        <div class="price-amount">$2.99</div>
+        <div class="price-desc">per item / month · cancel anytime</div>
+        <ul class="price-features">
+          <li>30 AI searches per month</li>
+          <li>Amazon &amp; eBay results</li>
+          <li>Email notification</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <a href="/pricing.html" class="price-link">See All Plans</a>
       </div>
     </div>
   </div>
@@ -542,33 +507,77 @@ footer {
 <!-- CATEGORIES -->
 <div class="section bg-slate">
   <div class="section-inner">
-    <div class="section-label">Browse Categories</div>
-    <h2 class="section-h">Where do you want to start?</h2>
+    <div class="section-label">Works With Any Photo</div>
+    <h2 class="section-h">What will you analyze first?</h2>
     <div class="cat-grid">
-      <div class="cat-pill"><div class="cat-pill-icon">🏠</div>Home Org</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🍳</div>Kitchen</div>
-      <div class="cat-pill"><div class="cat-pill-icon">💼</div>Home Office</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🛏</div>Bedroom</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🚿</div>Bathroom</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🎓</div>Dorm Room</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🏕</div>Outdoor</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🐾</div>Pets</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🧒</div>Baby & Kids</div>
-      <div class="cat-pill"><div class="cat-pill-icon">💪</div>Fitness</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🚗</div>Car</div>
-      <div class="cat-pill"><div class="cat-pill-icon">🎮</div>Gaming</div>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🛋️</div>Living Room</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🍳</div>Kitchen</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🛏️</div>Bedroom</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🚿</div>Bathroom</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">💼</div>Home Office</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🚗</div>Car Interior</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">👗</div>Outfit / Closet</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🎮</div>Gaming Setup</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🏋️</div>Home Gym</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🌿</div>Garden</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">🎒</div>Travel Gear</a>
+      <a href="/room-analyzer.html" class="cat-card"><div class="cat-icon">📦</div>Any Photo</a>
     </div>
   </div>
 </div>
 
-<!-- CTA -->
-<div class="cta-section">
-  <h2>Find your match today</h2>
-  <p>Tell us what you need. We'll show you every option — new, used, local, and what comes next.</p>
-  <div class="cta-input-wrap">
-    <input class="cta-input" type="text" placeholder="What are you looking for?">
-    <button class="btn-cta">Match →</button>
+<!-- TESTIMONIALS -->
+<div class="section">
+  <div class="section-inner">
+    <div class="section-label">People Love It</div>
+    <h2 class="section-h">Real results, real people</h2>
+    <div class="proof-grid">
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p class="proof-text">"I uploaded a photo of my living room and found the exact sofa from a TV show I'd been searching for for months. Took 10 seconds."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">S</div>
+          <div>
+            <div class="proof-name">Sarah M.</div>
+            <div class="proof-role">Interior design enthusiast</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p class="proof-text">"Set up a weekly watch on a vintage lamp I saw at a friend's place. Got an email with a $40 eBay listing — same lamp was $280 new."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">J</div>
+          <div>
+            <div class="proof-name">James T.</div>
+            <div class="proof-role">Budget home decorator</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p class="proof-text">"Used the Sell feature to list 6 items from my spare room. AI wrote all the eBay listings. Made $340 in a weekend."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">A</div>
+          <div>
+            <div class="proof-name">Anna K.</div>
+            <div class="proof-role">Declutter &amp; reseller</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- FINAL CTA -->
+<div class="cta-section">
+  <h2>Start finding. Start selling.</h2>
+  <p>Upload your first photo free. No account needed to start.</p>
+  <a href="/room-analyzer.html" class="cta-btn">
+    Upload a Photo — It's Free
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <p class="cta-note">100 analyses free every month · No credit card · Cancel watches anytime</p>
 </div>
 
 <!-- FOOTER -->
@@ -577,21 +586,33 @@ footer {
     <div class="footer-top">
       <div>
         <div class="footer-logo">Obje<span>Match</span></div>
-        <div class="footer-logo-sub">The smarter way to find anything.</div>
+        <div class="footer-tagline">Upload any photo. AI finds every item.</div>
       </div>
       <div class="footer-links">
-        <a href="#">Home</a>
-        <a href="#">Categories</a>
-        <a href="#">About</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Affiliate Disclosure</a>
+        <a href="/room-analyzer.html">Analyze</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/blog/">Blog</a>
+        <a href="/login.html">Sign In</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 ObjeMatcher. We participate in the Amazon Associates Program and other affiliate programs. We earn commissions on qualifying purchases — at no extra cost to you.</p>
+      <p>© 2025 ObjeMatch. We participate in the Amazon Associates Program and other affiliate programs. We earn commissions on qualifying purchases — at no extra cost to you.</p>
     </div>
   </div>
 </footer>
+
+<script>
+  const user = JSON.parse(localStorage.getItem('om_user') || 'null');
+  if (user) {
+    document.getElementById('loginBtn').style.display = 'none';
+    const chip = document.getElementById('userChip');
+    chip.style.display = 'inline-flex';
+    chip.textContent = user.name || user.email?.split('@')[0];
+    chip.onclick = () => location.href = '/dashboard.html';
+    chip.style.cursor = 'pointer';
+  }
+</script>
 
 </body>
 </html>
