@@ -258,7 +258,12 @@
         setLoading(false);
         return;
       }
-      if (!r.ok) { showError(data.error || 'Could not analyze this link.'); setLoading(false); return; }
+      if (!r.ok) {
+        const msg = data.error === 'Could not identify a product on this page'
+          ? 'No specific product found on this page. Try linking directly to a product listing on Amazon, Trendyol, eBay, etc.'
+          : (data.error || 'Could not analyze this link.');
+        showError(msg); setLoading(false); return;
+      }
 
       currentProduct = data.product;
       currentUrl     = url;

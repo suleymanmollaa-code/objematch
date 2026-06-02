@@ -228,12 +228,19 @@ async function identifyProduct(pageText, url) {
     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001', max_tokens: 300,
-      messages: [{ role: 'user', content: `Identify the main product on this webpage.
-URL: ${url}
-Content: ${pageText}
+      messages: [{ role: 'user', content: `You are a product identification assistant. Look at this webpage and extract ONE specific, purchasable physical product.
 
-Respond ONLY with JSON:
-{"name":"product name with brand and model","searchQuery":"best Google Shopping search query","category":"product category","estimatedPrice":"$XX-$XX or null"}` }]
+URL: ${url}
+Page content: ${pageText}
+
+RULES:
+- Return a specific product only if the page is clearly about buying/selling/reviewing a SINGLE identifiable product (e.g. "Sony WH-1000XM5", "iPhone 15 Pro", "Dyson V15").
+- If the page is a YouTube video, article, search results page, social feed, or lists multiple products, return {"name":null}.
+- If you cannot identify ONE specific product with a brand/model, return {"name":null}.
+- Do NOT invent or guess product names. Only return what is clearly stated on the page.
+
+Respond ONLY with JSON (no explanation):
+{"name":"brand + model name or null","searchQuery":"best search query to find this exact product","category":"product category","estimatedPrice":"$XX-$XX or null"}` }]
     })
   });
   const data = await r.json();
