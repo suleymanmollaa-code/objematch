@@ -3,137 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Analyses — ObjeMatch</title>
+  <title>Dashboard — ObjeMatch</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; min-height: 100vh; }
+    :root {
+      --bg: #f9fafb; --surface: #fff; --border: #e5e7eb;
+      --text: #111827; --muted: #6b7280; --light: #9ca3af;
+      --accent: #f97316; --purple: #7c6ff7; --green: #22c55e; --red: #ef4444;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     a { color: inherit; text-decoration: none; }
 
     nav {
-      background: #fff; border-bottom: 1px solid #e5e7eb;
-      padding: 0 clamp(16px, 4vw, 32px); height: 64px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 clamp(16px,4vw,32px); height: 64px;
       display: flex; align-items: center; gap: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
+    .logo { font-size: 20px; font-weight: 800; } .logo span { color: var(--accent); }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .nav-btn { padding: 7px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .nav-btn:hover { background: var(--bg); color: var(--text); }
+    .nav-btn.accent { background: var(--accent); color: white; border-color: var(--accent); }
+    .nav-btn.accent:hover { background: #ea580c; }
 
-    .logo { font-size: 20px; font-weight: 800; }
-    .logo span { color: #f97316; }
-    .nav-right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+    .page { max-width: 900px; margin: 0 auto; padding: clamp(24px,4vw,40px); }
 
-    .btn {
-      padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
-      cursor: pointer; border: 1px solid #e5e7eb; background: #fff;
-      color: #6b7280; font-family: inherit; transition: all 0.15s;
-    }
-    .btn:hover { background: #f9fafb; color: #111827; }
-    .btn.accent { background: #f97316; color: #fff; border-color: #f97316; }
-    .btn.accent:hover { background: #ea580c; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 32px; }
+    @media(max-width:560px){ .stats { grid-template-columns: 1fr 1fr; } }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+    .stat-val { font-size: 28px; font-weight: 800; }
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
-    .page { max-width: 1100px; margin: 0 auto; padding: clamp(24px,4vw,48px); }
+    .section { margin-bottom: 36px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-title { font-size: 17px; font-weight: 800; }
+    .section-link { font-size: 13px; color: var(--accent); font-weight: 600; cursor: pointer; }
+    .section-link:hover { text-decoration: underline; }
 
-    .page-header { margin-bottom: 32px; }
-    .page-title { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
-    .page-sub { color: #6b7280; font-size: 15px; }
+    .empty { text-align: center; padding: 36px 24px; color: var(--muted); font-size: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+    .empty-icon { font-size: 32px; margin-bottom: 10px; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-    }
+    .watch-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; transition: box-shadow 0.15s; }
+    .watch-card.active { border-color: #c4b5fd; }
+    .watch-card.inactive { opacity: 0.6; }
+    .watch-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .watch-info { flex: 1; min-width: 0; }
+    .watch-title { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .watch-meta  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .watch-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
+    .badge-active   { background: #f5f3ff; color: var(--purple); border: 1px solid #c4b5fd; }
+    .badge-inactive { background: var(--bg); color: var(--light); border: 1px solid var(--border); }
+    .watch-cancel { background: none; border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; flex-shrink: 0; }
+    .watch-cancel:hover { border-color: var(--red); color: var(--red); }
 
-    .card {
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
-      overflow: hidden; transition: box-shadow 0.2s, transform 0.2s;
-      cursor: pointer;
-    }
+    .alert-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
+    .alert-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; gap: 12px; }
+    .alert-head:hover { background: var(--bg); }
+    .alert-title { font-size: 14px; font-weight: 700; flex: 1; }
+    .alert-time  { font-size: 12px; color: var(--light); flex-shrink: 0; }
+    .alert-chevron { color: var(--light); transition: transform 0.15s; }
+    .alert-card.open .alert-chevron { transform: rotate(180deg); }
+    .alert-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+    .alert-card.open .alert-body { display: block; padding-top: 14px; }
 
-    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .deal-row { display: flex; align-items: center; gap: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+    .deal-info { flex: 1; min-width: 0; }
+    .deal-name  { font-size: 13px; font-weight: 600; }
+    .deal-price { font-size: 12px; color: #059669; font-weight: 700; }
+    .deal-why   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .deal-links { display: flex; gap: 6px; flex-shrink: 0; }
+    .amz-btn { background: #ff9900; color: #000; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; text-decoration: none; }
+    .ebay-btn { background: #e53238; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; text-decoration: none; }
 
-    .card-thumb {
-      width: 100%; aspect-ratio: 16/10; object-fit: cover;
-      background: #f3f4f6; display: block;
-    }
+    .analyses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .analysis-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow 0.15s; }
+    .analysis-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .analysis-thumb { width: 100%; height: 100px; object-fit: cover; background: var(--bg); display: block; }
+    .analysis-thumb-ph { width: 100%; height: 100px; background: linear-gradient(135deg,#e5e7eb,#d1d5db); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .analysis-meta { padding: 10px 12px; }
+    .analysis-room { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .analysis-date { font-size: 11px; color: var(--light); }
 
-    .card-thumb-placeholder {
-      width: 100%; aspect-ratio: 16/10; background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-      display: flex; align-items: center; justify-content: center; font-size: 40px;
-    }
+    .loading-state { text-align: center; padding: 60px; color: var(--muted); }
+    .spin { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .card-body { padding: 16px; }
-    .card-room { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #f97316; margin-bottom: 6px; }
-    .card-summary { font-size: 14px; color: #374151; line-height: 1.5; margin-bottom: 12px; }
-    .card-meta { display: flex; align-items: center; justify-content: space-between; }
-    .card-date { font-size: 12px; color: #9ca3af; }
-    .card-count { font-size: 12px; color: #6b7280; font-weight: 500; }
-
-    .card-del {
-      background: none; border: none; color: #d1d5db; cursor: pointer;
-      font-size: 16px; padding: 4px; transition: color 0.15s;
-    }
-    .card-del:hover { color: #ef4444; }
-
-    .empty-state {
-      text-align: center; padding: 80px 24px; grid-column: 1/-1;
-    }
-
-    .empty-icon { font-size: 56px; margin-bottom: 16px; }
-    .empty-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .empty-sub { color: #6b7280; font-size: 15px; margin-bottom: 28px; }
-
-    /* Modal */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5); z-index: 200;
-      align-items: center; justify-content: center; padding: 20px;
-    }
-
-    .modal-overlay.active { display: flex; }
-
-    .modal {
-      background: #fff; border-radius: 20px; padding: 32px;
-      max-width: 680px; width: 100%; max-height: 85vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-
-    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
-    .modal-room { font-size: 22px; font-weight: 800; }
-    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; line-height: 1; }
-    .modal-summary { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
-
-    .modal-photo { width: 100%; border-radius: 12px; margin-bottom: 20px; }
-
-    .prob-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .prob-desc { font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 12px; }
-
-    .prod-row {
-      display: flex; align-items: center; gap: 12px;
-      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
-      padding: 10px 12px; margin-bottom: 8px;
-    }
-
-    .prod-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .prod-why { font-size: 12px; color: #6b7280; }
-
-    .amz-link {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: #ff9900; color: #000; font-size: 12px; font-weight: 700;
-      padding: 5px 10px; border-radius: 7px; text-decoration: none;
-      flex-shrink: 0; transition: opacity 0.15s;
-    }
-
-    .amz-link:hover { opacity: 0.85; }
-
-    .prob-section { margin-bottom: 20px; }
-    .prob-num-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: 50%; font-size: 12px;
-      font-weight: 700; color: white; margin-right: 8px; vertical-align: middle;
-    }
-
-    @media (max-width: 640px) {
-      .grid { grid-template-columns: 1fr; }
-    }
+    .auth-gate { text-align: center; padding: 80px 24px; }
+    .auth-gate h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+    .auth-gate p  { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
   </style>
 </head>
 <body>
@@ -141,140 +100,186 @@
 <nav>
   <a href="/" class="logo">Obje<span>Match</span></a>
   <div class="nav-right">
-    <a href="/room-analyzer.html" class="btn accent">+ New Analysis</a>
-    <button class="btn" onclick="logout()">Sign out</button>
+    <a href="/room-analyzer.html" class="nav-btn accent">Analyze</a>
+    <button class="nav-btn" id="logoutBtn" style="display:none" onclick="logout()">Sign out</button>
   </div>
 </nav>
 
-<div class="page">
-  <div class="page-header">
-    <div class="page-title">My Room Analyses</div>
-    <div class="page-sub" id="pageSubtitle">Loading...</div>
-  </div>
-  <div class="grid" id="grid"></div>
-</div>
-
-<!-- Modal -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div class="modal-room" id="modalRoom"></div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-summary" id="modalSummary"></div>
-    <img id="modalPhoto" class="modal-photo" alt="" style="display:none">
-    <div id="modalProblems"></div>
+<div class="page" id="mainPage">
+  <div class="loading-state">
+    <div class="spin"></div>
+    Loading your dashboard...
   </div>
 </div>
 
 <script>
   const token = localStorage.getItem('om_token');
-  const colors = ['#f97316', '#7c6ff7', '#059669'];
+  const user  = JSON.parse(localStorage.getItem('om_user') || 'null');
 
-  if (!token) location.href = '/login.html?next=/dashboard.html';
+  if (!token || !user) {
+    document.getElementById('mainPage').innerHTML = `
+      <div class="auth-gate">
+        <div style="font-size:48px;margin-bottom:16px">🔒</div>
+        <h2>Sign in to view your dashboard</h2>
+        <p>Track your analyses, watches, and deal alerts in one place.</p>
+        <a href="/login.html" style="display:inline-block;background:var(--accent);color:white;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:700;">Sign in</a>
+      </div>`;
+  } else {
+    document.getElementById('logoutBtn').style.display = 'block';
+    loadDashboard();
+  }
 
   function logout() {
-    localStorage.clear();
+    localStorage.removeItem('om_token');
+    localStorage.removeItem('om_user');
     location.href = '/';
   }
 
-  async function load() {
+  async function loadDashboard() {
     try {
-      const res = await fetch('/api/history', { headers: { Authorization: `Bearer ${token}` } });
-      if (res.status === 401) { localStorage.clear(); location.href = '/login.html'; return; }
-      const { analyses } = await res.json();
-      render(analyses);
-    } catch {
-      document.getElementById('grid').innerHTML = '<div class="empty-state"><div class="empty-title">Failed to load</div></div>';
+      const res  = await fetch('/api/dashboard', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      renderDashboard(data);
+    } catch (e) {
+      document.getElementById('mainPage').innerHTML = '<div class="loading-state">Failed to load. Please refresh.</div>';
     }
   }
 
-  function render(analyses) {
-    const sub = document.getElementById('pageSubtitle');
-    sub.textContent = analyses.length ? `${analyses.length} saved ${analyses.length === 1 ? 'analysis' : 'analyses'}` : 'No analyses yet';
-
-    const grid = document.getElementById('grid');
-    if (!analyses.length) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">📷</div>
-          <div class="empty-title">No analyses yet</div>
-          <div class="empty-sub">Upload a room photo and our AI will find what your space needs.</div>
-          <a href="/room-analyzer.html" class="btn accent">Analyze My First Room</a>
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML = analyses.map(a => `
-      <div class="card" onclick="openModal('${a.id}')">
-        ${a.thumbnail
-          ? `<img class="card-thumb" src="${a.thumbnail}" alt="${a.room}">`
-          : `<div class="card-thumb-placeholder">🏠</div>`}
-        <div class="card-body">
-          <div class="card-room">${a.room}</div>
-          <div class="card-summary">${a.summary}</div>
-          <div class="card-meta">
-            <span class="card-date">${new Date(a.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
-            <span class="card-count">${a.problems?.length || 0} suggestions</span>
-            <button class="card-del" onclick="event.stopPropagation();del('${a.id}')">🗑</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-    window._analyses = analyses;
+  function timeAgo(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1)  return 'just now';
+    if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + 'h ago';
+    const d = Math.floor(h / 24);
+    if (d < 30) return d + 'd ago';
+    return new Date(iso).toLocaleDateString();
   }
 
-  async function del(id) {
-    if (!confirm('Delete this analysis?')) return;
-    await fetch(`/api/history/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    load();
+  function freqLabel(f) {
+    return { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly' }[f] || f;
   }
 
-  function openModal(id) {
-    const a = window._analyses?.find(x => x.id === id);
-    if (!a) return;
-
-    document.getElementById('modalRoom').textContent = a.room;
-    document.getElementById('modalSummary').textContent = a.summary;
-
-    const photo = document.getElementById('modalPhoto');
-    if (a.thumbnail) { photo.src = a.thumbnail; photo.style.display = 'block'; }
-    else { photo.style.display = 'none'; }
-
-    document.getElementById('modalProblems').innerHTML = (a.problems || []).map((p, i) => `
-      <div class="prob-section">
-        <div class="prob-title">
-          <span class="prob-num-badge" style="background:${colors[i]||'#6b7280'}">${i+1}</span>
-          ${esc(p.title)}
-        </div>
-        <div class="prob-desc">${esc(p.description)}</div>
-        ${(p.products||[]).map(prod => `
-          <div class="prod-row">
-            <div style="flex:1">
-              <div class="prod-name">${esc(prod.name)}</div>
-              <div class="prod-why">${esc(prod.why)}</div>
-            </div>
-            <a href="${prod.url}" target="_blank" rel="noopener" class="amz-link">Amazon ↗</a>
-          </div>
-        `).join('')}
-      </div>
-    `).join('');
-
-    document.getElementById('modalOverlay').classList.add('active');
+  async function cancelWatch(id) {
+    if (!confirm('Cancel this watch? AI searches will stop.')) return;
+    const res = await fetch('/api/watches/' + id, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    if (res.ok) loadDashboard();
+    else alert('Could not cancel. Please try again.');
   }
 
-  function closeModal(e) {
-    if (!e || e.target === document.getElementById('modalOverlay') || e.currentTarget === document.querySelector('.modal-close')) {
-      document.getElementById('modalOverlay').classList.remove('active');
-    }
+  function toggleAlert(id) {
+    document.getElementById(id).classList.toggle('open');
   }
 
   function esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  load();
+  function renderDashboard(data) {
+    const { user: u, watches, alerts, analyses } = data;
+    const activeWatches = (watches||[]).filter(w => w.active);
+
+    const statsHtml = `
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-val">${u?.used||0}<span style="font-size:16px;color:var(--muted)">/${u?.limit||100}</span></div>
+          <div class="stat-label">Analyses this month</div>
+        </div>
+        <div class="stat-card" style="border-color:#c4b5fd">
+          <div class="stat-val" style="color:var(--purple)">${activeWatches.length}</div>
+          <div class="stat-label">Active watches</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">${(alerts||[]).length}</div>
+          <div class="stat-label">Deal alerts</div>
+        </div>
+      </div>`;
+
+    let watchesHtml = '';
+    if (!watches || watches.length === 0) {
+      watchesHtml = `<div class="empty"><div class="empty-icon">📡</div>No watches yet. Analyze a photo and click "Watch" on any item.</div>`;
+    } else {
+      watchesHtml = (watches||[]).map(w => `
+        <div class="watch-card ${w.active ? 'active' : 'inactive'}">
+          <div style="font-size:22px">${w.active ? '📡' : '⏹️'}</div>
+          <div class="watch-info">
+            <div class="watch-title">${esc(w.itemTitle)}</div>
+            <div class="watch-meta">${freqLabel(w.frequency)} · ${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</div>
+          </div>
+          <span class="watch-badge ${w.active ? 'badge-active' : 'badge-inactive'}">${w.active ? 'Active' : 'Cancelled'}</span>
+          ${w.active ? `<button class="watch-cancel" onclick="cancelWatch('${w.id}')">Cancel</button>` : ''}
+        </div>`).join('');
+    }
+
+    let alertsHtml = '';
+    if (!alerts || alerts.length === 0) {
+      alertsHtml = `<div class="empty"><div class="empty-icon">🔔</div>No deal alerts yet. Alerts appear here when a Watch finds new deals.</div>`;
+    } else {
+      alertsHtml = (alerts||[]).slice(0,10).map((a, i) => {
+        const aid = 'alert-' + i;
+        const dealsHtml = (a.deals||[]).map(d => `
+          <div class="deal-row">
+            <div class="deal-info">
+              <div class="deal-name">${esc(d.title||'')}</div>
+              <div class="deal-price">${esc(d.price||'')}</div>
+              ${d.why ? `<div class="deal-why">${esc(d.why)}</div>` : ''}
+            </div>
+            <div class="deal-links">
+              ${d.amazonUrl ? `<a href="${d.amazonUrl}" target="_blank" class="amz-btn" rel="noopener">Amazon</a>` : ''}
+              ${d.ebayUrl   ? `<a href="${d.ebayUrl}"   target="_blank" class="ebay-btn" rel="noopener">eBay</a>`   : ''}
+            </div>
+          </div>`).join('');
+        return `
+          <div class="alert-card" id="${aid}">
+            <div class="alert-head" onclick="toggleAlert('${aid}')">
+              <div>🔔</div>
+              <div class="alert-title">Deals for &ldquo;${esc(a.itemTitle)}&rdquo;</div>
+              <div class="alert-time">${timeAgo(a.createdAt)}</div>
+              <div class="alert-chevron">⌄</div>
+            </div>
+            <div class="alert-body">${dealsHtml||'<div style="color:var(--muted);font-size:13px">No deals found.</div>'}</div>
+          </div>`;
+      }).join('');
+    }
+
+    let analysesHtml = '';
+    if (!analyses || analyses.length === 0) {
+      analysesHtml = `<div class="empty"><div class="empty-icon">📸</div>No analyses yet. <a href="/room-analyzer.html" style="color:var(--accent);font-weight:600">Upload a photo</a> to get started.</div>`;
+    } else {
+      analysesHtml = `<div class="analyses-grid">${(analyses||[]).map(a => `
+        <div class="analysis-card" onclick="location.href='/room-analyzer.html'">
+          ${a.thumbnail
+            ? `<img class="analysis-thumb" src="${a.thumbnail}" alt="" loading="lazy">`
+            : `<div class="analysis-thumb-ph">📸</div>`}
+          <div class="analysis-meta">
+            <div class="analysis-room">${esc(a.room||'Space')}</div>
+            <div class="analysis-date">${timeAgo(a.createdAt)}</div>
+          </div>
+        </div>`).join('')}</div>`;
+    }
+
+    document.getElementById('mainPage').innerHTML = `
+      ${statsHtml}
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">My Watches</div>
+          <a href="/pricing.html" class="section-link">Learn more</a>
+        </div>
+        ${watchesHtml}
+      </div>
+      <div class="section">
+        <div class="section-head"><div class="section-title">Deal Alerts</div></div>
+        ${alertsHtml}
+      </div>
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Recent Analyses</div>
+          <span class="section-link" onclick="location.href='/room-analyzer.html'">New analysis</span>
+        </div>
+        ${analysesHtml}
+      </div>`;
+  }
 </script>
 </body>
 </html>

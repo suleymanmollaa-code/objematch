@@ -1046,10 +1046,15 @@
         body: JSON.stringify({ itemTitle: _watchItem.title, itemDesc: _watchItem.desc, frequency: freq })
       });
       const data = await res.json();
+      if (data.comingSoon) {
+        closeWatchModal();
+        showWatchToast(_watchItem.title);
+        return;
+      }
       if (data.url) {
         location.href = data.url;
       } else {
-        alert(data.error || 'Could not start payment. Please try again.');
+        alert(data.error || 'Could not start. Please try again.');
         btn.disabled = false;
         btn.textContent = 'Continue to Payment';
       }
@@ -1058,6 +1063,25 @@
       btn.disabled = false;
       btn.textContent = 'Continue to Payment';
     }
+  }
+
+  function showWatchToast(title) {
+    const idx = _watchItem?.idx;
+    if (idx != null) {
+      const btn = document.getElementById(`watch-btn-${idx}`);
+      if (btn) {
+        btn.style.cssText += ';background:#f0fdf4;border-color:#22c55e;color:#15803d';
+        btn.querySelector('.option-icon').textContent  = '✓';
+        btn.querySelector('.option-label').textContent = 'Registered';
+        btn.querySelector('.option-price').textContent = 'Coming soon';
+        btn.querySelector('.option-source').textContent = '';
+      }
+    }
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:600;z-index:1000;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
+    t.textContent = `Watch registered! We'll notify you when "${title}" monitoring launches.`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 4500);
   }
 
   document.getElementById('watchOverlay').addEventListener('click', function(e) {
