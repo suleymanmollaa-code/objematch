@@ -228,19 +228,19 @@ async function identifyProduct(pageText, url) {
     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001', max_tokens: 300,
-      messages: [{ role: 'user', content: `You are a product identification assistant. Look at this webpage and extract ONE specific, purchasable physical product.
+      messages: [{ role: 'user', content: `You are a price monitoring assistant. Extract info from this product page.
 
 URL: ${url}
 Page content: ${pageText}
 
 RULES:
-- Return a specific product only if the page is clearly about buying/selling/reviewing a SINGLE identifiable product (e.g. "Sony WH-1000XM5", "iPhone 15 Pro", "Dyson V15").
-- If the page is a YouTube video, article, search results page, social feed, or lists multiple products, return {"name":null}.
-- If you cannot identify ONE specific product with a brand/model, return {"name":null}.
-- Do NOT invent or guess product names. Only return what is clearly stated on the page.
+- Only extract if this is a SINGLE product listing/detail page where one item is for sale.
+- If it is a video, article, blog, social feed, search results, or multi-product page → {"name":null}
+- Extract the exact price currently shown on the page (as-is, e.g. "₺1.299,00" or "$49.99").
+- Do NOT invent or guess. Only return what is clearly on the page.
 
-Respond ONLY with JSON (no explanation):
-{"name":"brand + model name or null","searchQuery":"best search query to find this exact product","category":"product category","estimatedPrice":"$XX-$XX or null"}` }]
+Return ONLY valid JSON:
+{"name":"full product name with brand and model, or null","currentPrice":"exact price shown or null","available":true}` }]
     })
   });
   const data = await r.json();
@@ -263,19 +263,15 @@ function buildStoreLinks(query) {
   ].map(s => ({ ...s, title: query, price: null, thumbnail: null }));
 }
 
-async function sendLinkAlertEmail(to, productName, sourceUrl, sellers) {
-  if (!mailer || !sellers.length) return;
-  const rows = sellers.slice(0, 5).map(s => `
-    <div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;background:#fff;display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:#111827">${esc(s.source || '')}</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:2px">${esc(s.title || '')}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:15px;font-weight:800;color:#059669">${esc(s.price || '')}</div>
-        ${s.link ? `<a href="${s.link}" style="font-size:11px;color:#f97316;font-weight:600">View →</a>` : ''}
-      </div>
-    </div>`).join('');
+async function sendLinkAlertEmail(to, productName, sourceUrl, currentPrice, previousPrice) {
+  if (!mailer) return;
+  const priceBlock = currentPrice
+    ? `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+        <div style="font-size:12px;color:#6b7280;margin-bottom:4px;">Current price</div>
+        <div style="font-size:28px;font-weight:900;color:#059669">${esc(currentPrice)}</div>
+        ${previousPrice && previousPrice !== currentPrice ? `<div style="font-size:12px;color:#9ca3af;margin-top:4px;">Was: ${esc(previousPrice)}</div>` : ''}
+      </div>`
+    : '';
 
   await mailer.sendMail({
     from:    `"ObjeMatch" <${process.env.SMTP_USER}>`,
@@ -284,12 +280,10 @@ async function sendLinkAlertEmail(to, productName, sourceUrl, sellers) {
     html: `<div style="max-width:520px;margin:0 auto;font-family:Inter,Arial,sans-serif;background:#f9fafb;padding:32px 16px;">
       <div style="background:#fff;border-radius:20px;padding:28px;">
         <div style="font-size:20px;font-weight:800;color:#111827;margin-bottom:4px;">🔔 Price update</div>
-        <div style="color:#6b7280;font-size:13px;margin-bottom:20px;">Here's where <strong>${esc(productName)}</strong> is selling right now:</div>
-        ${rows}
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6;">
-          <a href="${BASE_URL}/link-tracker.html" style="background:#f97316;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">Open Link Tracker</a>
-        </div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:14px">You're watching this product. <a href="${BASE_URL}/dashboard.html" style="color:#6b7280">Manage watches</a></div>
+        <div style="color:#6b7280;font-size:13px;margin-bottom:20px;"><strong>${esc(productName)}</strong> has been checked.</div>
+        ${priceBlock}
+        <a href="${esc(sourceUrl)}" style="display:block;background:#f97316;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;text-align:center;margin-bottom:16px;">View product page →</a>
+        <div style="font-size:11px;color:#9ca3af">You're watching this link. <a href="${BASE_URL}/dashboard.html" style="color:#6b7280">Manage watches</a></div>
       </div>
     </div>`
   });
@@ -395,29 +389,37 @@ async function runLinkWatchCron() {
 
   for (const watch of due) {
     try {
-      const sellers = buildStoreLinks(watch.searchQuery || watch.productName);
-      const alerts  = readJSON(ALERTS_FILE);
-      alerts.push({
-        id: Date.now().toString(), type: 'link',
-        watchId: watch.id, userId: watch.userId,
-        productName: watch.productName, sourceUrl: watch.url,
-        sellers, createdAt: new Date().toISOString()
-      });
-      writeJSON(ALERTS_FILE, alerts);
+      const pageText    = await fetchPageText(watch.url);
+      const info        = await identifyProduct(pageText, watch.url);
+      const currentPrice = info.currentPrice || null;
+      const priceChanged = currentPrice && watch.lastPrice && currentPrice !== watch.lastPrice;
+      const firstCheck   = !watch.lastCheckedAt;
 
-      const users = readJSON(USERS_FILE);
-      const user  = users.find(u => u.id === watch.userId);
-      if (user?.email && mailer) {
-        await sendLinkAlertEmail(user.email, watch.productName, watch.url, sellers);
+      if (priceChanged || firstCheck) {
+        const users = readJSON(USERS_FILE);
+        const user  = users.find(u => u.id === watch.userId);
+        if (user?.email && mailer) {
+          await sendLinkAlertEmail(user.email, watch.productName, watch.url, currentPrice, watch.lastPrice);
+        }
+        const alerts = readJSON(ALERTS_FILE);
+        alerts.push({
+          id: Date.now().toString(), type: 'link',
+          watchId: watch.id, userId: watch.userId,
+          productName: watch.productName, sourceUrl: watch.url,
+          currentPrice, previousPrice: watch.lastPrice,
+          priceChanged, createdAt: new Date().toISOString()
+        });
+        writeJSON(ALERTS_FILE, alerts);
       }
 
       const idx = watches.findIndex(w => w.id === watch.id);
       if (idx !== -1) {
         watches[idx].lastCheckedAt = new Date().toISOString();
         watches[idx].nextCheckAt   = getNextCheckAt(watch.frequency);
+        if (currentPrice) watches[idx].lastPrice = currentPrice;
         writeJSON(LINK_WATCHES_FILE, watches);
       }
-      console.log(`Link watch processed: "${watch.productName}"`);
+      console.log(`Link watch checked: "${watch.productName}" — ${currentPrice || 'price not found'}${priceChanged ? ' (CHANGED from ' + watch.lastPrice + ')' : ''}`);
     } catch (e) { console.error('Link watch cron error:', e.message); }
   }
 }
@@ -832,13 +834,10 @@ app.post('/api/link-analyze', requireAuth, async (req, res) => {
   try {
     const pageText = await fetchPageText(url);
     const product  = await identifyProduct(pageText, url);
-    if (!product.name) return res.status(400).json({ error: 'Could not identify a product on this page' });
+    if (!product.name) return res.status(400).json({ error: 'No specific product found on this page. Try linking directly to a product listing (Amazon, Trendyol, eBay, etc.)' });
 
-    const sellers = buildStoreLinks(product.searchQuery || product.name);
     incrementLinkUsage(req.user.id);
-
-    const usage = getLinkUsage(users.find(u => u.id === req.user.id) || dbUser);
-    res.json({ product, sellers, used: check.used + 1, limit: LINK_FREE_LIMIT });
+    res.json({ product, used: check.used + 1, limit: LINK_FREE_LIMIT });
   } catch (e) {
     console.error('Link analyze error:', e.message);
     res.status(500).json({ error: 'Failed to analyze link' });
@@ -846,13 +845,14 @@ app.post('/api/link-analyze', requireAuth, async (req, res) => {
 });
 
 app.post('/api/link-watches', requireAuth, (req, res) => {
-  const { url, productName, searchQuery, frequency } = req.body;
+  const { url, productName, currentPrice, frequency } = req.body;
   if (!url || !productName) return res.status(400).json({ error: 'url and productName required' });
 
   const watches = readJSON(LINK_WATCHES_FILE);
   const watch = {
     id: Date.now().toString(), userId: req.user.id,
-    url, productName, searchQuery: searchQuery || productName,
+    url, productName,
+    lastPrice: currentPrice || null,
     frequency: ['daily', 'weekly', 'monthly'].includes(frequency) ? frequency : 'daily',
     active: true, lastCheckedAt: null,
     nextCheckAt: getNextCheckAt(frequency || 'daily'),

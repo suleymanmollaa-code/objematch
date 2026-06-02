@@ -19,29 +19,27 @@
     .btn-nav { background: #111827; color: #fff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; }
     .btn-nav:hover { background: #1f2937; }
 
-    .hero { max-width: 680px; margin: 0 auto; padding: 64px 24px 40px; text-align: center; }
+    .hero { max-width: 640px; margin: 0 auto; padding: 64px 24px 40px; text-align: center; }
     .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700; margin-bottom: 24px; }
-    .hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; color: #111827; line-height: 1.2; margin-bottom: 16px; }
-    .hero p { color: #6b7280; font-size: 1.05rem; line-height: 1.7; margin-bottom: 40px; }
+    .hero h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; color: #111827; line-height: 1.2; margin-bottom: 14px; }
+    .hero p { color: #6b7280; font-size: 1rem; line-height: 1.7; margin-bottom: 36px; }
 
-    .input-wrap { background: #fff; border: 2px solid #e5e7eb; border-radius: 18px; padding: 20px 24px; display: flex; gap: 12px; align-items: center; transition: border-color .2s; }
+    .input-wrap { background: #fff; border: 2px solid #e5e7eb; border-radius: 18px; padding: 18px 20px; display: flex; gap: 12px; align-items: center; transition: border-color .2s; }
     .input-wrap:focus-within { border-color: #f97316; }
     .input-wrap input { flex: 1; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 15px; color: #111827; background: transparent; }
     .input-wrap input::placeholder { color: #9ca3af; }
-    .btn-analyze { background: #f97316; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background .15s; }
-    .btn-analyze:hover { background: #ea580c; }
-    .btn-analyze:disabled { background: #d1d5db; cursor: not-allowed; }
+    .btn-watch { background: #f97316; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background .15s; }
+    .btn-watch:hover { background: #ea580c; }
+    .btn-watch:disabled { background: #d1d5db; cursor: not-allowed; }
 
-    /* Usage bar */
-    .usage-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; }
+    .usage-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 16px; }
     .usage-dots { display: flex; gap: 5px; }
-    .usage-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; }
+    .usage-dot { width: 9px; height: 9px; border-radius: 50%; background: #e5e7eb; }
     .usage-dot.used { background: #f97316; }
     .usage-text { font-size: 12px; color: #9ca3af; }
 
-    .main { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+    .main { max-width: 600px; margin: 0 auto; padding: 0 24px 80px; }
 
-    /* Login gate */
     .login-gate { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 48px 32px; text-align: center; margin-bottom: 24px; }
     .login-gate h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
     .login-gate p { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
@@ -50,8 +48,7 @@
     .btn-sec-link { font-size: 14px; color: #6b7280; }
     .btn-sec-link:hover { color: #111827; }
 
-    /* Limit reached */
-    .limit-banner { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+    .limit-banner { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
     .limit-banner p { font-size: 14px; color: #92400e; font-weight: 500; }
     .limit-banner a { background: #f97316; color: #fff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; white-space: nowrap; }
 
@@ -60,46 +57,42 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading p { color: #6b7280; font-size: 14px; }
 
-    .product-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 24px 28px; margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-    .product-info h2 { font-size: 1.2rem; font-weight: 800; color: #111827; margin-bottom: 8px; }
-    .product-meta { display: flex; gap: 8px; flex-wrap: wrap; }
-    .product-tag { background: #f3f4f6; border-radius: 8px; padding: 3px 10px; font-size: 12px; color: #6b7280; font-weight: 500; }
-    .product-tag.green { background: #ecfdf5; color: #059669; }
+    /* Result card */
+    .result-card { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 18px; overflow: hidden; margin-bottom: 16px; }
+    .result-head { padding: 22px 24px 18px; border-bottom: 1px solid #f3f4f6; }
+    .result-name { font-size: 17px; font-weight: 800; color: #111827; margin-bottom: 10px; line-height: 1.3; }
+    .price-row { display: flex; align-items: baseline; gap: 10px; }
+    .price-current { font-size: 26px; font-weight: 900; color: #059669; }
+    .price-label { font-size: 12px; color: #9ca3af; }
+    .price-unavailable { font-size: 14px; color: #9ca3af; font-style: italic; }
 
-    /* Watch box */
-    .watch-box { background: #fff; border: 2px solid #f97316; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
-    .watch-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-    .watch-box p { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
-    .freq-grid { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .freq-btn { flex: 1; min-width: 80px; padding: 12px 8px; border: 2px solid #e5e7eb; border-radius: 12px; background: #fff; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #6b7280; cursor: pointer; text-align: center; transition: all .15s; }
-    .freq-btn.active { border-color: #f97316; background: #fff7ed; color: #f97316; }
-    .freq-price { font-size: 11px; font-weight: 500; color: #9ca3af; margin-top: 3px; }
-    .freq-btn.active .freq-price { color: #fdba74; }
-    .btn-watch { width: 100%; background: #f97316; color: #fff; border: none; padding: 14px; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s; }
-    .btn-watch:hover { background: #ea580c; }
-    .btn-watch:disabled { background: #d1d5db; cursor: not-allowed; }
-
-    .section-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    .sellers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 32px; }
-    .seller-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; transition: border-color .15s, box-shadow .15s; }
-    .seller-card:hover { border-color: #f97316; box-shadow: 0 4px 16px rgba(249,115,22,.1); }
-    .seller-icon { font-size: 24px; }
-    .seller-name { font-size: 13px; font-weight: 700; color: #111827; }
-    .seller-desc { font-size: 12px; color: #9ca3af; line-height: 1.4; flex: 1; }
-    .btn-view { background: #111827; color: #fff; border: none; padding: 8px 0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; display: block; text-align: center; width: 100%; }
-    .btn-view:hover { background: #1f2937; }
-
-    /* Watched list */
-    .watched-section { margin-top: 40px; }
-    .watched-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-    .wc-info { flex: 1; }
-    .wc-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
-    .wc-meta { font-size: 12px; color: #9ca3af; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .freq-badge { background: #f3f4f6; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: #6b7280; }
-    .btn-delete { background: none; border: 1px solid #e5e7eb; color: #9ca3af; padding: 6px 12px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; cursor: pointer; }
-    .btn-delete:hover { border-color: #ef4444; color: #ef4444; }
+    /* Watch box inside result */
+    .watch-box { padding: 20px 24px; background: #fff7ed; }
+    .watch-title { font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 4px; }
+    .watch-sub { font-size: 12px; color: #b45309; margin-bottom: 16px; }
+    .freq-grid { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .freq-btn { flex: 1; min-width: 80px; padding: 10px 8px; border: 2px solid #fed7aa; border-radius: 10px; background: #fff; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: #92400e; cursor: pointer; text-align: center; transition: all .15s; }
+    .freq-btn.active { border-color: #f97316; background: #f97316; color: #fff; }
+    .freq-price { font-size: 10px; font-weight: 500; margin-top: 2px; opacity: .8; }
+    .btn-start-watch { width: 100%; background: #f97316; color: #fff; border: none; padding: 13px; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s; }
+    .btn-start-watch:hover { background: #ea580c; }
+    .btn-start-watch:disabled { background: #d1d5db; cursor: not-allowed; }
 
     .error-msg { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 14px 18px; color: #dc2626; font-size: 14px; margin-bottom: 20px; }
+
+    /* Watched list */
+    .watched-section { margin-top: 32px; }
+    .section-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+    .watched-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .wc-icon { font-size: 20px; flex-shrink: 0; }
+    .wc-info { flex: 1; min-width: 0; }
+    .wc-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wc-meta { font-size: 12px; color: #9ca3af; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .wc-price { font-size: 12px; font-weight: 700; color: #059669; }
+    .freq-badge { background: #f3f4f6; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: #6b7280; }
+    .btn-delete { background: none; border: 1px solid #e5e7eb; color: #9ca3af; padding: 5px 10px; border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 11px; cursor: pointer; flex-shrink: 0; }
+    .btn-delete:hover { border-color: #ef4444; color: #ef4444; }
+    .btn-view-link { font-size: 11px; color: #f97316; font-weight: 600; flex-shrink: 0; }
 
     .toast { position: fixed; bottom: 24px; right: 24px; background: #111827; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; }
     .toast.show { opacity: 1; }
@@ -110,7 +103,6 @@
 <nav>
   <a href="/" class="logo">Obje<span>Match</span></a>
   <div class="nav-right">
-    <a href="/room-analyzer.html" class="nav-link">Photo Analyzer</a>
     <a href="/dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
     <a href="/login.html?next=/link-tracker.html" class="btn-nav" id="navLogin">Sign In</a>
     <a href="/dashboard.html" class="btn-nav" id="navUser" style="display:none"></a>
@@ -119,12 +111,12 @@
 
 <div class="hero">
   <div class="hero-badge">Link Tracker</div>
-  <h1>Paste any link.<br>Find it everywhere it's sold.</h1>
-  <p>Share a product page, social post, or any URL — we'll identify the product and show you all the places it's sold across the web.</p>
+  <h1>Paste a product link.<br>We'll watch it for you.</h1>
+  <p>Paste any product page URL — we'll read the current price and alert you whenever it changes.</p>
 
   <div class="input-wrap" id="inputWrap">
-    <input type="url" id="urlInput" placeholder="https://amazon.com/dp/... or instagram.com/p/..." />
-    <button class="btn-analyze" id="analyzeBtn" onclick="analyzeLink()">Track It</button>
+    <input type="url" id="urlInput" placeholder="https://trendyol.com/... or amazon.com/dp/..." />
+    <button class="btn-watch" id="analyzeBtn" onclick="analyzeLink()">Check It</button>
   </div>
 
   <div class="usage-bar" id="usageBar" style="display:none">
@@ -135,16 +127,16 @@
 
 <div class="main">
   <div id="errorMsg" class="error-msg" style="display:none"></div>
-  <div id="limitBanner" class="limit-banner" style="display:none">
-    <p>You've used all 5 free link analyses this month. Watch a product to keep getting updates.</p>
-    <a href="/pricing.html">See Watch Plans</a>
+
+  <div class="limit-banner" id="limitBanner" style="display:none">
+    <p>You've used all 5 free previews this month. Subscribe to keep watching.</p>
+    <a href="/pricing.html">See Plans</a>
   </div>
 
-  <!-- Login gate -->
   <div class="login-gate" id="loginGate" style="display:none">
     <div style="font-size:48px;margin-bottom:16px">🔗</div>
     <h3>Sign in to use Link Tracker</h3>
-    <p>Create a free account to analyze up to 5 links per month<br>and set up price alert watches.</p>
+    <p>Create a free account to preview up to 5 links per month<br>and set up price alert watches.</p>
     <a href="/register.html?next=/link-tracker.html" class="btn-cta">Create Free Account</a>
     <a href="/login.html?next=/link-tracker.html" class="btn-sec-link">Already have an account? Sign in</a>
   </div>
@@ -155,42 +147,32 @@
   </div>
 
   <div id="results" style="display:none">
-    <div class="product-card">
-      <div class="product-info">
-        <h2 id="productName"></h2>
-        <div class="product-meta" id="productMeta"></div>
+    <div class="result-card">
+      <div class="result-head">
+        <div class="result-name" id="productName"></div>
+        <div class="price-row" id="priceRow"></div>
       </div>
-      <button class="btn-analyze" onclick="toggleWatchBox()" id="watchToggleBtn" style="font-size:13px;padding:10px 18px">
-        Watch this →
-      </button>
-    </div>
-
-    <div class="watch-box" id="watchBox" style="display:none">
-      <h3>Get price alerts for this product</h3>
-      <p>Choose how often you want to be notified — we'll search for deals and email you.</p>
-      <div class="freq-grid">
-        <button class="freq-btn" data-freq="monthly" onclick="selectFreq('monthly')">
-          Monthly<div class="freq-price">$1.99/mo</div>
-        </button>
-        <button class="freq-btn active" data-freq="weekly" onclick="selectFreq('weekly')">
-          Weekly<div class="freq-price">$3.99/mo</div>
-        </button>
-        <button class="freq-btn" data-freq="daily" onclick="selectFreq('daily')">
-          Daily<div class="freq-price">$7.99/mo</div>
-        </button>
+      <div class="watch-box">
+        <div class="watch-title">Watch this link for price changes</div>
+        <div class="watch-sub">We'll check this page and email you when the price drops.</div>
+        <div class="freq-grid">
+          <button class="freq-btn" data-freq="monthly" onclick="selectFreq('monthly')">
+            Monthly<div class="freq-price">$1.99/mo</div>
+          </button>
+          <button class="freq-btn active" data-freq="weekly" onclick="selectFreq('weekly')">
+            Weekly<div class="freq-price">$3.99/mo</div>
+          </button>
+          <button class="freq-btn" data-freq="daily" onclick="selectFreq('daily')">
+            Daily<div class="freq-price">$7.99/mo</div>
+          </button>
+        </div>
+        <button class="btn-start-watch" id="watchSubmitBtn" onclick="startWatch()">Start Watching — Subscribe</button>
       </div>
-      <button class="btn-watch" id="watchSubmitBtn" onclick="startWatch()">Start Watching — Subscribe</button>
     </div>
-
-    <div class="section-title">
-      Where it's sold
-      <span style="color:#9ca3af;font-weight:500;font-size:13px" id="sellerCount"></span>
-    </div>
-    <div class="sellers-grid" id="sellersGrid"></div>
   </div>
 
   <div class="watched-section" id="watchedSection" style="display:none">
-    <div class="section-title">Your Tracked Links</div>
+    <div class="section-title">Your Watched Links</div>
     <div id="watchedList"></div>
   </div>
 </div>
@@ -219,14 +201,12 @@
   })();
 
   function renderUsage(used, limit) {
-    const bar  = document.getElementById('usageBar');
-    const dots = document.getElementById('usageDots');
-    const txt  = document.getElementById('usageText');
+    const bar = document.getElementById('usageBar');
     bar.style.display = 'flex';
-    dots.innerHTML = Array.from({ length: limit }, (_, i) =>
+    document.getElementById('usageDots').innerHTML = Array.from({ length: limit }, (_, i) =>
       `<div class="usage-dot ${i < used ? 'used' : ''}"></div>`
     ).join('');
-    txt.textContent = `${used} of ${limit} free analyses used this month`;
+    document.getElementById('usageText').textContent = `${used} of ${limit} free previews used this month`;
     if (used >= limit) {
       document.getElementById('limitBanner').style.display = 'flex';
       document.getElementById('analyzeBtn').disabled = true;
@@ -241,8 +221,7 @@
     setLoading(true, 'Fetching page...');
     hideError();
     document.getElementById('results').style.display = 'none';
-    setTimeout(() => setLoadingText('Identifying product...'), 2000);
-    setTimeout(() => setLoadingText('Building store links...'), 3500);
+    setTimeout(() => setLoadingText('Reading product info...'), 2000);
 
     try {
       const r = await fetch('/api/link-analyze', {
@@ -258,17 +237,12 @@
         setLoading(false);
         return;
       }
-      if (!r.ok) {
-        const msg = data.error === 'Could not identify a product on this page'
-          ? 'No specific product found on this page. Try linking directly to a product listing on Amazon, Trendyol, eBay, etc.'
-          : (data.error || 'Could not analyze this link.');
-        showError(msg); setLoading(false); return;
-      }
+      if (!r.ok) { showError(data.error || 'Could not analyze this link.'); setLoading(false); return; }
 
       currentProduct = data.product;
       currentUrl     = url;
       renderUsage(data.used, data.limit);
-      renderResults(data.product, data.sellers);
+      renderResult(data.product);
     } catch {
       showError('Network error. Please try again.');
     } finally {
@@ -276,33 +250,17 @@
     }
   }
 
-  function renderResults(product, sellers) {
-    document.getElementById('productName').textContent = product.name || 'Product Found';
-    const meta = document.getElementById('productMeta');
-    meta.innerHTML = '';
-    if (product.category) meta.innerHTML += `<span class="product-tag">${esc(product.category)}</span>`;
-    if (product.estimatedPrice && product.estimatedPrice !== 'null') {
-      meta.innerHTML += `<span class="product-tag green">${esc(product.estimatedPrice)}</span>`;
+  function renderResult(product) {
+    document.getElementById('productName').textContent = product.name;
+
+    const priceRow = document.getElementById('priceRow');
+    if (product.currentPrice && product.currentPrice !== 'null') {
+      priceRow.innerHTML = `<span class="price-current">${esc(product.currentPrice)}</span><span class="price-label">current price</span>`;
+    } else {
+      priceRow.innerHTML = `<span class="price-unavailable">Price not detected — we'll check when we monitor this link</span>`;
     }
 
-    document.getElementById('watchBox').style.display = 'none';
-    document.getElementById('sellerCount').textContent = `${sellers.length} stores`;
-
-    const grid = document.getElementById('sellersGrid');
-    grid.innerHTML = sellers.map(s => `
-      <div class="seller-card">
-        <div class="seller-icon">${s.icon || '🛒'}</div>
-        <div class="seller-name">${esc(s.source)}</div>
-        <div class="seller-desc">Search for "${esc((s.title||'').slice(0,40))}${(s.title||'').length>40?'…':''}"</div>
-        <a href="${esc(s.link)}" target="_blank" rel="noopener" class="btn-view">Search →</a>
-      </div>`).join('');
-
     document.getElementById('results').style.display = '';
-  }
-
-  function toggleWatchBox() {
-    const box = document.getElementById('watchBox');
-    box.style.display = box.style.display === 'none' ? '' : 'none';
   }
 
   function selectFreq(f) {
@@ -321,14 +279,24 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
         body: JSON.stringify({
-          itemTitle: currentProduct.name,
-          itemDesc:  `Source: ${currentUrl}`,
-          frequency: selectedFreq
+          itemTitle:    currentProduct.name,
+          itemDesc:     `Source: ${currentUrl}`,
+          currentPrice: currentProduct.currentPrice || null,
+          frequency:    selectedFreq
         })
       });
       const data = await r.json();
       if (data.comingSoon) { showToast('Watch plans coming soon!'); return; }
-      if (data.url) { window.location.href = data.url; return; }
+      if (data.url) {
+        // also save the watch optimistically
+        await fetch('/api/link-watches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+          body: JSON.stringify({ url: currentUrl, productName: currentProduct.name, currentPrice: currentProduct.currentPrice, frequency: selectedFreq })
+        });
+        window.location.href = data.url;
+        return;
+      }
       showToast(data.error || 'Error setting up watch');
     } catch {
       showToast('Error setting up watch');
@@ -355,15 +323,16 @@
     section.style.display = '';
     list.innerHTML = active.map(w => `
       <div class="watched-card">
-        <div style="font-size:22px">🔗</div>
+        <div class="wc-icon">🔗</div>
         <div class="wc-info">
           <div class="wc-name">${esc(w.productName)}</div>
           <div class="wc-meta">
             <span class="freq-badge">${w.frequency}</span>
-            <span>${w.lastCheckedAt ? 'Last checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</span>
-            <a href="${esc(w.url)}" target="_blank" rel="noopener" style="color:#f97316;font-size:12px">source ↗</a>
+            ${w.lastPrice ? `<span class="wc-price">${esc(w.lastPrice)}</span>` : ''}
+            <span>${w.lastCheckedAt ? 'Checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}</span>
           </div>
         </div>
+        <a href="${esc(w.url)}" target="_blank" rel="noopener" class="btn-view-link">View ↗</a>
         <button class="btn-delete" onclick="deleteWatch('${w.id}')">Remove</button>
       </div>`).join('');
   }
@@ -378,7 +347,7 @@
   function setLoading(on, text) {
     document.getElementById('loadingState').style.display = on ? '' : 'none';
     document.getElementById('analyzeBtn').disabled = on;
-    document.getElementById('analyzeBtn').textContent = on ? 'Analyzing...' : 'Track It';
+    document.getElementById('analyzeBtn').textContent = on ? 'Checking...' : 'Check It';
     if (text) document.getElementById('loadingText').textContent = text;
   }
   function setLoadingText(t) { const el = document.getElementById('loadingText'); if (el) el.textContent = t; }
