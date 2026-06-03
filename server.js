@@ -63,7 +63,7 @@ app.post('/api/lemonsqueezy/webhook', express.raw({ type: 'application/json' }),
 });
 
 // ── MIDDLEWARE ────────────────────────────────────────────────────────────────
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname)));
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
