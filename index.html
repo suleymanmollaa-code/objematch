@@ -8,229 +8,395 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; }
+    html { -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Inter', sans-serif; background: #e9e9e9; color: #111; min-height: 100vh; }
 
+    /* ── NAV ── */
     nav {
-      background: #fff; border-bottom: 1px solid #e5e7eb;
-      padding: 0 24px; height: 60px; display: flex; align-items: center;
-      justify-content: space-between; position: sticky; top: 0; z-index: 100;
+      position: sticky; top: 0; z-index: 200;
+      background: #fff; height: 64px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.08);
     }
-    .logo { font-size: 20px; font-weight: 800; color: #111827; text-decoration: none; }
-    .logo span { color: #f97316; }
-    .nav-links { display: flex; gap: 4px; }
-    .nav-link { padding: 7px 13px; border-radius: 9px; font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
-    .nav-link:hover, .nav-link.active { background: #fff7ed; color: #f97316; }
-    .nav-right { display: flex; gap: 10px; align-items: center; }
-    .btn-share { background: #f97316; color: #fff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; transition: background .15s; }
-    .btn-share:hover { background: #ea580c; }
-    .btn-sign { font-size: 13px; color: #6b7280; font-weight: 600; text-decoration: none; padding: 7px 12px; border-radius: 8px; }
-    .btn-sign:hover { background: #f3f4f6; }
-    @media(max-width:600px) { .nav-links { display: none; } }
-
-    /* Search + category bar */
-    .toolbar {
-      max-width: 1200px; margin: 0 auto; padding: 20px 20px 0;
-      display: flex; flex-direction: column; gap: 14px;
+    .nav-logo {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      background: #f97316; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: #fff; text-decoration: none;
+      letter-spacing: -.03em;
     }
-    .search-row { display: flex; gap: 10px; }
-    .search-input {
-      flex: 1; padding: 10px 16px; border: 1.5px solid #e5e7eb; border-radius: 12px;
-      font-size: 14px; font-family: inherit; outline: none; background: #fff; color: #111827;
+    .nav-search {
+      flex: 1; max-width: 680px; margin: 0 auto;
+      display: flex; align-items: center; gap: 10px;
+      background: #efefef; border-radius: 24px; padding: 0 18px; height: 46px;
+      transition: background .15s;
     }
-    .search-input:focus { border-color: #f97316; }
-    .categories { display: flex; gap: 8px; flex-wrap: wrap; }
-    .cat-btn {
-      padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
-      border: 1.5px solid #e5e7eb; background: #fff; color: #6b7280; cursor: pointer;
-      font-family: inherit; transition: all .15s; white-space: nowrap;
+    .nav-search:focus-within { background: #e5e5e5; outline: 2px solid #111; outline-offset: -2px; }
+    .search-icon { color: #767676; flex-shrink: 0; }
+    .nav-search input {
+      flex: 1; border: none; background: transparent; font-size: 15px;
+      font-family: inherit; color: #111; outline: none;
     }
-    .cat-btn:hover { border-color: #f97316; color: #f97316; }
-    .cat-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
-
-    /* Masonry grid */
-    .grid-wrap { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; }
-    .masonry { columns: 4; column-gap: 16px; }
-    @media (max-width: 1100px) { .masonry { columns: 3; } }
-    @media (max-width: 720px)  { .masonry { columns: 2; } }
-    @media (max-width: 420px)  { .masonry { columns: 1; } }
-
-    .card { break-inside: avoid; background: #fff; border-radius: 18px; border: 1px solid #e5e7eb; overflow: hidden; margin-bottom: 16px; transition: box-shadow .2s, transform .2s; }
-    .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.10); transform: translateY(-2px); }
-
-    /* Photo with overlay */
-    .card-photo-wrap { position: relative; cursor: pointer; }
-    .card-photo { width: 100%; display: block; }
-    .photo-overlay {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      background: linear-gradient(transparent, rgba(0,0,0,0.65));
-      padding: 32px 12px 12px;
-      display: flex; align-items: center; justify-content: space-between;
+    .nav-search input::placeholder { color: #767676; }
+    .nav-actions { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+    .btn-nav {
+      height: 40px; padding: 0 16px; border-radius: 24px; font-size: 14px;
+      font-weight: 700; font-family: inherit; cursor: pointer; border: none;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+      transition: all .15s; white-space: nowrap;
     }
-    .overlay-user { display: flex; align-items: center; gap: 7px; }
-    .user-av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #f97316, #ef4444); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; }
-    .user-name { font-size: 12px; font-weight: 700; color: #fff; text-decoration: none; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
-    .items-badge {
-      background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff; font-size: 11px; font-weight: 700;
-      padding: 4px 10px; border-radius: 20px;
-      display: flex; align-items: center; gap: 4px;
+    .btn-signin  { background: #efefef; color: #111; }
+    .btn-signin:hover { background: #e2e2e2; }
+    .btn-create  { background: #111; color: #fff; }
+    .btn-create:hover { background: #333; }
+    .btn-dash    { background: #f97316; color: #fff; }
+    .btn-dash:hover { background: #ea580c; }
+    .nav-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg,#f97316,#ef4444);
+      color: #fff; font-size: 14px; font-weight: 800;
+      display: none; align-items: center; justify-content: center;
+      text-decoration: none; cursor: pointer;
+    }
+    @media(max-width:600px) {
+      .btn-create span { display: none; }
+      .btn-signin { display: none; }
     }
 
-    /* Expandable items */
-    .items-panel { display: none; flex-direction: column; gap: 1px; border-top: 1px solid #f3f4f6; }
-    .items-panel.open { display: flex; }
-    .item-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: #fff; transition: background .1s; }
-    .item-row:hover { background: #fafafa; }
-    .item-info { flex: 1; min-width: 0; }
-    .item-name  { font-size: 13px; font-weight: 700; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .item-price { font-size: 11px; font-weight: 700; color: #059669; margin-top: 1px; }
-    .item-btns  { display: flex; gap: 6px; flex-shrink: 0; }
-    .btn-shop-sm { background: #111827; color: #fff; border-radius: 7px; padding: 5px 10px; font-size: 11px; font-weight: 700; text-decoration: none; white-space: nowrap; transition: background .15s; }
-    .btn-shop-sm:hover { background: #374151; }
-    .btn-track { background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; border-radius: 7px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s; }
-    .btn-track:hover { background: #f97316; color: #fff; border-color: #f97316; }
-    .no-items { font-size: 12px; color: #9ca3af; padding: 12px 14px; }
+    /* ── CATEGORY PILLS ── */
+    .cats-wrap {
+      background: #fff; border-bottom: 1px solid rgba(0,0,0,.06);
+      overflow-x: auto; scrollbar-width: none;
+      display: flex; gap: 8px; padding: 10px 16px;
+      position: sticky; top: 64px; z-index: 100;
+    }
+    .cats-wrap::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      flex-shrink: 0; padding: 8px 16px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; border: none; cursor: pointer;
+      font-family: inherit; transition: all .15s; background: #efefef; color: #111;
+    }
+    .cat-pill:hover { background: #e2e2e2; }
+    .cat-pill.active { background: #111; color: #fff; }
 
-    .card-footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px 10px; border-top: 1px solid #f3f4f6; }
-    .card-meta { display: flex; align-items: center; gap: 8px; }
-    .cat-badge { font-size: 10px; font-weight: 700; background: #f3f4f6; color: #6b7280; padding: 2px 7px; border-radius: 10px; }
-    .card-time  { font-size: 11px; color: #9ca3af; }
-    .want-btn { background: none; border: none; font-size: 12px; color: #6b7280; cursor: pointer; font-family: inherit; font-weight: 600; display: flex; align-items: center; gap: 5px; padding: 4px 0; transition: color .15s; }
-    .want-btn:hover, .want-btn.liked { color: #ef4444; }
-    .share-btn { background: none; border: none; font-size: 12px; color: #9ca3af; cursor: pointer; font-family: inherit; font-weight: 600; padding: 4px 0; transition: color .15s; }
-    .share-btn:hover { color: #6b7280; }
+    /* ── MASONRY GRID ── */
+    .grid-wrap { padding: 16px 8px 60px; }
+    .masonry {
+      columns: 5; column-gap: 12px;
+      max-width: 1800px; margin: 0 auto;
+    }
+    @media(max-width:1500px) { .masonry { columns: 4; } }
+    @media(max-width:1100px) { .masonry { columns: 3; } }
+    @media(max-width:720px)  { .masonry { columns: 2; } }
+    @media(max-width:380px)  { .masonry { columns: 1; } }
 
-    .loading { text-align: center; padding: 80px 20px; color: #6b7280; }
-    .empty { text-align: center; padding: 80px 20px; }
-    .empty h2 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
-    .empty p { color: #6b7280; font-size: 15px; margin-bottom: 28px; }
-    .btn-cta { display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; }
+    /* ── PIN CARD ── */
+    .pin {
+      break-inside: avoid; margin-bottom: 12px;
+      border-radius: 16px; overflow: hidden;
+      cursor: pointer; position: relative;
+      background: #fff;
+      transition: transform .2s;
+    }
+    .pin:hover { transform: scale(1.01); }
+    .pin-img { width: 100%; display: block; border-radius: 16px; }
 
-    /* Track modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .modal { background: #fff; border-radius: 20px; padding: 28px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-    .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
-    .modal-item-name { color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-    .modal p { color: #6b7280; font-size: 13px; margin-bottom: 18px; }
-    .modal input { width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; margin-bottom: 12px; }
-    .modal input:focus { border-color: #f97316; }
-    .modal-btns { display: flex; gap: 10px; }
-    .modal-btns button { flex: 1; padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
-    .btn-cancel { background: #f3f4f6; color: #6b7280; }
-    .btn-cancel:hover { background: #e5e7eb; }
-    .btn-save { background: #f97316; color: #fff; }
-    .btn-save:hover { background: #ea580c; }
-    .btn-save:disabled { opacity: .5; cursor: not-allowed; }
-    .modal-msg { font-size: 13px; margin-top: 10px; }
-    .modal-msg.ok  { color: #15803d; font-weight: 600; }
-    .modal-msg.err { color: #dc2626; }
+    /* Hover overlay */
+    .pin-overlay {
+      position: absolute; inset: 0; border-radius: 16px;
+      background: rgba(0,0,0,0); transition: background .2s;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 10px;
+      pointer-events: none;
+    }
+    .pin:hover .pin-overlay { background: rgba(0,0,0,.18); pointer-events: all; }
+
+    .overlay-top { display: flex; justify-content: flex-end; gap: 6px; opacity: 0; transition: opacity .2s; }
+    .pin:hover .overlay-top { opacity: 1; }
+    .btn-heart {
+      width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+      background: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all .15s; flex-shrink: 0;
+    }
+    .btn-heart:hover { transform: scale(1.1); }
+    .btn-heart.liked { background: #ef4444; }
+    .btn-heart.liked::after { content: '♥'; color: #fff; font-size: 15px; }
+    .btn-heart:not(.liked)::after { content: '♡'; color: #111; font-size: 15px; }
+    .btn-shop-pin {
+      height: 36px; padding: 0 14px; border-radius: 20px; border: none; cursor: pointer;
+      background: #fff; font-size: 12px; font-weight: 700; font-family: inherit;
+      display: flex; align-items: center; gap: 4px; transition: all .15s;
+    }
+    .btn-shop-pin:hover { background: #f97316; color: #fff; }
+
+    .overlay-bot { opacity: 0; transition: opacity .2s; display: flex; align-items: center; gap: 8px; }
+    .pin:hover .overlay-bot { opacity: 1; }
+    .pin-user-av {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg,#f97316,#ef4444);
+      color: #fff; font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; flex-shrink: 0;
+      border: 2px solid #fff;
+    }
+    .pin-user-name { font-size: 12px; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+    .items-count-badge {
+      margin-left: auto; background: rgba(255,255,255,.25); backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,.4); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px;
+    }
+
+    /* ── LOADING / EMPTY ── */
+    .state-msg { text-align: center; padding: 80px 20px; color: #767676; font-size: 15px; }
+    .state-msg h2 { font-size: 22px; font-weight: 800; color: #111; margin-bottom: 10px; }
+    .state-msg p { margin-bottom: 24px; }
+    .btn-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #111; color: #fff; padding: 12px 24px;
+      border-radius: 24px; font-size: 14px; font-weight: 700; text-decoration: none;
+    }
+    .btn-cta:hover { background: #333; }
+
+    /* ── MODAL (post detail) ── */
+    .modal-bg {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(2px);
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 24px;
+      width: 100%; max-width: 900px; max-height: 90vh;
+      display: flex; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.3);
+      animation: popIn .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn { from { transform: scale(.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @media(max-width:680px) { .modal-box { flex-direction: column; max-height: 95vh; } }
+
+    .modal-photo {
+      flex: 1; min-width: 0; background: #111;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media(max-width:680px) { .modal-photo { height: 260px; } }
+
+    .modal-side {
+      width: 340px; flex-shrink: 0; overflow-y: auto;
+      display: flex; flex-direction: column;
+      padding: 20px;
+    }
+    @media(max-width:680px) { .modal-side { width: 100%; flex: 1; } }
+
+    .modal-close {
+      position: absolute; top: 16px; right: 16px; z-index: 10;
+      width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+      background: #fff; font-size: 18px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2); transition: all .15s;
+    }
+    .modal-close:hover { background: #f3f3f3; transform: scale(1.05); }
+
+    .modal-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+    .modal-want {
+      flex: 1; height: 40px; border-radius: 20px; border: none; cursor: pointer;
+      background: #111; color: #fff; font-size: 13px; font-weight: 700;
+      font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all .15s;
+    }
+    .modal-want:hover { background: #333; }
+    .modal-want.liked { background: #ef4444; }
+    .modal-share-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #e5e5e5;
+      background: #fff; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 16px; transition: all .15s;
+    }
+    .modal-share-btn:hover { background: #f3f3f3; }
+
+    .modal-author { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0; }
+    .modal-author-av {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg,#f97316,#ef4444);
+      color: #fff; font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .modal-author-name { font-size: 14px; font-weight: 700; }
+    .modal-author-time { font-size: 11px; color: #767676; margin-top: 1px; }
+
+    .modal-cat { display: inline-block; background: #f3f3f3; color: #555; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-bottom: 14px; }
+
+    .modal-items-title { font-size: 13px; font-weight: 800; color: #767676; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+    .modal-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px; border-radius: 12px; margin-bottom: 6px;
+      background: #f9f9f9; transition: background .15s;
+    }
+    .modal-item:hover { background: #f0f0f0; }
+    .item-dot { width: 8px; height: 8px; border-radius: 50%; background: #f97316; flex-shrink: 0; }
+    .modal-item-info { flex: 1; min-width: 0; }
+    .modal-item-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .modal-item-price { font-size: 11px; font-weight: 700; color: #059669; margin-top: 1px; }
+    .modal-item-btns { display: flex; gap: 5px; flex-shrink: 0; }
+    .btn-ms { height: 28px; padding: 0 10px; border-radius: 14px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s; }
+    .btn-ms-shop  { background: #111; color: #fff; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-ms-shop:hover  { background: #444; }
+    .btn-ms-track { background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; }
+    .btn-ms-track:hover { background: #f97316; color: #fff; border-color: #f97316; }
+
+    /* ── TRACK MODAL ── */
+    .track-modal-bg {
+      display: none; position: fixed; inset: 0; z-index: 600;
+      background: rgba(0,0,0,.5); align-items: center; justify-content: center; padding: 20px;
+    }
+    .track-modal-bg.open { display: flex; }
+    .track-modal {
+      background: #fff; border-radius: 20px; padding: 28px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      animation: popIn .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .track-modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .track-item-label { font-size: 13px; color: #555; font-weight: 600; margin-bottom: 16px; }
+    .track-modal input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid #e5e5e5; border-radius: 12px;
+      font-size: 14px; font-family: inherit; outline: none; margin-bottom: 12px;
+    }
+    .track-modal input:focus { border-color: #f97316; }
+    .track-btns { display: flex; gap: 10px; }
+    .track-btns button { flex: 1; height: 44px; border-radius: 22px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .btn-tc { background: #f0f0f0; color: #555; }
+    .btn-tc:hover { background: #e5e5e5; }
+    .btn-ts { background: #f97316; color: #fff; }
+    .btn-ts:hover { background: #ea580c; }
+    .btn-ts:disabled { opacity: .5; cursor: not-allowed; }
+    .track-msg { font-size: 13px; margin-top: 10px; }
+    .track-msg.ok  { color: #059669; font-weight: 600; }
+    .track-msg.err { color: #dc2626; }
   </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <a href="/" class="logo">Obje<span>Match</span></a>
-  <div class="nav-links">
-    <a href="/" class="nav-link active">Feed</a>
-    <a href="/chat.html" class="nav-link">AI Chat</a>
-    <a href="/link-tracker.html" class="nav-link">Link Tracker</a>
+  <a href="/" class="nav-logo">O</a>
+  <div class="nav-search">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#767676" stroke-width="2.5"/><path d="m20 20-3-3" stroke="#767676" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <input id="searchInput" type="text" placeholder="Search products, spaces, setups..." oninput="onSearch()">
   </div>
-  <div class="nav-right">
-    <a href="/dashboard.html" class="btn-sign" id="navDash" style="display:none">Dashboard</a>
-    <a href="/login.html?next=/" class="btn-sign" id="navLogin">Sign in</a>
-    <a href="/chat.html" class="btn-share">+ Share Photo</a>
+  <div class="nav-actions">
+    <a href="/dashboard.html" class="btn-nav btn-dash" id="navDash" style="display:none">Dashboard</a>
+    <a href="/login.html?next=/" class="btn-nav btn-signin" id="navLogin">Sign in</a>
+    <a href="/chat.html" class="btn-nav btn-create">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Create</span>
+    </a>
+    <a href="/dashboard.html" class="nav-avatar" id="navAvatar"></a>
   </div>
 </nav>
 
-<div class="toolbar">
-  <div class="search-row">
-    <input class="search-input" id="searchInput" placeholder="Search products, setups..." oninput="onSearch()">
-  </div>
-  <div class="categories">
-    <button class="cat-btn active" data-cat="all" onclick="setCat(this)">All</button>
-    <button class="cat-btn" data-cat="home-office" onclick="setCat(this)">Home Office</button>
-    <button class="cat-btn" data-cat="living-room" onclick="setCat(this)">Living Room</button>
-    <button class="cat-btn" data-cat="gaming" onclick="setCat(this)">Gaming</button>
-    <button class="cat-btn" data-cat="bedroom" onclick="setCat(this)">Bedroom</button>
-    <button class="cat-btn" data-cat="kitchen" onclick="setCat(this)">Kitchen</button>
-    <button class="cat-btn" data-cat="car" onclick="setCat(this)">Car</button>
-    <button class="cat-btn" data-cat="fashion" onclick="setCat(this)">Fashion</button>
-    <button class="cat-btn" data-cat="outdoor" onclick="setCat(this)">Outdoor</button>
-    <button class="cat-btn" data-cat="other" onclick="setCat(this)">Other</button>
-  </div>
+<!-- CATEGORY PILLS -->
+<div class="cats-wrap">
+  <button class="cat-pill active" data-cat="all" onclick="setCat(this)">All</button>
+  <button class="cat-pill" data-cat="home-office" onclick="setCat(this)">Home Office</button>
+  <button class="cat-pill" data-cat="living-room" onclick="setCat(this)">Living Room</button>
+  <button class="cat-pill" data-cat="gaming" onclick="setCat(this)">Gaming</button>
+  <button class="cat-pill" data-cat="bedroom" onclick="setCat(this)">Bedroom</button>
+  <button class="cat-pill" data-cat="kitchen" onclick="setCat(this)">Kitchen</button>
+  <button class="cat-pill" data-cat="fashion" onclick="setCat(this)">Fashion</button>
+  <button class="cat-pill" data-cat="car" onclick="setCat(this)">Car</button>
+  <button class="cat-pill" data-cat="outdoor" onclick="setCat(this)">Outdoor</button>
+  <button class="cat-pill" data-cat="other" onclick="setCat(this)">Other</button>
 </div>
 
+<!-- GRID -->
 <div class="grid-wrap">
-  <div class="loading" id="loading">Loading feed...</div>
+  <div class="state-msg" id="loadingMsg">Loading...</div>
   <div class="masonry" id="masonry" style="display:none"></div>
-  <div class="empty" id="empty" style="display:none">
-    <div style="font-size:52px;margin-bottom:16px">📸</div>
+  <div class="state-msg" id="emptyMsg" style="display:none">
+    <div style="font-size:56px;margin-bottom:16px">📸</div>
     <h2>Nothing here yet</h2>
     <p>Be the first to share a photo and tag products.</p>
-    <a href="/chat.html" class="btn-cta">Upload a photo</a>
+    <a href="/chat.html" class="btn-cta">+ Create pin</a>
   </div>
 </div>
 
-<!-- Track modal -->
-<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModal(event)">
-  <div class="modal">
-    <h3>📡 Track price</h3>
-    <div class="modal-item-name" id="modalItemName"></div>
-    <p>Paste a link from any store — we'll alert you when the price drops.</p>
-    <input type="url" id="modalUrl" placeholder="https://amazon.com/... or any store link">
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" id="modalSaveBtn" onclick="submitTrack()">Track It</button>
+<!-- POST DETAIL MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeBgClick(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-photo">
+      <img id="modalImg" src="" alt="">
     </div>
-    <div class="modal-msg" id="modalMsg"></div>
+    <div class="modal-side" id="modalSide"></div>
+  </div>
+</div>
+
+<!-- TRACK MODAL -->
+<div class="track-modal-bg" id="trackBg" onclick="closeTrackBg(event)">
+  <div class="track-modal">
+    <h3>📡 Track price</h3>
+    <div class="track-item-label" id="trackLabel"></div>
+    <input type="url" id="trackUrl" placeholder="https://amazon.com/... or any store link">
+    <div class="track-btns">
+      <button class="btn-tc" onclick="closeTrack()">Cancel</button>
+      <button class="btn-ts" id="trackSaveBtn" onclick="submitTrack()">Track It</button>
+    </div>
+    <div class="track-msg" id="trackMsg"></div>
   </div>
 </div>
 
 <script>
   const TOKEN = localStorage.getItem('om_token');
-  let currentCat  = 'all';
-  let searchTimer = null;
-  let currentTrackItem = null;
+  const user  = JSON.parse(localStorage.getItem('om_user') || 'null');
 
-  if (TOKEN) {
-    document.getElementById('navLogin').style.display = 'none';
-    document.getElementById('navDash').style.display = '';
+  // Auth UI
+  if (TOKEN && user) {
+    document.getElementById('navLogin').style.display  = 'none';
+    document.getElementById('navDash').style.display   = '';
+    const av = document.getElementById('navAvatar');
+    av.style.display = 'flex';
+    av.textContent   = (user.name || user.email || '?')[0].toUpperCase();
   }
 
   const CAT_LABELS = {
-    'home-office': 'Home Office', 'living-room': 'Living Room', gaming: 'Gaming',
-    bedroom: 'Bedroom', kitchen: 'Kitchen', car: 'Car', fashion: 'Fashion',
-    outdoor: 'Outdoor', other: 'Other'
+    'home-office':'Home Office','living-room':'Living Room',gaming:'Gaming',
+    bedroom:'Bedroom',kitchen:'Kitchen',car:'Car',fashion:'Fashion',
+    outdoor:'Outdoor',other:'Other'
   };
 
+  let currentCat   = 'all';
+  let searchTimer  = null;
+  let currentTrack = null;
+
+  // ── FEED ──────────────────────────────────────────────────
   async function loadFeed() {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('masonry').style.display = 'none';
-    document.getElementById('empty').style.display   = 'none';
+    document.getElementById('loadingMsg').style.display = 'block';
+    document.getElementById('masonry').style.display    = 'none';
+    document.getElementById('emptyMsg').style.display   = 'none';
 
     const q   = document.getElementById('searchInput').value.trim();
     const url = `/api/feed?category=${currentCat}&sort=popular&q=${encodeURIComponent(q)}`;
     try {
       const res  = await fetch(url);
       const data = await res.json();
-      document.getElementById('loading').style.display = 'none';
-      const masonry = document.getElementById('masonry');
-      masonry.innerHTML = '';
+      document.getElementById('loadingMsg').style.display = 'none';
+      const grid = document.getElementById('masonry');
+      grid.innerHTML = '';
 
       if (!data.posts?.length) {
-        document.getElementById('empty').style.display = 'block';
+        document.getElementById('emptyMsg').style.display = 'block';
         return;
       }
-      masonry.style.display = '';
-      data.posts.forEach(p => masonry.appendChild(buildCard(p)));
+      grid.style.display = '';
+      data.posts.forEach(p => grid.appendChild(buildPin(p)));
     } catch {
-      document.getElementById('loading').textContent = 'Failed to load. Refresh to retry.';
+      document.getElementById('loadingMsg').textContent = 'Failed to load.';
     }
   }
 
   function setCat(btn) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentCat = btn.dataset.cat;
     loadFeed();
@@ -241,143 +407,198 @@
     searchTimer = setTimeout(loadFeed, 350);
   }
 
-  function buildCard(post) {
-    const el = document.createElement('div');
-    el.className = 'card';
-    const init     = (post.userName || '?')[0].toUpperCase();
-    const timeAgo  = getTimeAgo(post.createdAt);
-    const catLabel = CAT_LABELS[post.category] || '';
-    const itemCount = (post.items || []).length;
-
-    const itemsHtml = itemCount
-      ? post.items.map((item, idx) => {
-          const shopUrl = item.amazonUrl || `https://www.amazon.com/s?k=${encodeURIComponent(item.name)}`;
-          return `<div class="item-row">
-            <div class="item-info">
-              <div class="item-name">${esc(item.name)}</div>
-              ${item.price ? `<div class="item-price">${esc(item.price)}</div>` : ''}
-            </div>
-            <div class="item-btns">
-              <a class="btn-shop-sm" href="${esc(shopUrl)}" target="_blank" rel="noopener"
-                 onclick="event.stopPropagation();fetch('/api/go/${post.id}/${idx}',{method:'GET',redirect:'manual'}).catch(()=>{})">Shop</a>
-              <button class="btn-track" onclick="requireAuthTrack(event,'${esc(item.name)}','${esc(shopUrl)}')">Track</button>
-            </div>
-          </div>`;
-        }).join('')
-      : `<div class="no-items">No items tagged</div>`;
+  // ── BUILD PIN CARD ─────────────────────────────────────────
+  function buildPin(post) {
+    const el   = document.createElement('div');
+    el.className = 'pin';
+    const init = (post.userName || '?')[0].toUpperCase();
+    const cnt  = (post.items || []).length;
+    const firstItem  = post.items?.[0];
+    const shopUrl = firstItem?.amazonUrl || (firstItem ? `https://www.amazon.com/s?k=${encodeURIComponent(firstItem.name)}` : null);
 
     el.innerHTML = `
-      <div class="card-photo-wrap" onclick="toggleItems(this)">
-        <img class="card-photo" src="${esc(post.photoUrl)}" alt="" loading="lazy">
-        <div class="photo-overlay">
-          <div class="overlay-user">
-            <a href="/profile.html?id=${post.userId}" class="user-av" onclick="event.stopPropagation()">${init}</a>
-            <a href="/profile.html?id=${post.userId}" class="user-name" onclick="event.stopPropagation()">${esc(post.userName)}</a>
-          </div>
-          ${itemCount ? `<div class="items-badge">🏷️ ${itemCount} items</div>` : ''}
+      <img class="pin-img" src="${esc(post.photoUrl)}" alt="" loading="lazy">
+      <div class="pin-overlay">
+        <div class="overlay-top">
+          ${shopUrl ? `<button class="btn-shop-pin" onclick="event.stopPropagation();trackClick('${post.id}',0,'${esc(shopUrl)}')" >Shop</button>` : ''}
+          <button class="btn-heart${isLiked(post.id) ? ' liked' : ''}" onclick="event.stopPropagation();heartPin(this,'${post.id}')"></button>
         </div>
-      </div>
-      <div class="items-panel">${itemsHtml}</div>
-      <div class="card-footer">
-        <div class="card-meta">
-          ${catLabel ? `<span class="cat-badge">${catLabel}</span>` : ''}
-          <span class="card-time">${timeAgo}</span>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <button class="want-btn" onclick="toggleWant(this,'${post.id}')">
-            ♥ <span class="want-num">${post.wantCount || 0}</span>
-          </button>
-          <button class="share-btn" onclick="copyLink('${post.id}')">Share</button>
+        <div class="overlay-bot">
+          <a href="/profile.html?id=${post.userId}" class="pin-user-av" onclick="event.stopPropagation()">${init}</a>
+          <span class="pin-user-name">${esc(post.userName)}</span>
+          ${cnt > 0 ? `<span class="items-count-badge">🏷️ ${cnt}</span>` : ''}
         </div>
       </div>`;
+
+    el.addEventListener('click', () => openModal(post));
     return el;
   }
 
-  function toggleItems(photoWrap) {
-    const panel = photoWrap.nextElementSibling;
-    panel.classList.toggle('open');
-    const badge = photoWrap.querySelector('.items-badge');
-    if (badge) badge.textContent = panel.classList.contains('open') ? '✕ close' : `🏷️ ${panel.querySelectorAll('.item-row').length} items`;
+  function trackClick(postId, idx, shopUrl) {
+    fetch(`/api/go/${postId}/${idx}`, { method:'GET', redirect:'manual' }).catch(()=>{});
+    window.open(shopUrl, '_blank', 'noopener');
   }
 
-  function requireAuthTrack(e, itemName, shopUrl) {
-    e.stopPropagation();
-    if (!TOKEN) { location.href = '/login.html?next=/'; return; }
-    openTrack(e, itemName, shopUrl);
-  }
+  // ── LIKES ─────────────────────────────────────────────────
+  function getLikes() { try { return JSON.parse(localStorage.getItem('om_likes') || '{}'); } catch { return {}; } }
+  function isLiked(id) { return !!getLikes()[id]; }
 
-  async function toggleWant(btn, postId) {
+  async function heartPin(btn, postId) {
     if (!TOKEN) { location.href = '/login.html?next=/'; return; }
     if (btn.classList.contains('liked')) return;
     btn.classList.add('liked');
-    btn.querySelector('.want-num').textContent = parseInt(btn.querySelector('.want-num').textContent) + 1;
+    const likes = getLikes(); likes[postId] = 1; localStorage.setItem('om_likes', JSON.stringify(likes));
     await fetch(`/api/posts/${postId}/want`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` } });
+  }
+
+  // ── MODAL ─────────────────────────────────────────────────
+  let _modalPost = null;
+
+  function openModal(post) {
+    _modalPost = post;
+    document.getElementById('modalImg').src = post.photoUrl;
+    document.getElementById('modalSide').innerHTML = buildSide(post);
+    document.getElementById('modalBg').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modalBg').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeBgClick(e) {
+    if (e.target === document.getElementById('modalBg')) closeModal();
+  }
+
+  function buildSide(post) {
+    const init    = (post.userName || '?')[0].toUpperCase();
+    const timeAgo = getTimeAgo(post.createdAt);
+    const catLabel = CAT_LABELS[post.category] || '';
+    const liked   = isLiked(post.id);
+
+    const itemsHtml = (post.items || []).length
+      ? (post.items || []).map((item, idx) => {
+          const su = item.amazonUrl || `https://www.amazon.com/s?k=${encodeURIComponent(item.name)}`;
+          return `<div class="modal-item">
+            <div class="item-dot"></div>
+            <div class="modal-item-info">
+              <div class="modal-item-name">${esc(item.name)}</div>
+              ${item.price ? `<div class="modal-item-price">${esc(item.price)}</div>` : ''}
+            </div>
+            <div class="modal-item-btns">
+              <a class="btn-ms btn-ms-shop" href="${esc(su)}" target="_blank" rel="noopener"
+                onclick="fetch('/api/go/${post.id}/${idx}',{method:'GET',redirect:'manual'}).catch(()=>{})">Shop</a>
+              <button class="btn-ms btn-ms-track" onclick="openTrack('${esc(item.name)}','${esc(su)}')">Track</button>
+            </div>
+          </div>`;
+        }).join('')
+      : '<div style="font-size:13px;color:#999;padding:8px 0">No items tagged</div>';
+
+    return `
+      <div class="modal-actions">
+        <button class="modal-want${liked ? ' liked' : ''}" id="modalWantBtn" onclick="modalHeart('${post.id}')">
+          ${liked ? '♥' : '♡'} <span id="modalWantCount">${post.wantCount || 0} wants</span>
+        </button>
+        <button class="modal-share-btn" onclick="copyLink('${post.id}')" title="Share">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="#111" stroke-width="2"/><circle cx="6" cy="12" r="3" stroke="#111" stroke-width="2"/><circle cx="18" cy="19" r="3" stroke="#111" stroke-width="2"/><path d="M8.59 13.51 15.42 17.49M15.41 6.51 8.59 10.49" stroke="#111" stroke-width="2"/></svg>
+        </button>
+        <a href="/post.html?id=${post.id}" class="modal-share-btn" title="Open post" style="text-decoration:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="#111" stroke-width="2" stroke-linecap="round"/><path d="M15 3h6v6" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 14 21 3" stroke="#111" stroke-width="2" stroke-linecap="round"/></svg>
+        </a>
+      </div>
+      <div class="modal-author">
+        <a href="/profile.html?id=${post.userId}" class="modal-author-av">${init}</a>
+        <div>
+          <div class="modal-author-name">${esc(post.userName)}</div>
+          <div class="modal-author-time">${timeAgo}</div>
+        </div>
+      </div>
+      ${catLabel ? `<span class="modal-cat">${catLabel}</span>` : ''}
+      <div class="modal-items-title">Tagged products</div>
+      ${itemsHtml}`;
+  }
+
+  async function modalHeart(postId) {
+    if (!TOKEN) { location.href = '/login.html?next=/'; return; }
+    const btn = document.getElementById('modalWantBtn');
+    if (btn?.classList.contains('liked')) return;
+    btn?.classList.add('liked');
+    const likes = getLikes(); likes[postId] = 1; localStorage.setItem('om_likes', JSON.stringify(likes));
+    // also update feed card
+    document.querySelectorAll('.pin').forEach(p => {
+      const hb = p.querySelector('.btn-heart');
+      if (hb && !hb.classList.contains('liked')) {
+        // match by checking onclick
+        if (p.querySelector(`[onclick*="${postId}"]`)) hb.classList.add('liked');
+      }
+    });
+    const res  = await fetch(`/api/posts/${postId}/want`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` } });
+    const data = await res.json();
+    const wc = document.getElementById('modalWantCount');
+    if (wc) wc.textContent = (data.wantCount || 0) + ' wants';
   }
 
   function copyLink(postId) {
     const url = `${location.origin}/post.html?id=${postId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Link copied!');
-    }).catch(() => {
-      prompt('Copy this link:', url);
-    });
+    navigator.clipboard.writeText(url).then(() => alert('Link copied!')).catch(() => prompt('Copy:', url));
   }
 
-  function openTrack(e, itemName, prefillUrl) {
-    e.stopPropagation();
+  // keyboard close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeTrack(); } });
+
+  // ── TRACK ─────────────────────────────────────────────────
+  function openTrack(itemName, prefillUrl) {
     if (!TOKEN) { location.href = '/login.html?next=/'; return; }
-    currentTrackItem = itemName;
-    document.getElementById('modalItemName').textContent = itemName;
-    document.getElementById('modalUrl').value = prefillUrl || '';
-    document.getElementById('modalMsg').textContent = '';
-    document.getElementById('modalMsg').className = 'modal-msg';
-    document.getElementById('modalSaveBtn').disabled = false;
-    document.getElementById('modalSaveBtn').textContent = 'Track It';
-    document.getElementById('modalOverlay').style.display = 'flex';
-    if (!prefillUrl) setTimeout(() => document.getElementById('modalUrl').focus(), 100);
+    currentTrack = itemName;
+    document.getElementById('trackLabel').textContent = itemName;
+    document.getElementById('trackUrl').value   = prefillUrl || '';
+    document.getElementById('trackMsg').textContent  = '';
+    document.getElementById('trackMsg').className    = 'track-msg';
+    document.getElementById('trackSaveBtn').disabled = false;
+    document.getElementById('trackSaveBtn').textContent = 'Track It';
+    document.getElementById('trackBg').classList.add('open');
+    if (!prefillUrl) setTimeout(() => document.getElementById('trackUrl').focus(), 80);
   }
 
-  function closeModal(e) {
-    if (e && e.target !== document.getElementById('modalOverlay')) return;
-    document.getElementById('modalOverlay').style.display = 'none';
-  }
+  function closeTrack() { document.getElementById('trackBg').classList.remove('open'); }
+  function closeTrackBg(e) { if (e.target === document.getElementById('trackBg')) closeTrack(); }
 
   async function submitTrack() {
-    const url   = document.getElementById('modalUrl').value.trim();
-    const msgEl = document.getElementById('modalMsg');
-    const btn   = document.getElementById('modalSaveBtn');
+    const url   = document.getElementById('trackUrl').value.trim();
+    const msgEl = document.getElementById('trackMsg');
+    const btn   = document.getElementById('trackSaveBtn');
+    if (!url) { msgEl.textContent = 'Please enter a URL.'; msgEl.className = 'track-msg err'; return; }
+    try { new URL(url); } catch { msgEl.textContent = 'Invalid URL.'; msgEl.className = 'track-msg err'; return; }
 
-    if (!url) { msgEl.textContent = 'Please enter a URL.'; msgEl.className = 'modal-msg err'; return; }
-    try { new URL(url); } catch { msgEl.textContent = 'Invalid URL.'; msgEl.className = 'modal-msg err'; return; }
-
-    btn.disabled = true; btn.textContent = 'Saving...'; msgEl.textContent = '';
-
+    btn.disabled = true; btn.textContent = 'Saving...';
     try {
-      const analyzeRes  = await fetch('/api/link-analyze', {
+      const ar   = await fetch('/api/link-analyze', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
         body: JSON.stringify({ url })
       });
-      const analyzeData = await analyzeRes.json();
-      const productName  = analyzeData.product?.name || currentTrackItem;
-      const currentPrice = analyzeData.product?.currentPrice || null;
+      const ad   = await ar.json();
+      const name = ad.product?.name || currentTrack;
+      const price = ad.product?.currentPrice || null;
 
-      const watchRes = await fetch('/api/link-watches', {
+      const wr = await fetch('/api/link-watches', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
-        body: JSON.stringify({ url, productName, currentPrice, frequency: 'daily' })
+        body: JSON.stringify({ url, productName: name, currentPrice: price, frequency: 'daily' })
       });
-      if (!watchRes.ok) throw new Error();
+      if (!wr.ok) throw new Error();
 
-      msgEl.textContent = "Saved! We'll alert you when the price drops.";
-      msgEl.className = 'modal-msg ok';
+      msgEl.textContent = "Saved! You'll get an email when the price drops.";
+      msgEl.className = 'track-msg ok';
       btn.textContent = 'Saved!';
-      setTimeout(() => { document.getElementById('modalOverlay').style.display = 'none'; }, 1800);
+      setTimeout(closeTrack, 2000);
     } catch {
-      msgEl.textContent = 'Something went wrong. Try again.';
-      msgEl.className = 'modal-msg err';
+      msgEl.textContent = 'Something went wrong.';
+      msgEl.className = 'track-msg err';
       btn.disabled = false; btn.textContent = 'Track It';
     }
   }
 
+  // ── HELPERS ───────────────────────────────────────────────
   function getTimeAgo(iso) {
     const s = Math.floor((Date.now() - new Date(iso)) / 1000);
     if (s < 60)    return 'just now';
@@ -385,7 +606,6 @@
     if (s < 86400) return Math.floor(s/3600) + 'h ago';
     return Math.floor(s/86400) + 'd ago';
   }
-
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
   loadFeed();
