@@ -376,9 +376,9 @@ You can also just ask me anything about products.`, true);
       : `<div class="msg-avatar user">${userInitials}</div>`;
     const sugg = showSuggestions ? `
       <div class="suggestions">
-        <div class="suggestion" onclick="quickSend('What is this item worth?')">💰 What is this worth?</div>
-        <div class="suggestion" onclick="quickSend('Where can I find this cheaper?')">🔍 Find it cheaper</div>
-        <div class="suggestion" onclick="quickSend('Is there a better alternative?')">⚡ Better alternatives</div>
+        <div class="suggestion" onclick="quickSend('What is this item worth?')">💰 Ne kadar eder?</div>
+        <div class="suggestion" onclick="quickSend('What brand and model is this?')">🔍 Marka ve model ne?</div>
+        <div class="suggestion" onclick="quickSend('What are the key specs of this product?')">📋 Teknik özellikler</div>
       </div>` : '';
     el.innerHTML = `${avatar}<div class="msg-body"><div class="bubble">${formatText(text)}</div>${sugg}</div>`;
     document.getElementById('messages').appendChild(el);
