@@ -8,23 +8,47 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
-    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; display: flex; flex-direction: column; }
+    body { font-family: 'Inter', sans-serif; background: #e9e9e9; color: #111827; display: flex; flex-direction: column; }
     a { color: inherit; text-decoration: none; }
 
     nav {
-      background: #fff; border-bottom: 1px solid #e5e7eb;
-      padding: 0 24px; height: 60px; display: flex; align-items: center;
-      justify-content: space-between; flex-shrink: 0; z-index: 10;
+      background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,.08);
+      padding: 0 16px; height: 64px; display: flex; align-items: center;
+      gap: 12px; flex-shrink: 0; z-index: 10;
     }
-    .logo { font-size: 19px; font-weight: 800; }
-    .logo span { color: #f97316; }
-    .nav-right { display: flex; gap: 10px; align-items: center; }
-    .nav-link { font-size: 13px; color: #6b7280; font-weight: 500; padding: 6px 12px; border-radius: 8px; }
-    .nav-link:hover { background: #f3f4f6; color: #111827; }
-    .btn-nav { background: #111827; color: #fff; padding: 7px 16px; border-radius: 9px; font-size: 13px; font-weight: 700; }
+    .nav-logo {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      background: #f97316; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: #fff; text-decoration: none;
+    }
+    .nav-title {
+      font-size: 15px; font-weight: 800; color: #111;
+    }
+    .nav-right { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+    .nav-link {
+      height: 38px; padding: 0 14px; border-radius: 20px; font-size: 13px;
+      font-weight: 700; color: #111; text-decoration: none;
+      display: inline-flex; align-items: center; transition: background .15s;
+      background: #efefef;
+    }
+    .nav-link:hover { background: #e2e2e2; }
+    .btn-nav {
+      height: 38px; padding: 0 16px; border-radius: 20px;
+      background: #111; color: #fff; font-size: 13px; font-weight: 700;
+      font-family: inherit; border: none; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; transition: background .15s;
+    }
+    .btn-nav:hover { background: #333; }
+    .nav-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg,#f97316,#ef4444);
+      color: #fff; font-size: 14px; font-weight: 800;
+      display: none; align-items: center; justify-content: center;
+      text-decoration: none;
+    }
 
     /* Chat layout */
-    .chat-wrap { flex: 1; display: flex; flex-direction: column; max-width: 760px; width: 100%; margin: 0 auto; padding: 0 16px; min-height: 0; }
+    .chat-wrap { flex: 1; display: flex; flex-direction: column; max-width: 760px; width: 100%; margin: 0 auto; padding: 0 16px; min-height: 0; background: #e9e9e9; }
 
     .messages { flex: 1; overflow-y: auto; padding: 28px 0 16px; display: flex; flex-direction: column; gap: 20px; }
 
@@ -167,11 +191,13 @@
 <body>
 
 <nav>
-  <a href="/" class="logo">Obje<span>Match</span></a>
+  <a href="/" class="nav-logo">O</a>
+  <span class="nav-title">AI Chat</span>
   <div class="nav-right">
+    <a href="/" class="nav-link">Feed</a>
     <a href="/dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
     <a href="/login.html?next=/chat.html" class="btn-nav" id="navLogin">Sign In</a>
-    <span class="nav-link" id="navUser" style="display:none;color:#111827;font-weight:700"></span>
+    <a href="/dashboard.html" class="nav-avatar" id="navAvatar"></a>
   </div>
 </nav>
 
@@ -229,8 +255,9 @@
       userInitials = (p.name || p.email || '?')[0].toUpperCase();
       document.getElementById('navLogin').style.display    = 'none';
       document.getElementById('navDashboard').style.display = '';
-      document.getElementById('navUser').style.display     = '';
-      document.getElementById('navUser').textContent       = p.name || p.email?.split('@')[0] || 'Account';
+      const av = document.getElementById('navAvatar');
+      av.style.display = 'flex';
+      av.textContent   = (p.name || p.email || '?')[0].toUpperCase();
     } catch {}
     // Check for image passed from room-analyzer
     const pendingData = sessionStorage.getItem('pendingChatImage');
