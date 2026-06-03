@@ -477,10 +477,23 @@ You can also just ask me anything about products.`, true);
       <div class="msg-body">
         <div class="share-card">
           <div class="share-card-text">
-            Share this to the community
-            <div class="share-card-sub">Others can discover these products and track prices too</div>
+            Share to community feed
+            <div class="share-card-sub">Others discover your products and track prices together</div>
           </div>
-          <button class="btn-share-feed" id="${id}_btn" onclick="shareToFeed('${id}')">Share</button>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <select id="${id}_cat" style="padding:6px 10px;border-radius:8px;border:1.5px solid #bbf7d0;font-size:12px;font-family:inherit;color:#166534;background:#f0fdf4;outline:none;">
+              <option value="home-office">Home Office</option>
+              <option value="living-room">Living Room</option>
+              <option value="gaming">Gaming</option>
+              <option value="bedroom">Bedroom</option>
+              <option value="kitchen">Kitchen</option>
+              <option value="car">Car</option>
+              <option value="fashion">Fashion</option>
+              <option value="outdoor">Outdoor</option>
+              <option value="other">Other</option>
+            </select>
+            <button class="btn-share-feed" id="${id}_btn" onclick="shareToFeed('${id}')">Share</button>
+          </div>
         </div>
       </div>`;
     document.getElementById('messages').appendChild(el);
@@ -492,10 +505,11 @@ You can also just ask me anything about products.`, true);
     if (!lastSharedImage) return;
     btn.disabled = true; btn.textContent = 'Sharing...';
     try {
+      const category = document.getElementById(id + '_cat')?.value || 'other';
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
-        body: JSON.stringify({ base64: lastSharedImage.base64, mediaType: lastSharedImage.mediaType })
+        body: JSON.stringify({ base64: lastSharedImage.base64, mediaType: lastSharedImage.mediaType, category })
       });
       if (!res.ok) throw new Error();
       btn.textContent = 'Shared!';

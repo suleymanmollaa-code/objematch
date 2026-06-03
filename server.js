@@ -918,7 +918,7 @@ async function extractItemsFromPhoto(base64, mediaType) {
 }
 
 app.post('/api/posts', requireAuth, async (req, res) => {
-  const { base64, mediaType } = req.body;
+  const { base64, mediaType, category } = req.body;
   if (!base64) return res.status(400).json({ error: 'photo required' });
 
   const filename = `${Date.now()}_${req.user.id}.jpg`;
@@ -933,7 +933,9 @@ app.post('/api/posts', requireAuth, async (req, res) => {
     userName: req.user.name || req.user.email.split('@')[0],
     photoUrl: `/uploads/${filename}`,
     items,
+    category: category || 'other',
     wantCount: 0,
+    trackCount: 0,
     createdAt: new Date().toISOString()
   };
   posts.unshift(post);
@@ -942,9 +944,28 @@ app.post('/api/posts', requireAuth, async (req, res) => {
 });
 
 app.get('/api/feed', (req, res) => {
-  const page  = parseInt(req.query.page || '0');
-  const limit = 20;
-  const posts = readJSON(POSTS_FILE).slice(page * limit, (page + 1) * limit);
+  const page     = parseInt(req.query.page || '0');
+  const limit    = 24;
+  const category = req.query.category;
+  const q        = (req.query.q || '').toLowerCase();
+  let posts = readJSON(POSTS_FILE);
+  if (category && category !== 'all') posts = posts.filter(p => p.category === category);
+  if (q) posts = posts.filter(p =>
+    p.items?.some(i => i.name?.toLowerCase().includes(q)) ||
+    p.userName?.toLowerCase().includes(q)
+  );
+  res.json({ posts: posts.slice(page * limit, (page + 1) * limit), total: posts.length });
+});
+
+app.get('/api/posts/:id', (req, res) => {
+  const posts = readJSON(POSTS_FILE);
+  const post  = posts.find(p => p.id === req.params.id);
+  if (!post) return res.status(404).json({ error: 'not found' });
+  res.json({ post });
+});
+
+app.get('/api/users/:id/posts', (req, res) => {
+  const posts = readJSON(POSTS_FILE).filter(p => p.userId === req.params.id);
   res.json({ posts });
 });
 

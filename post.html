@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">ObjeMatch — Post</title>
+  <meta id="metaDesc" name="description" content="Discover and track products from this photo.">
+  <meta id="ogTitle" property="og:title" content="ObjeMatch Post">
+  <meta id="ogDesc" property="og:description" content="Discover products and track prices.">
+  <meta id="ogImage" property="og:image" content="">
+  <meta property="og:type" content="article">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; }
+
+    nav { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 20px; font-weight: 800; color: #111827; text-decoration: none; }
+    .logo span { color: #f97316; }
+    .nav-right { display: flex; gap: 10px; align-items: center; }
+    .nav-link { font-size: 13px; color: #6b7280; font-weight: 600; text-decoration: none; padding: 7px 12px; border-radius: 8px; }
+    .nav-link:hover { background: #f3f4f6; }
+    .btn-back { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6b7280; font-weight: 600; text-decoration: none; padding: 7px 12px; border-radius: 8px; transition: background .15s; }
+    .btn-back:hover { background: #f3f4f6; }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    .post-grid { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+    @media (max-width: 760px) { .post-grid { grid-template-columns: 1fr; } }
+
+    .post-photo { border-radius: 20px; overflow: hidden; border: 1px solid #e5e7eb; background: #f3f4f6; }
+    .post-photo img { width: 100%; display: block; }
+
+    .post-sidebar { display: flex; flex-direction: column; gap: 18px; }
+
+    .author-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; transition: box-shadow .2s; }
+    .author-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .author-av { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #f97316, #ef4444); color: #fff; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .author-name { font-size: 15px; font-weight: 700; }
+    .author-sub  { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+    .section { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; }
+    .section-title { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .04em; }
+
+    .items-list { display: flex; flex-direction: column; gap: 8px; }
+    .item-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: #f9fafb; border-radius: 10px; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name  { font-size: 13px; font-weight: 700; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-price { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .btn-track  { background: #f97316; color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .15s; }
+    .btn-track:hover { background: #ea580c; }
+
+    .want-row { display: flex; align-items: center; justify-content: space-between; }
+    .want-btn  { background: none; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; color: #6b7280; display: flex; align-items: center; gap: 8px; transition: all .15s; }
+    .want-btn:hover, .want-btn.liked { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+    .want-count { font-size: 13px; color: #6b7280; font-weight: 600; }
+
+    .share-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; }
+    .share-title { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .share-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .share-btn { display: flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; font-family: inherit; border: none; transition: opacity .15s; }
+    .share-btn:hover { opacity: .85; }
+    .share-twitter  { background: #1d9bf0; color: #fff; }
+    .share-whatsapp { background: #25d366; color: #fff; }
+    .share-copy     { background: #f3f4f6; color: #374151; }
+
+    /* Track modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal { background: #fff; border-radius: 20px; padding: 28px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .modal-item { color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+    .modal p { color: #6b7280; font-size: 13px; margin-bottom: 18px; }
+    .modal input { width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; margin-bottom: 12px; }
+    .modal input:focus { border-color: #f97316; }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
+    .btn-cancel { background: #f3f4f6; color: #6b7280; }
+    .btn-save   { background: #f97316; color: #fff; }
+    .btn-save:disabled { opacity: .5; cursor: not-allowed; }
+    .modal-msg { font-size: 13px; margin-top: 10px; }
+    .modal-msg.ok  { color: #15803d; font-weight: 600; }
+    .modal-msg.err { color: #dc2626; }
+
+    .skeleton { background: #f3f4f6; border-radius: 20px; height: 400px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Obje<span>Match</span></a>
+  <div class="nav-right">
+    <a href="/feed.html" class="btn-back">← Feed</a>
+    <a href="/dashboard.html" class="nav-link" id="navDash" style="display:none">Dashboard</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div id="skeleton" class="skeleton"></div>
+  <div class="post-grid" id="postGrid" style="display:none">
+    <div class="post-photo">
+      <img id="postImg" src="" alt="">
+    </div>
+    <div class="post-sidebar">
+      <a id="authorCard" href="#" class="author-card">
+        <div class="author-av" id="authorAv"></div>
+        <div>
+          <div class="author-name" id="authorName"></div>
+          <div class="author-sub">View all posts →</div>
+        </div>
+      </a>
+
+      <div class="section">
+        <div class="section-title">Products in this photo</div>
+        <div class="items-list" id="itemsList"></div>
+      </div>
+
+      <div class="section">
+        <div class="want-row">
+          <button class="want-btn" id="wantBtn" onclick="toggleWant()">♥ Want this</button>
+          <span class="want-count" id="wantCount"></span>
+        </div>
+      </div>
+
+      <div class="share-section">
+        <div class="share-title">Share this post</div>
+        <div class="share-btns">
+          <a id="shareTwitter" href="#" target="_blank" rel="noopener" class="share-btn share-twitter">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.725-8.835L1.254 2.25H8.08l4.259 5.626zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Twitter / X
+          </a>
+          <a id="shareWhatsapp" href="#" target="_blank" rel="noopener" class="share-btn share-whatsapp">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.847L.057 23.49l5.783-1.515A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.017-1.372l-.36-.213-3.434.9.918-3.347-.234-.374A9.818 9.818 0 1 1 12 21.818z"/></svg>
+            WhatsApp
+          </a>
+          <button class="share-btn share-copy" onclick="copyLink()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="notFound" style="display:none;text-align:center;padding:80px 20px;">
+    <div style="font-size:48px;margin-bottom:16px">😕</div>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:10px;">Post not found</h2>
+    <a href="/feed.html" style="color:#f97316;font-weight:700;">Back to feed →</a>
+  </div>
+</div>
+
+<!-- Track modal -->
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal">
+    <h3>📡 Track price</h3>
+    <div class="modal-item" id="modalItemName"></div>
+    <p>Paste a link from any store — we'll alert you when the price drops.</p>
+    <input type="url" id="modalUrl" placeholder="https://amazon.com/... or any store link">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="modalSaveBtn" onclick="submitTrack()">Track It</button>
+    </div>
+    <div class="modal-msg" id="modalMsg"></div>
+  </div>
+</div>
+
+<script>
+  const TOKEN  = localStorage.getItem('om_token');
+  const postId = new URLSearchParams(location.search).get('id');
+  let currentTrackItem = null;
+  let postData = null;
+
+  if (TOKEN) document.getElementById('navDash').style.display = '';
+
+  async function loadPost() {
+    if (!postId) { show404(); return; }
+    try {
+      const res  = await fetch(`/api/posts/${postId}`);
+      if (!res.ok) { show404(); return; }
+      const data = await res.json();
+      postData   = data.post;
+      renderPost(postData);
+    } catch { show404(); }
+  }
+
+  function renderPost(post) {
+    document.getElementById('skeleton').style.display   = 'none';
+    document.getElementById('postGrid').style.display   = 'grid';
+
+    // SEO
+    const items = (post.items||[]).map(i=>i.name).join(', ');
+    document.getElementById('pageTitle').textContent = `${post.userName}'s setup — ObjeMatch`;
+    document.getElementById('metaDesc').content = items ? `Products: ${items}` : 'Discover products in this photo.';
+    document.getElementById('ogTitle').content  = `${post.userName}'s setup on ObjeMatch`;
+    document.getElementById('ogDesc').content   = items ? `Products: ${items}` : 'Discover & track prices.';
+    document.getElementById('ogImage').content  = location.origin + post.photoUrl;
+
+    // Photo
+    document.getElementById('postImg').src = post.photoUrl;
+
+    // Author
+    const init = (post.userName||'?')[0].toUpperCase();
+    document.getElementById('authorAv').textContent   = init;
+    document.getElementById('authorName').textContent = post.userName;
+    document.getElementById('authorCard').href        = `/profile.html?id=${post.userId}`;
+
+    // Items
+    const list = document.getElementById('itemsList');
+    if ((post.items||[]).length) {
+      post.items.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${esc(item.name)}</div>
+            ${item.price ? `<div class="item-price">${esc(item.price)}</div>` : ''}
+          </div>
+          <button class="btn-track" onclick="openTrack('${esc(item.name)}')">Track Price</button>`;
+        list.appendChild(row);
+      });
+    } else {
+      list.innerHTML = '<div style="font-size:13px;color:#9ca3af">No items tagged</div>';
+    }
+
+    // Want
+    updateWantCount(post.wantCount || 0);
+
+    // Share links
+    const pageUrl  = encodeURIComponent(location.href);
+    const text     = encodeURIComponent(`Check out this setup on ObjeMatch!`);
+    document.getElementById('shareTwitter').href  = `https://twitter.com/intent/tweet?url=${pageUrl}&text=${text}`;
+    document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${text}%20${pageUrl}`;
+  }
+
+  function updateWantCount(n) {
+    document.getElementById('wantCount').textContent = n > 0 ? `${n} want this` : '';
+  }
+
+  async function toggleWant() {
+    if (!TOKEN) { location.href = `/login.html?next=/post.html?id=${postId}`; return; }
+    const btn = document.getElementById('wantBtn');
+    if (btn.classList.contains('liked')) return;
+    btn.classList.add('liked');
+    const res  = await fetch(`/api/posts/${postId}/want`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` } });
+    const data = await res.json();
+    updateWantCount(data.wantCount);
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(location.href).then(() => alert('Link copied!'))
+      .catch(() => prompt('Copy this link:', location.href));
+  }
+
+  function openTrack(itemName) {
+    if (!TOKEN) { location.href = `/login.html?next=/post.html?id=${postId}`; return; }
+    currentTrackItem = itemName;
+    document.getElementById('modalItemName').textContent = itemName;
+    document.getElementById('modalUrl').value = '';
+    document.getElementById('modalMsg').textContent = '';
+    document.getElementById('modalMsg').className = 'modal-msg';
+    document.getElementById('modalSaveBtn').disabled = false;
+    document.getElementById('modalSaveBtn').textContent = 'Track It';
+    document.getElementById('modalOverlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('modalUrl').focus(), 100);
+  }
+
+  function closeModal(e) {
+    if (e && e.target !== document.getElementById('modalOverlay')) return;
+    document.getElementById('modalOverlay').style.display = 'none';
+  }
+
+  async function submitTrack() {
+    const url   = document.getElementById('modalUrl').value.trim();
+    const msgEl = document.getElementById('modalMsg');
+    const btn   = document.getElementById('modalSaveBtn');
+    if (!url) { msgEl.textContent = 'Please enter a URL.'; msgEl.className = 'modal-msg err'; return; }
+    try { new URL(url); } catch { msgEl.textContent = 'Invalid URL.'; msgEl.className = 'modal-msg err'; return; }
+    btn.disabled = true; btn.textContent = 'Saving...'; msgEl.textContent = '';
+    try {
+      const ar   = await fetch('/api/link-analyze', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+        body: JSON.stringify({ url })
+      });
+      const ad   = await ar.json();
+      const wr   = await fetch('/api/link-watches', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+        body: JSON.stringify({ url, productName: ad.product?.name || currentTrackItem, currentPrice: ad.product?.currentPrice || null, frequency: 'daily' })
+      });
+      if (!wr.ok) throw new Error();
+      msgEl.textContent = "Saved! We'll alert you when the price drops.";
+      msgEl.className = 'modal-msg ok';
+      btn.textContent = 'Saved!';
+      setTimeout(() => { document.getElementById('modalOverlay').style.display = 'none'; }, 1800);
+    } catch {
+      msgEl.textContent = 'Something went wrong.';
+      msgEl.className = 'modal-msg err';
+      btn.disabled = false; btn.textContent = 'Track It';
+    }
+  }
+
+  function show404() {
+    document.getElementById('skeleton').style.display  = 'none';
+    document.getElementById('notFound').style.display  = 'block';
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  loadPost();
+</script>
+</body>
+</html>
