@@ -125,6 +125,28 @@
       transition: all .15s;
     }
     .suggestion:hover { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+
+    /* Track card */
+    .track-card {
+      background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 16px;
+      padding: 16px 18px; margin-top: 6px;
+    }
+    .track-card-title { font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 10px; }
+    .track-input-row { display: flex; gap: 8px; }
+    .track-input {
+      flex: 1; padding: 9px 12px; border: 1.5px solid #fcd34d; border-radius: 10px;
+      font-size: 13px; font-family: inherit; outline: none; color: #111827; background: #fff;
+    }
+    .track-input:focus { border-color: #f97316; }
+    .track-btn {
+      padding: 9px 16px; background: #f97316; color: #fff; border: none;
+      border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; white-space: nowrap; transition: background .15s;
+    }
+    .track-btn:hover { background: #ea580c; }
+    .track-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .track-success { font-size: 13px; color: #15803d; font-weight: 600; margin-top: 8px; display: none; }
+    .track-error   { font-size: 13px; color: #dc2626; margin-top: 8px; display: none; }
   </style>
 </head>
 <body>
@@ -281,6 +303,7 @@ You can also just ask me anything about products.`, true);
     messages.push({ role: 'user', content: pendingImage ? content : userText });
 
     // Clear input
+    const hadImage = !!pendingImage;
     input.value = '';
     input.style.height = 'auto';
     removeImage();
@@ -334,6 +357,7 @@ You can also just ask me anything about products.`, true);
       }
 
       messages.push({ role: 'assistant', content: aiText });
+      if (hadImage) appendTrackCard();
     } catch (e) {
       typingEl?.remove();
       appendMessage('ai', 'Network error. Please try again.');
@@ -403,6 +427,68 @@ You can also just ask me anything about products.`, true);
   function scrollToBottom() {
     const m = document.getElementById('messages');
     m.scrollTop = m.scrollHeight;
+  }
+
+  function appendTrackCard() {
+    const id = 'tc_' + Date.now();
+    const el = document.createElement('div');
+    el.className = 'msg ai';
+    el.innerHTML = `
+      <div class="msg-avatar ai">OM</div>
+      <div class="msg-body">
+        <div class="track-card">
+          <div class="track-card-title">📡 Fiyat takibi kur — herhangi bir siteden link yapıştır</div>
+          <div class="track-input-row">
+            <input class="track-input" id="${id}_url" type="url" placeholder="https://amazon.com/dp/... veya herhangi bir ürün linki">
+            <button class="track-btn" onclick="saveWatch('${id}')">Takibe Al</button>
+          </div>
+          <div class="track-success" id="${id}_ok">✅ Takibe alındı! Fiyat değişince email ile haberdar ederiz.</div>
+          <div class="track-error"   id="${id}_err"></div>
+        </div>
+      </div>`;
+    document.getElementById('messages').appendChild(el);
+    scrollToBottom();
+  }
+
+  async function saveWatch(id) {
+    const urlEl = document.getElementById(id + '_url');
+    const okEl  = document.getElementById(id + '_ok');
+    const errEl = document.getElementById(id + '_err');
+    const btn   = urlEl.parentElement.querySelector('.track-btn');
+    const url   = urlEl.value.trim();
+    if (!url) { errEl.textContent = 'Lütfen bir URL girin.'; errEl.style.display='block'; return; }
+    try { new URL(url); } catch { errEl.textContent = 'Geçersiz URL.'; errEl.style.display='block'; return; }
+
+    btn.disabled = true; btn.textContent = 'Kaydediliyor...';
+    errEl.style.display = 'none';
+
+    try {
+      // First analyze the URL to get product name
+      const analyzeRes = await fetch('/api/link-analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+        body: JSON.stringify({ url })
+      });
+      const analyzeData = await analyzeRes.json();
+      const productName = analyzeData.product?.name || 'Ürün';
+      const currentPrice = analyzeData.product?.currentPrice || null;
+
+      // Save the watch
+      const watchRes = await fetch('/api/link-watches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+        body: JSON.stringify({ url, productName, currentPrice, frequency: 'daily' })
+      });
+      if (!watchRes.ok) throw new Error('Kayıt başarısız');
+
+      urlEl.style.display = 'none'; btn.style.display = 'none';
+      okEl.style.display = 'block';
+      scrollToBottom();
+    } catch (e) {
+      errEl.textContent = e.message || 'Bir hata oluştu. Tekrar dene.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Takibe Al';
+    }
   }
 </script>
 </body>
