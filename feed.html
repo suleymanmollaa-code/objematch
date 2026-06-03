@@ -228,13 +228,17 @@
     const catLabel = CAT_LABELS[post.category] || '';
 
     const itemsHtml = (post.items || []).length
-      ? post.items.map((item, idx) => `
+      ? post.items.map((item, idx) => {
+          const shopUrl = item.amazonUrl || `https://www.amazon.com/s?k=${encodeURIComponent(item.name)}`;
+          return `
           <div class="item-row">
             <span class="item-name" title="${esc(item.name)}">${esc(item.name)}</span>
             ${item.price ? `<span class="item-price">${esc(item.price)}</span>` : ''}
-            <a class="btn-shop-sm" href="/api/go/${post.id}/${idx}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Shop</a>
+            <a class="btn-shop-sm" href="${esc(shopUrl)}" target="_blank" rel="noopener"
+               onclick="event.stopPropagation();fetch('/api/go/${post.id}/${idx}',{method:'GET',redirect:'manual'}).catch(()=>{})">Shop</a>
             <button class="btn-track" onclick="openTrack(event,'${esc(item.name)}')">Track</button>
-          </div>`).join('')
+          </div>`;
+        }).join('')
       : `<div class="no-items">No items tagged</div>`;
 
     el.innerHTML = `
@@ -343,5 +347,8 @@
 
   loadFeed();
 </script>
+<!-- Skimlinks: replace YOUR_SKIMLINKS_ID with your publisher ID from skimlinks.com -->
+<script type="text/javascript"> skimlinks_pub_id = 'YOUR_SKIMLINKS_ID'; </script>
+<script type="text/javascript" src="https://s.skimresources.com/js/YOUR_SKIMLINKS_ID.skimlinks.js"></script>
 </body>
 </html>

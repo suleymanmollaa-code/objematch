@@ -211,7 +211,7 @@
     const list = document.getElementById('itemsList');
     if ((post.items||[]).length) {
       post.items.forEach((item, idx) => {
-        const shopUrl = `/api/go/${post.id}/${idx}`;
+        const shopUrl = item.amazonUrl || `https://www.amazon.com/s?k=${encodeURIComponent(item.name)}`;
         const row = document.createElement('div');
         row.className = 'item-row';
         row.innerHTML = `
@@ -221,7 +221,8 @@
             ${item.clicks > 0 ? `<div class="clicks-badge">${item.clicks} shop click${item.clicks!==1?'s':''}</div>` : ''}
           </div>
           <div class="item-btns">
-            <a class="btn-shop" href="${shopUrl}" target="_blank" rel="noopener">
+            <a class="btn-shop" href="${esc(shopUrl)}" target="_blank" rel="noopener"
+               onclick="fetch('/api/go/${post.id}/${idx}',{method:'GET',redirect:'manual'}).catch(()=>{})">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm0 2v.511l-8 6.223-8-6.222V6h16zM4 18V9.044l7.386 5.745a.994.994 0 0 0 1.228 0L20 9.044 20.002 18H4z"/></svg>
               Shop
             </a>
@@ -318,5 +319,8 @@
 
   loadPost();
 </script>
+<!-- Skimlinks: replace YOUR_SKIMLINKS_ID with your publisher ID from skimlinks.com -->
+<script type="text/javascript"> skimlinks_pub_id = 'YOUR_SKIMLINKS_ID'; </script>
+<script type="text/javascript" src="https://s.skimresources.com/js/YOUR_SKIMLINKS_ID.skimlinks.js"></script>
 </body>
 </html>
