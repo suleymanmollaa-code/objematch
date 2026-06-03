@@ -696,13 +696,16 @@
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
 
   function handleFile(file) {
-    selectedFile = file;
-    const url = URL.createObjectURL(file);
-    document.getElementById('previewImg').src = url;
-    document.getElementById('previewName').textContent = file.name;
-    dropArea.style.display = 'none';
-    document.getElementById('previewArea').classList.add('active');
-    document.getElementById('errorBox').style.display = 'none';
+    const reader = new FileReader();
+    reader.onload = e => {
+      sessionStorage.setItem('pendingChatImage', JSON.stringify({
+        dataUrl: e.target.result,
+        base64: e.target.result.split(',')[1],
+        mediaType: file.type
+      }));
+      window.location.href = '/chat.html';
+    };
+    reader.readAsDataURL(file);
   }
 
   function resetUpload() {

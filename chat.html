@@ -194,6 +194,23 @@
       document.getElementById('navUser').style.display     = '';
       document.getElementById('navUser').textContent       = p.name || p.email?.split('@')[0] || 'Account';
     } catch {}
+    // Check for image passed from room-analyzer
+    const pendingData = sessionStorage.getItem('pendingChatImage');
+    if (pendingData) {
+      sessionStorage.removeItem('pendingChatImage');
+      try {
+        const img = JSON.parse(pendingData);
+        pendingImage = img;
+        document.getElementById('previewImg').src = img.dataUrl;
+        document.getElementById('imagePreview').style.display = '';
+        document.getElementById('msgInput').placeholder = 'What would you like to know about this photo?';
+        appendMessage('ai', `Photo received! I'm ready to identify items and find where to buy them. What would you like to know?`, true);
+        // Auto-analyze
+        document.getElementById('msgInput').value = 'What items can you identify in this photo? For each item, include the brand and model if visible, and estimated price range.';
+        sendMessage();
+        return;
+      } catch {}
+    }
     showWelcome();
   })();
 
