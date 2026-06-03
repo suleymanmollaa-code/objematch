@@ -430,9 +430,45 @@
           <span class="section-link" onclick="switchTab('plan')">View all</span>
         </div>
         ${watchesHtml}
+      </div>
+      ${renderTrackedProducts()}`;
+  }
+
+  /* ── Tracked Products (from feed Track button) ─────────────── */
+  function renderTrackedProducts() {
+    const lw = (dashData.linkWatches || []).filter(w => w.active);
+    if (!lw.length) return '';
+    const rows = lw.slice(0, 5).map(w => `
+      <div class="watch-card active" style="gap:12px">
+        <div style="font-size:20px">📡</div>
+        <div class="watch-info" style="flex:1;min-width:0">
+          <div class="watch-title">${esc(w.productName)}</div>
+          <div class="watch-meta">
+            ${w.lastPrice ? '<span style="color:#059669;font-weight:700">' + esc(w.lastPrice) + '</span> · ' : ''}
+            ${w.lastCheckedAt ? 'Checked ' + timeAgo(w.lastCheckedAt) : 'Pending first check'}
+          </div>
+          <div class="watch-meta" style="margin-top:2px">
+            <a href="${esc(w.url)}" target="_blank" rel="noopener" style="color:var(--purple);font-weight:600;font-size:11px;word-break:break-all">${esc(w.url.length > 50 ? w.url.slice(0,50)+'...' : w.url)}</a>
+          </div>
+        </div>
+        <button class="btn-cancel" onclick="cancelLinkWatch('${w.id}')">Remove</button>
+      </div>`).join('');
+    return `
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Tracked Products</div>
+          <span class="section-badge" style="font-size:11px;color:var(--muted)">${lw.length} active</span>
+        </div>
+        ${rows}
       </div>`;
   }
 
+  async function cancelLinkWatch(id) {
+    if (!confirm('Stop tracking this product?')) return;
+    await fetch('/api/link-watches/' + id, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    dashData.linkWatches = (dashData.linkWatches||[]).map(w => w.id === id ? {...w, active: false} : w);
+    renderTab(currentTab);
+  }
 
   /* ── Alerts ──────────────────────────────────────────────── */
   function renderAlerts() {
@@ -442,6 +478,31 @@
 
     const cards = (alerts||[]).map((a, i) => {
       const aid = 'al-' + i;
+
+      // Link-type alert (tracked product price update)
+      if (a.type === 'link') {
+        const priceInfo = a.currentPrice
+          ? `<div style="display:flex;gap:16px;padding:12px 0">
+              <div><div style="font-size:11px;color:var(--muted)">Current price</div><div style="font-size:20px;font-weight:900;color:#059669">${esc(a.currentPrice)}</div></div>
+              ${a.previousPrice && a.previousPrice !== a.currentPrice ? `<div><div style="font-size:11px;color:var(--muted)">Previous</div><div style="font-size:14px;color:var(--muted);text-decoration:line-through">${esc(a.previousPrice)}</div></div>` : ''}
+             </div>`
+          : '';
+        return `
+          <div class="alert-card" id="${aid}">
+            <div class="alert-head" onclick="document.getElementById('${aid}').classList.toggle('open')">
+              <div>📡</div>
+              <div class="alert-title">Price update: &ldquo;${esc(a.productName)}&rdquo;</div>
+              <div class="alert-time">${timeAgo(a.createdAt)}</div>
+              <div class="alert-chevron">⌄</div>
+            </div>
+            <div class="alert-body">
+              ${priceInfo}
+              <a href="${esc(a.sourceUrl)}" target="_blank" rel="noopener" style="display:inline-block;background:#f97316;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;margin-top:4px">View product</a>
+            </div>
+          </div>`;
+      }
+
+      // Standard deal alert
       const deals = (a.deals||[]).map(d => `
         <div class="deal-row">
           <div class="deal-info">

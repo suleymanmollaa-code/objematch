@@ -531,6 +531,10 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
     .filter(m => m.userId === uid)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+  const linkWatches = readJSON(LINK_WATCHES_FILE)
+    .filter(w => w.userId === uid)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   const alerts   = readJSON(ALERTS_FILE)
     .filter(a => a.userId === uid)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -554,6 +558,7 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
   res.json({
     user: { id: user?.id, email: user?.email, name: user?.name, used: usage.count, limit: FREE_LIMIT, notifPrefs: user?.notifPrefs || {} },
     watches: monitors,
+    linkWatches,
     alerts,
     analyses
   });
@@ -953,12 +958,14 @@ app.get('/api/feed', (req, res) => {
   const limit    = 24;
   const category = req.query.category;
   const q        = (req.query.q || '').toLowerCase();
+  const sort     = req.query.sort || 'recent';
   let posts = readJSON(POSTS_FILE);
   if (category && category !== 'all') posts = posts.filter(p => p.category === category);
   if (q) posts = posts.filter(p =>
     p.items?.some(i => i.name?.toLowerCase().includes(q)) ||
     p.userName?.toLowerCase().includes(q)
   );
+  if (sort === 'popular') posts.sort((a, b) => (b.wantCount || 0) - (a.wantCount || 0));
   res.json({ posts: posts.slice(page * limit, (page + 1) * limit), total: posts.length });
 });
 

@@ -260,7 +260,7 @@
             <div class="item-btns">
               <a class="btn-shop-sm" href="${esc(shopUrl)}" target="_blank" rel="noopener"
                  onclick="event.stopPropagation();fetch('/api/go/${post.id}/${idx}',{method:'GET',redirect:'manual'}).catch(()=>{})">Shop</a>
-              <button class="btn-track" onclick="requireAuthTrack(event,'${esc(item.name)}')">Track</button>
+              <button class="btn-track" onclick="requireAuthTrack(event,'${esc(item.name)}','${esc(shopUrl)}')">Track</button>
             </div>
           </div>`;
         }).join('')
@@ -300,10 +300,10 @@
     if (badge) badge.textContent = panel.classList.contains('open') ? '✕ close' : `🏷️ ${panel.querySelectorAll('.item-row').length} items`;
   }
 
-  function requireAuthTrack(e, itemName) {
+  function requireAuthTrack(e, itemName, shopUrl) {
     e.stopPropagation();
     if (!TOKEN) { location.href = '/login.html?next=/feed.html'; return; }
-    openTrack(e, itemName);
+    openTrack(e, itemName, shopUrl);
   }
 
   async function toggleWant(btn, postId) {
@@ -323,18 +323,18 @@
     });
   }
 
-  function openTrack(e, itemName) {
+  function openTrack(e, itemName, prefillUrl) {
     e.stopPropagation();
     if (!TOKEN) { location.href = '/login.html?next=/feed.html'; return; }
     currentTrackItem = itemName;
     document.getElementById('modalItemName').textContent = itemName;
-    document.getElementById('modalUrl').value = '';
+    document.getElementById('modalUrl').value = prefillUrl || '';
     document.getElementById('modalMsg').textContent = '';
     document.getElementById('modalMsg').className = 'modal-msg';
     document.getElementById('modalSaveBtn').disabled = false;
     document.getElementById('modalSaveBtn').textContent = 'Track It';
     document.getElementById('modalOverlay').style.display = 'flex';
-    setTimeout(() => document.getElementById('modalUrl').focus(), 100);
+    if (!prefillUrl) setTimeout(() => document.getElementById('modalUrl').focus(), 100);
   }
 
   function closeModal(e) {
