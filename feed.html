@@ -69,6 +69,8 @@
     .item-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: #f9fafb; border-radius: 9px; }
     .item-name { font-size: 12px; font-weight: 600; color: #111827; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .item-price { font-size: 11px; color: #6b7280; flex-shrink: 0; }
+    .btn-shop-sm { background: #111827; color: #fff; border-radius: 7px; padding: 4px 9px; font-size: 11px; font-weight: 700; text-decoration: none; white-space: nowrap; flex-shrink: 0; transition: background .15s; }
+    .btn-shop-sm:hover { background: #374151; }
     .btn-track { background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; border-radius: 7px; padding: 4px 9px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s; flex-shrink: 0; }
     .btn-track:hover { background: #f97316; color: #fff; border-color: #f97316; }
     .no-items { font-size: 12px; color: #9ca3af; padding: 6px 0; }
@@ -226,10 +228,11 @@
     const catLabel = CAT_LABELS[post.category] || '';
 
     const itemsHtml = (post.items || []).length
-      ? post.items.map(item => `
+      ? post.items.map((item, idx) => `
           <div class="item-row">
             <span class="item-name" title="${esc(item.name)}">${esc(item.name)}</span>
             ${item.price ? `<span class="item-price">${esc(item.price)}</span>` : ''}
+            <a class="btn-shop-sm" href="/api/go/${post.id}/${idx}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Shop</a>
             <button class="btn-track" onclick="openTrack(event,'${esc(item.name)}')">Track</button>
           </div>`).join('')
       : `<div class="no-items">No items tagged</div>`;

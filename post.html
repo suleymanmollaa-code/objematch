@@ -47,8 +47,12 @@
     .item-info { flex: 1; min-width: 0; }
     .item-name  { font-size: 13px; font-weight: 700; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .item-price { font-size: 12px; color: #6b7280; margin-top: 2px; }
-    .btn-track  { background: #f97316; color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .15s; }
-    .btn-track:hover { background: #ea580c; }
+    .item-btns  { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-shop   { background: #111827; color: #fff; border: none; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: background .15s; }
+    .btn-shop:hover { background: #374151; }
+    .btn-track  { background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s; }
+    .btn-track:hover { background: #f97316; color: #fff; border-color: #f97316; }
+    .clicks-badge { font-size: 11px; color: #9ca3af; margin-top: 4px; }
 
     .want-row { display: flex; align-items: center; justify-content: space-between; }
     .want-btn  { background: none; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; color: #6b7280; display: flex; align-items: center; gap: 8px; transition: all .15s; }
@@ -206,15 +210,23 @@
     // Items
     const list = document.getElementById('itemsList');
     if ((post.items||[]).length) {
-      post.items.forEach(item => {
+      post.items.forEach((item, idx) => {
+        const shopUrl = `/api/go/${post.id}/${idx}`;
         const row = document.createElement('div');
         row.className = 'item-row';
         row.innerHTML = `
           <div class="item-info">
             <div class="item-name">${esc(item.name)}</div>
             ${item.price ? `<div class="item-price">${esc(item.price)}</div>` : ''}
+            ${item.clicks > 0 ? `<div class="clicks-badge">${item.clicks} shop click${item.clicks!==1?'s':''}</div>` : ''}
           </div>
-          <button class="btn-track" onclick="openTrack('${esc(item.name)}')">Track Price</button>`;
+          <div class="item-btns">
+            <a class="btn-shop" href="${shopUrl}" target="_blank" rel="noopener">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm0 2v.511l-8 6.223-8-6.222V6h16zM4 18V9.044l7.386 5.745a.994.994 0 0 0 1.228 0L20 9.044 20.002 18H4z"/></svg>
+              Shop
+            </a>
+            <button class="btn-track" onclick="openTrack('${esc(item.name)}')">Track</button>
+          </div>`;
         list.appendChild(row);
       });
     } else {

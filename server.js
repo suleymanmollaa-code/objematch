@@ -913,7 +913,12 @@ async function extractItemsFromPhoto(base64, mediaType) {
     });
     const d = await r.json();
     const txt = d.content?.[0]?.text || '[]';
-    return JSON.parse(txt.match(/\[[\s\S]*\]/)?.[0] || '[]');
+    const items = JSON.parse(txt.match(/\[[\s\S]*\]/)?.[0] || '[]');
+    return items.map(item => ({
+      ...item,
+      amazonUrl: `https://www.amazon.com/s?k=${encodeURIComponent(item.name)}&tag=${AFFILIATE}`,
+      clicks: 0
+    }));
   } catch { return []; }
 }
 
@@ -976,6 +981,29 @@ app.post('/api/posts/:id/want', requireAuth, (req, res) => {
   posts[idx].wantCount = (posts[idx].wantCount || 0) + 1;
   writeJSON(POSTS_FILE, posts);
   res.json({ wantCount: posts[idx].wantCount });
+});
+
+// Click tracking redirect
+app.get('/api/go/:postId/:itemIdx', (req, res) => {
+  const posts   = readJSON(POSTS_FILE);
+  const idx     = posts.findIndex(p => p.id === req.params.postId);
+  const itemIdx = parseInt(req.params.itemIdx);
+  if (idx === -1 || !posts[idx].items?.[itemIdx]) {
+    return res.redirect(`https://www.amazon.com/?tag=${AFFILIATE}`);
+  }
+  posts[idx].items[itemIdx].clicks = (posts[idx].items[itemIdx].clicks || 0) + 1;
+  writeJSON(POSTS_FILE, posts);
+  res.redirect(posts[idx].items[itemIdx].amazonUrl ||
+    `https://www.amazon.com/s?k=${encodeURIComponent(posts[idx].items[itemIdx].name)}&tag=${AFFILIATE}`);
+});
+
+// Creator stats
+app.get('/api/users/:id/stats', (req, res) => {
+  const posts        = readJSON(POSTS_FILE).filter(p => p.userId === req.params.id);
+  const totalClicks  = posts.reduce((s, p) => s + (p.items||[]).reduce((ss, i) => ss + (i.clicks||0), 0), 0);
+  const totalWants   = posts.reduce((s, p) => s + (p.wantCount||0), 0);
+  const estEarnings  = (totalClicks * 0.06).toFixed(2); // ~6 cents avg per click
+  res.json({ totalClicks, totalWants, estEarnings, postCount: posts.length });
 });
 
 // serve uploads
