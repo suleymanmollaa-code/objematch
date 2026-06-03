@@ -727,30 +727,43 @@ app.post('/api/analyze-room', upload.single('photo'), optionalAuth, async (req, 
     : '';
 
   const base64 = imageBuffer.toString('base64');
-  const prompt = `You are an expert visual shopping assistant. Analyze this photo carefully.
+  const prompt = `You are a world-class product identification expert and visual shopping assistant. Your job is to identify every shoppable item in this photo with maximum specificity.
 ${yoloContext}
-TASK: Identify 5-8 distinct, shoppable objects. For each object:
-- Read any visible brand names, logos, or model numbers
-- Give the most specific name possible (e.g. "Herman Miller Aeron Chair" not just "chair")
-- Estimate realistic current market price ranges
-- Write Amazon search keywords that would find that exact item (include brand + model if visible)
-- Write eBay search keywords optimized for used/second-hand results
+TASK: Identify 5-8 distinct purchasable items. For EACH item follow these rules strictly:
 
-Scan all areas: top-left, top-right, center, bottom-left, bottom-right. Do not miss large furniture, electronics, or appliances.
-Coordinates: x=0 far left, x=100 far right, y=0 top, y=100 bottom. Use YOLO coordinates when available.
+IDENTIFICATION RULES:
+- Zoom in mentally on every part of the image — read ALL visible text, logos, labels, model numbers, serial plates
+- If you can see a brand → always include it (e.g. "Apple", "Samsung", "IKEA", "Herman Miller")
+- If you can see a model → always include it (e.g. "MacBook Pro 16-inch", "Eames Lounge Chair", "KALLAX shelf")
+- If no brand visible → describe precisely: material + color + style + category (e.g. "Walnut veneer mid-century 3-drawer dresser")
+- NEVER use vague names like "chair", "lamp", "desk". Always add at least 2 descriptors.
+- For electronics: include screen size, color, generation if visible
+- For furniture: include material, color, approximate size, style era
+- For clothing/decor: include color, pattern, material, style
+
+SEARCH QUERY RULES:
+- Amazon search: brand + model + key spec (aim to find the exact item on first try)
+- eBay search: same but add "used" or "vintage" where appropriate
+
+PRICE RULES:
+- Research current realistic market prices — not MSRP, actual sold prices
+- Give tight ranges (e.g. "$180-$220" not "$100-$500")
+
+Scan methodically: top-left → top-right → center → bottom-left → bottom-right. Miss nothing.
+Coordinates: x=0 far left, x=100 far right, y=0 top, y=100 bottom.
 
 Respond ONLY with valid JSON, no markdown, no explanation:
 {
-  "room": "Specific space type (e.g. Modern Home Office, Car Interior, Kitchen)",
-  "summary": "One engaging sentence about what you see",
+  "room": "Precise space description (e.g. 'Modern Scandinavian Home Office', 'Japanese-style Living Room')",
+  "summary": "One specific, vivid sentence describing what you see and its style",
   "problems": [{
-    "title": "Brand + specific product name if visible, otherwise descriptive name",
+    "title": "Brand Model Specific-Name (e.g. Herman Miller Aeron Chair Size B)",
     "type": "present",
-    "description": "Brief buying tip or what to look for",
+    "description": "One-sentence buying tip: what to check for, best place to buy, or what makes this item valuable",
     "x": 50, "y": 50,
     "options": {
-      "new":  { "search": "brand model specific amazon search terms", "price": "$XX-$XX" },
-      "used": { "search": "brand model specific ebay used search terms", "price": "$XX-$XX" }
+      "new":  { "search": "exact amazon search query", "price": "$XX-$XX" },
+      "used": { "search": "exact ebay search query", "price": "$XX-$XX" }
     }
   }]
 }`;
@@ -760,7 +773,7 @@ Respond ONLY with valid JSON, no markdown, no explanation:
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001', max_tokens: 1500,
+        model: 'claude-sonnet-4-6', max_tokens: 2500,
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
           { type: 'text', text: prompt }
