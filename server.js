@@ -77,6 +77,8 @@ const ANALYSES_FILE      = path.join(DATA_DIR, 'analyses.json');
 const MONITORS_FILE      = path.join(DATA_DIR, 'monitors.json');
 const ALERTS_FILE        = path.join(DATA_DIR, 'alerts.json');
 const LINK_WATCHES_FILE  = path.join(DATA_DIR, 'link-watches.json');
+const POSTS_FILE         = path.join(DATA_DIR, 'posts.json');
+const UPLOADS_DIR        = path.join(__dirname, 'uploads');
 const FREE_LIMIT      = 100;
 const LINK_FREE_LIMIT = 9999; // unlimited for now
 const BASE_URL        = process.env.BASE_URL || 'https://www.objematch.com';
@@ -88,7 +90,8 @@ const LS_VARIANTS   = {
   daily:   process.env.LEMONSQUEEZY_VARIANT_DAILY,
 };
 
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(DATA_DIR))   fs.mkdirSync(DATA_DIR,   { recursive: true });
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 // ── EMAIL ─────────────────────────────────────────────────────────────────────
 let mailer = null;
@@ -891,6 +894,71 @@ app.post('/api/chat', requireAuth, async (req, res) => {
     if (!res.headersSent) res.status(500).json({ error: 'Chat failed' });
   }
 });
+
+// ── SOCIAL FEED ───────────────────────────────────────────────────────────────
+async function extractItemsFromPhoto(base64, mediaType) {
+  if (!API_KEY) return [];
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType || 'image/jpeg', data: base64 } },
+          { type: 'text', text: 'List the shoppable products in this photo. Return ONLY a JSON array, nothing else. Format: [{"name":"Brand Model","price":"$X-$Y"}]. Max 8 items. If no identifiable products, return [].' }
+        ]}]
+      })
+    });
+    const d = await r.json();
+    const txt = d.content?.[0]?.text || '[]';
+    return JSON.parse(txt.match(/\[[\s\S]*\]/)?.[0] || '[]');
+  } catch { return []; }
+}
+
+app.post('/api/posts', requireAuth, async (req, res) => {
+  const { base64, mediaType } = req.body;
+  if (!base64) return res.status(400).json({ error: 'photo required' });
+
+  const filename = `${Date.now()}_${req.user.id}.jpg`;
+  fs.writeFileSync(path.join(UPLOADS_DIR, filename), Buffer.from(base64, 'base64'));
+
+  const items = await extractItemsFromPhoto(base64, mediaType || 'image/jpeg');
+
+  const posts = readJSON(POSTS_FILE);
+  const post = {
+    id: Date.now().toString(),
+    userId: req.user.id,
+    userName: req.user.name || req.user.email.split('@')[0],
+    photoUrl: `/uploads/${filename}`,
+    items,
+    wantCount: 0,
+    createdAt: new Date().toISOString()
+  };
+  posts.unshift(post);
+  writeJSON(POSTS_FILE, posts.slice(0, 1000));
+  res.json({ post });
+});
+
+app.get('/api/feed', (req, res) => {
+  const page  = parseInt(req.query.page || '0');
+  const limit = 20;
+  const posts = readJSON(POSTS_FILE).slice(page * limit, (page + 1) * limit);
+  res.json({ posts });
+});
+
+app.post('/api/posts/:id/want', requireAuth, (req, res) => {
+  const posts = readJSON(POSTS_FILE);
+  const idx   = posts.findIndex(p => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'not found' });
+  posts[idx].wantCount = (posts[idx].wantCount || 0) + 1;
+  writeJSON(POSTS_FILE, posts);
+  res.json({ wantCount: posts[idx].wantCount });
+});
+
+// serve uploads
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 // ── LINK TRACKER ROUTES ───────────────────────────────────────────────────────
 app.post('/api/link-analyze', requireAuth, async (req, res) => {

@@ -126,6 +126,21 @@
     }
     .suggestion:hover { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
 
+    /* Share card */
+    .share-card {
+      background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 16px;
+      padding: 14px 18px; margin-top: 6px; display: flex; align-items: center; gap: 12px;
+    }
+    .share-card-text { flex: 1; font-size: 13px; color: #166534; font-weight: 600; }
+    .share-card-sub { font-size: 12px; color: #4ade80; font-weight: 400; }
+    .btn-share-feed {
+      padding: 8px 16px; background: #16a34a; color: #fff; border: none;
+      border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; white-space: nowrap; transition: background .15s;
+    }
+    .btn-share-feed:hover { background: #15803d; }
+    .btn-share-feed:disabled { opacity: .5; cursor: not-allowed; }
+
     /* Track card */
     .track-card {
       background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 16px;
@@ -197,7 +212,8 @@
 <script>
   const TOKEN = localStorage.getItem('om_token');
   let messages  = [];   // conversation history {role, content}
-  let pendingImage = null; // {base64, mediaType, dataUrl}
+  let pendingImage    = null; // {base64, mediaType, dataUrl}
+  let lastSharedImage = null; // keep for share-to-feed
   let isStreaming  = false;
   let userInitials = '?';
 
@@ -304,6 +320,7 @@ You can also just ask me anything about products.`, true);
 
     // Clear input
     const hadImage = !!pendingImage;
+    if (pendingImage) lastSharedImage = { base64: pendingImage.base64, mediaType: pendingImage.mediaType };
     input.value = '';
     input.style.height = 'auto';
     removeImage();
@@ -357,7 +374,7 @@ You can also just ask me anything about products.`, true);
       }
 
       messages.push({ role: 'assistant', content: aiText });
-      if (hadImage) appendTrackCard();
+      if (hadImage) { appendTrackCard(); appendShareCard(); }
     } catch (e) {
       typingEl?.remove();
       appendMessage('ai', 'Network error. Please try again.');
@@ -448,6 +465,46 @@ You can also just ask me anything about products.`, true);
       </div>`;
     document.getElementById('messages').appendChild(el);
     scrollToBottom();
+  }
+
+  function appendShareCard() {
+    if (!lastSharedImage) return;
+    const id = 'sc_' + Date.now();
+    const el = document.createElement('div');
+    el.className = 'msg ai';
+    el.innerHTML = `
+      <div class="msg-avatar ai">OM</div>
+      <div class="msg-body">
+        <div class="share-card">
+          <div class="share-card-text">
+            Share this to the community
+            <div class="share-card-sub">Others can discover these products and track prices too</div>
+          </div>
+          <button class="btn-share-feed" id="${id}_btn" onclick="shareToFeed('${id}')">Share</button>
+        </div>
+      </div>`;
+    document.getElementById('messages').appendChild(el);
+    scrollToBottom();
+  }
+
+  async function shareToFeed(id) {
+    const btn = document.getElementById(id + '_btn');
+    if (!lastSharedImage) return;
+    btn.disabled = true; btn.textContent = 'Sharing...';
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+        body: JSON.stringify({ base64: lastSharedImage.base64, mediaType: lastSharedImage.mediaType })
+      });
+      if (!res.ok) throw new Error();
+      btn.textContent = 'Shared!';
+      btn.style.background = '#15803d';
+      const card = btn.closest('.share-card');
+      card.querySelector('.share-card-text').innerHTML = '✅ Posted to feed! <a href="/feed.html" style="color:#15803d;text-decoration:underline">View feed →</a>';
+    } catch {
+      btn.disabled = false; btn.textContent = 'Share';
+    }
   }
 
   async function saveWatch(id) {
