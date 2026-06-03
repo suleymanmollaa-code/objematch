@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ObjeMatch — AI Shopping Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+
+    nav {
+      background: #fff; border-bottom: 1px solid #e5e7eb;
+      padding: 0 24px; height: 60px; display: flex; align-items: center;
+      justify-content: space-between; flex-shrink: 0; z-index: 10;
+    }
+    .logo { font-size: 19px; font-weight: 800; }
+    .logo span { color: #f97316; }
+    .nav-right { display: flex; gap: 10px; align-items: center; }
+    .nav-link { font-size: 13px; color: #6b7280; font-weight: 500; padding: 6px 12px; border-radius: 8px; }
+    .nav-link:hover { background: #f3f4f6; color: #111827; }
+    .btn-nav { background: #111827; color: #fff; padding: 7px 16px; border-radius: 9px; font-size: 13px; font-weight: 700; }
+
+    /* Chat layout */
+    .chat-wrap { flex: 1; display: flex; flex-direction: column; max-width: 760px; width: 100%; margin: 0 auto; padding: 0 16px; min-height: 0; }
+
+    .messages { flex: 1; overflow-y: auto; padding: 28px 0 16px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* Message bubbles */
+    .msg { display: flex; gap: 12px; align-items: flex-start; max-width: 100%; }
+    .msg.user { flex-direction: row-reverse; }
+
+    .msg-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+    }
+    .msg-avatar.ai { background: #111827; color: #f97316; font-size: 14px; }
+    .msg-avatar.user { background: linear-gradient(135deg, #f97316, #ef4444); color: #fff; font-size: 13px; }
+
+    .msg-body { display: flex; flex-direction: column; gap: 6px; max-width: calc(100% - 50px); }
+
+    .bubble {
+      padding: 14px 18px; border-radius: 18px;
+      font-size: 14.5px; line-height: 1.7; color: #111827;
+    }
+    .msg.ai .bubble { background: #fff; border: 1px solid #e5e7eb; border-top-left-radius: 6px; }
+    .msg.user .bubble { background: #111827; color: #fff; border-top-right-radius: 6px; }
+
+    .msg-image { max-width: 260px; border-radius: 14px; overflow: hidden; border: 1px solid #e5e7eb; }
+    .msg-image img { width: 100%; display: block; }
+
+    /* Typing indicator */
+    .typing { display: flex; gap: 5px; align-items: center; padding: 14px 18px; }
+    .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; animation: bounce 1.2s ease infinite; }
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)} }
+
+    /* Input area */
+    .input-area {
+      border-top: 1px solid #e5e7eb; background: #fff;
+      padding: 16px 0 20px; flex-shrink: 0;
+    }
+    .image-preview { margin-bottom: 10px; position: relative; display: inline-block; }
+    .image-preview img { height: 72px; border-radius: 10px; border: 1px solid #e5e7eb; display: block; }
+    .remove-img { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #ef4444; color: #fff; border-radius: 50%; border: none; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+
+    .input-box {
+      display: flex; align-items: flex-end; gap: 10px;
+      background: #fff; border: 1.5px solid #e5e7eb; border-radius: 16px;
+      padding: 10px 12px; transition: border-color .2s;
+    }
+    .input-box:focus-within { border-color: #f97316; }
+
+    .upload-label {
+      width: 36px; height: 36px; border-radius: 10px; background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; font-size: 17px;
+      transition: background .15s;
+    }
+    .upload-label:hover { background: #e5e7eb; }
+
+    textarea {
+      flex: 1; border: none; outline: none; font-family: 'Inter', sans-serif;
+      font-size: 14.5px; color: #111827; resize: none; min-height: 36px; max-height: 140px;
+      background: transparent; line-height: 1.5; padding: 6px 0;
+    }
+    textarea::placeholder { color: #9ca3af; }
+
+    .send-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: #f97316; color: #fff; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background .15s;
+    }
+    .send-btn:hover { background: #ea580c; }
+    .send-btn:disabled { background: #e5e7eb; cursor: not-allowed; }
+    .send-btn svg { width: 16px; height: 16px; }
+
+    /* Login gate */
+    .login-gate {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 40px 24px;
+    }
+    .login-gate-inner { max-width: 400px; }
+    .login-gate h2 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+    .login-gate p { color: #6b7280; font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
+    .btn-cta { display: inline-block; background: #f97316; color: #fff; padding: 13px 28px; border-radius: 12px; font-size: 15px; font-weight: 700; margin-right: 10px; }
+    .btn-cta:hover { background: #ea580c; }
+
+    /* Markdown-ish formatting */
+    .bubble strong { font-weight: 700; }
+    .bubble em { font-style: italic; color: #6b7280; }
+    .bubble a { color: #f97316; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+    .msg.user .bubble a { color: #fed7aa; }
+
+    /* Intro suggestions */
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .suggestion {
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 20px;
+      padding: 7px 14px; font-size: 13px; color: #374151; cursor: pointer;
+      transition: all .15s;
+    }
+    .suggestion:hover { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Obje<span>Match</span></a>
+  <div class="nav-right">
+    <a href="/dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
+    <a href="/login.html?next=/chat.html" class="btn-nav" id="navLogin">Sign In</a>
+    <span class="nav-link" id="navUser" style="display:none;color:#111827;font-weight:700"></span>
+  </div>
+</nav>
+
+<div id="loginGate" class="login-gate" style="display:none">
+  <div class="login-gate-inner">
+    <div style="font-size:52px;margin-bottom:18px">🛍️</div>
+    <h2>Sign in to use ObjeMatch</h2>
+    <p>Upload a photo of any room or space — AI identifies every item and helps you find the best prices.</p>
+    <a href="/register.html?next=/chat.html" class="btn-cta">Create Free Account</a>
+    <a href="/login.html?next=/chat.html" style="font-size:14px;color:#6b7280">Sign in</a>
+  </div>
+</div>
+
+<div class="chat-wrap" id="chatWrap" style="display:none">
+  <div class="messages" id="messages"></div>
+
+  <div class="input-area">
+    <div class="image-preview" id="imagePreview" style="display:none">
+      <img id="previewImg" src="" alt="">
+      <button class="remove-img" onclick="removeImage()">×</button>
+    </div>
+    <div class="input-box">
+      <label class="upload-label" for="photoInput" title="Upload photo">
+        📷
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handleImageSelect(this)">
+      </label>
+      <textarea id="msgInput" placeholder="Upload a photo or ask anything..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TOKEN = localStorage.getItem('om_token');
+  let messages  = [];   // conversation history {role, content}
+  let pendingImage = null; // {base64, mediaType, dataUrl}
+  let isStreaming  = false;
+  let userInitials = '?';
+
+  // Init
+  (function init() {
+    if (!TOKEN) {
+      document.getElementById('loginGate').style.display = 'flex';
+      return;
+    }
+    document.getElementById('chatWrap').style.display = 'flex';
+    try {
+      const p = JSON.parse(atob(TOKEN.split('.')[1]));
+      userInitials = (p.name || p.email || '?')[0].toUpperCase();
+      document.getElementById('navLogin').style.display    = 'none';
+      document.getElementById('navDashboard').style.display = '';
+      document.getElementById('navUser').style.display     = '';
+      document.getElementById('navUser').textContent       = p.name || p.email?.split('@')[0] || 'Account';
+    } catch {}
+    showWelcome();
+  })();
+
+  function showWelcome() {
+    appendMessage('ai', `Hi! I'm your AI shopping assistant.
+
+**Upload a photo** of any room, desk setup, car interior, closet — anything. I'll identify every item and find you the best places to buy or compare prices.
+
+You can also just ask me anything about products.`, true);
+  }
+
+  function handleImageSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl   = e.target.result;
+      const base64    = dataUrl.split(',')[1];
+      const mediaType = file.type || 'image/jpeg';
+      pendingImage = { base64, mediaType, dataUrl };
+      document.getElementById('previewImg').src    = dataUrl;
+      document.getElementById('imagePreview').style.display = '';
+      document.getElementById('msgInput').placeholder = 'What would you like to know about this photo?';
+      document.getElementById('msgInput').focus();
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  function removeImage() {
+    pendingImage = null;
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('msgInput').placeholder = 'Upload a photo or ask anything...';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  }
+
+  async function sendMessage() {
+    if (isStreaming) return;
+    const input = document.getElementById('msgInput');
+    const text  = input.value.trim();
+    if (!text && !pendingImage) return;
+
+    const userText = text || 'What items can you identify in this photo?';
+
+    // Show user message
+    if (pendingImage) {
+      appendImageMessage(pendingImage.dataUrl, userText);
+    } else {
+      appendMessage('user', userText);
+    }
+
+    // Build content for Claude
+    const content = [];
+    if (pendingImage) {
+      content.push({ type: 'image', source: { type: 'base64', media_type: pendingImage.mediaType, data: pendingImage.base64 } });
+    }
+    content.push({ type: 'text', text: userText });
+
+    messages.push({ role: 'user', content: pendingImage ? content : userText });
+
+    // Clear input
+    input.value = '';
+    input.style.height = 'auto';
+    removeImage();
+
+    // Stream AI response
+    isStreaming = true;
+    document.getElementById('sendBtn').disabled = true;
+    const typingEl = appendTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}` },
+        body: JSON.stringify({ messages })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        typingEl.remove();
+        appendMessage('ai', 'Sorry, something went wrong. Please try again.');
+        return;
+      }
+
+      typingEl.remove();
+      const aiEl = appendMessage('ai', '');
+      const bubbleEl = aiEl.querySelector('.bubble');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let aiText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6).trim();
+          if (data === '[DONE]') break;
+          try {
+            const json = JSON.parse(data);
+            const delta = json.delta?.text || '';
+            if (delta) {
+              aiText += delta;
+              bubbleEl.innerHTML = formatText(aiText);
+              scrollToBottom();
+            }
+          } catch {}
+        }
+      }
+
+      messages.push({ role: 'assistant', content: aiText });
+    } catch (e) {
+      typingEl?.remove();
+      appendMessage('ai', 'Network error. Please try again.');
+    } finally {
+      isStreaming = false;
+      document.getElementById('sendBtn').disabled = false;
+      document.getElementById('msgInput').focus();
+    }
+  }
+
+  function appendMessage(role, text, showSuggestions = false) {
+    const el = document.createElement('div');
+    el.className = `msg ${role}`;
+    const avatar = role === 'ai'
+      ? `<div class="msg-avatar ai">OM</div>`
+      : `<div class="msg-avatar user">${userInitials}</div>`;
+    const sugg = showSuggestions ? `
+      <div class="suggestions">
+        <div class="suggestion" onclick="quickSend('What is this item worth?')">💰 What is this worth?</div>
+        <div class="suggestion" onclick="quickSend('Where can I find this cheaper?')">🔍 Find it cheaper</div>
+        <div class="suggestion" onclick="quickSend('Is there a better alternative?')">⚡ Better alternatives</div>
+      </div>` : '';
+    el.innerHTML = `${avatar}<div class="msg-body"><div class="bubble">${formatText(text)}</div>${sugg}</div>`;
+    document.getElementById('messages').appendChild(el);
+    scrollToBottom();
+    return el;
+  }
+
+  function appendImageMessage(dataUrl, text) {
+    const el = document.createElement('div');
+    el.className = 'msg user';
+    el.innerHTML = `
+      <div class="msg-avatar user">${userInitials}</div>
+      <div class="msg-body">
+        <div class="msg-image"><img src="${dataUrl}" alt=""></div>
+        ${text ? `<div class="bubble">${esc(text)}</div>` : ''}
+      </div>`;
+    document.getElementById('messages').appendChild(el);
+    scrollToBottom();
+  }
+
+  function appendTyping() {
+    const el = document.createElement('div');
+    el.className = 'msg ai';
+    el.innerHTML = `<div class="msg-avatar ai">OM</div><div class="msg-body"><div class="bubble"><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
+    document.getElementById('messages').appendChild(el);
+    scrollToBottom();
+    return el;
+  }
+
+  function quickSend(text) {
+    document.getElementById('msgInput').value = text;
+    sendMessage();
+  }
+
+  function formatText(text) {
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function scrollToBottom() {
+    const m = document.getElementById('messages');
+    m.scrollTop = m.scrollHeight;
+  }
+</script>
+</body>
+</html>

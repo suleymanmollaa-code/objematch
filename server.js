@@ -826,6 +826,72 @@ Respond ONLY with valid JSON, no markdown, no explanation:
   }
 });
 
+// ── CHAT ROUTE ────────────────────────────────────────────────────────────────
+const CHAT_SYSTEM = `You are ObjeMatch, an expert AI shopping assistant. Your specialty is identifying products from photos and helping users find the best prices.
+
+When shown a photo:
+- Identify EVERY visible shoppable item with maximum specificity (brand + model + key specs)
+- For each item give: current market price range, where to buy new, where to find used/cheaper
+- Format clearly using **bold** for product names and prices
+- Include Amazon search links as: [Search Amazon](https://www.amazon.com/s?k=SEARCH+TERMS)
+- Include eBay links as: [Search eBay](https://www.ebay.com/sch/i.html?_nkw=SEARCH+TERMS)
+
+For follow-up questions: answer helpfully and specifically, referencing what you've already seen.
+Keep responses conversational but packed with useful information. Never be vague.`;
+
+app.post('/api/chat', requireAuth, async (req, res) => {
+  if (!API_KEY) return res.status(500).json({ error: 'API not configured' });
+  const { messages } = req.body;
+  if (!messages || !messages.length) return res.status(400).json({ error: 'messages required' });
+
+  try {
+    const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2048,
+        stream: true,
+        system: CHAT_SYSTEM,
+        messages
+      })
+    });
+
+    if (!upstream.ok) {
+      const err = await upstream.json();
+      return res.status(500).json({ error: err.error?.message || 'AI error' });
+    }
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const reader = upstream.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') { res.write('data: [DONE]\n\n'); break; }
+        try {
+          const json = JSON.parse(data);
+          if (json.type === 'content_block_delta' && json.delta?.text) {
+            res.write(`data: ${JSON.stringify({ delta: { text: json.delta.text } })}\n\n`);
+          }
+        } catch {}
+      }
+    }
+    res.end();
+  } catch (e) {
+    console.error('Chat error:', e.message);
+    if (!res.headersSent) res.status(500).json({ error: 'Chat failed' });
+  }
+});
+
 // ── LINK TRACKER ROUTES ───────────────────────────────────────────────────────
 app.post('/api/link-analyze', requireAuth, async (req, res) => {
   const { url } = req.body;
